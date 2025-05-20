@@ -1,6 +1,7 @@
 <% layout('layout/layout.ejs') %>
 
 <link rel="stylesheet" href="/css/loginRegistro.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 
 <!-- Imagen de fondo a pantalla completa -->
@@ -10,7 +11,7 @@
 <form id="reservationForm" action="/reservar" method="POST">
     <div class="d-flex justify-content-center gap-2 flex-wrap">
       <input type="text" name="ciudad" class="form-control" placeholder="Ingresar ciudad / Hotel" style="max-width: 200px;" required>
-      <input type="text" name="fechas" class="form-control" placeholder="13/05/25 – 14/05/25" style="max-width: 180px;" required>
+      <input type="text" name="fechas" id="fechas" class="form-control" placeholder="13/05/25 – 14/05/25" style="max-width: 180px;" required>
       <input type="text" name="habitacion" class="form-control" placeholder="1 Habitación - 2 Personas" style="max-width: 220px;" required>
       <input type="text" name="codigo" class="form-control" placeholder="Código Promocional" style="max-width: 180px;">
       <button type="submit" class="btn btn-danger">RESERVAR</button>
@@ -19,3 +20,16 @@
 
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    flatpickr("#fechas", {
+      mode: "range",
+      dateFormat: "d/m/y",
+      locale: "es",
+      minDate: "today"
+    });
+  });
+</script>
