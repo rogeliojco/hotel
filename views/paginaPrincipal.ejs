@@ -153,3 +153,41 @@
     </div>
   </div>
 </section>
+<!-- Footer -->
+<footer class="footer-minimal bg-dark text-white py-4">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- Logo/Texto -->
+      <div class="col-md-4 mb-3 mb-md-0 text-center text-md-start">
+        <span class="fw-light">HOTELES</span> <span class="fw-bold" style="color: #d9534f;">PREMIUM</span>
+      </div>
+      
+      <!-- Número de contacto destacado -->
+      <div class="col-md-4 text-center">
+        <a href="tel:+524433108137" class="contact-number">
+          <i class="fas fa-phone-alt me-2"></i>
+          <span>+52 443 310 8137</span>
+        </a>
+      </div>
+      
+      <!-- Redes sociales -->
+      <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+        <a href="#" class="text-white mx-2 social-icon"><i class="fab fa-whatsapp"></i></a>
+        <a href="#" class="text-white mx-2 social-icon"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="text-white mx-2 social-icon"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+    
+    <!-- Línea divisoria y copyright -->
+    <div class="border-top border-secondary mt-3 pt-3 text-center">
+      <p class="small mb-0 text-muted">
+        &copy; <span id="current-year"></span> Hoteles Premium. Todos los derechos reservados.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- Script para año actual -->
+<script>
+  document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
