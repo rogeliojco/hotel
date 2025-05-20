@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <title><%- typeof title !== 'undefined' ? title : 'Mi App' %></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <%- block('stylesheets') -%>
 
   <!-- Bootstrap + Estilos globales -->
   <link rel="stylesheet" href="https://bootswatch.com/5/pulse/bootstrap.css">

@@ -30,3 +30,39 @@ body {
   background-color: #7A8EA4;
     border: none;
 }
+
+
+/* Estilos para la sección de beneficios */
+.benefits-section {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.benefit-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.benefit-icon {
+  color: #d9534f;
+}
+
+.benefits-section h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.benefits-section p.small {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
