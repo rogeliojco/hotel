@@ -1,0 +1,102 @@
+    body {
+        background: linear-gradient(to right, #B39453, #4D390E);
+    }
+
+    
+    .alert-fade {
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .alert-fade.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .alert-fade.hide {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    .login-card {
+        background-color: #B09151; /* Fondo del formulario */
+        border-radius: 10px;
+        border: none;
+        padding-top: 30px;
+        padding-bottom: 30px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .login-header {
+        background-color: transparent;
+        border-bottom: none;
+        color: #fff;
+        text-align: center; /* Added: To center the header text */
+        margin-bottom: 1rem;
+    }
+    
+    .login-header h4 {
+        font-weight: bold;
+        color: #FFFFFF;
+    }
+    
+    .form-label {
+        font-weight: bold;
+        color: #FFFFFF;
+    }
+    
+    .form-control {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        color: #333;
+        border-radius: 8px; /* Added: border-radius for form control */
+        padding-left: 10px; /* Added: padding for form control */
+    }
+    
+    .form-control::placeholder {
+        color: #6F5725; /* Added: Placeholder text color */
+    }
+    
+    .btn-registrar {
+        background-color: #6e5c48;
+        color: #fff;
+        border: none;
+        border-radius: 8px; /* Added: border-radius for btn-registrar */
+        padding: 0.5rem 1rem; /* Added: padding for btn-registrar */
+        transition: 0.3s;
+        width: 100%;
+    }
+    
+    .btn-registrar:hover {
+        background-color: #444444;
+        color: #FFFFFF;
+    }
+
+    
+    
+    .col-md-6.col-lg-5 {
+        margin-left: 40px;
+        margin-right: 40px;
+    }
+
+.hero-image {
+  background-image: url('../asset//principalImg.png'); /* Revisa que el path sea correcto */
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 600px;
+  position: relative; /* Asegura que el contenido encima se posicione relativo a este contenedor */
+}
+
+.search-form-container input.form-control {
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  background-color: #f5f5f5;
+  border: none;
+}
+
+.search-form-container .btn-danger {
+  padding: 0.5rem 1.5rem;
+  font-weight: bold;
+}
+
