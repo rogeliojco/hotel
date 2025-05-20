@@ -45,6 +45,7 @@ app.use((req, res, next)=>{
 })
 
 app.use('/', require('./rutas'));
+app.use('/', require('./rutas/reservas'));
 
 //iniciando el servidor
 

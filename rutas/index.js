@@ -56,4 +56,20 @@ function isAuthenticated(req, res, next) {
     res.redirect('/');
 }
 
+
+// Ruta que recibe el formulario principal
+router.post('/reservar', (req, res) => {
+    const { ciudad, fechas, habitacion, codigo } = req.body;
+
+    // Renderiza la vista de reserva con los datos
+    res.render('reserva', {
+        ciudad,
+        fechas,
+        habitacion,
+        codigo
+    });
+});
+
+
+
 module.exports = router;
