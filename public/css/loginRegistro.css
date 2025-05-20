@@ -1,0 +1,72 @@
+/* Estilos para títulos de bienvenida */
+.bienvenida-titulo {
+    color: #fff;
+    font-weight: bold;
+    font-size: 2rem;
+    font-family: 'Georgia', serif;
+}
+
+.bienvenida-texto {
+    color: #f8f8f8;
+    font-size: 1.1rem;
+    max-width: 400px;
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.5;
+}
+
+/* Botón de registro */
+.btn-registrar {
+    background-color: #8C6E4D;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-registrar:hover {
+    background-color: #5A3E2B;
+    color: #fff;
+}
+
+/* Tarjeta de login con estilo "hotel boutique" */
+.login-card {
+    background-color: #F2E5D7; /* Color crema cálido */
+    border-radius: 15px;
+    padding: 40px 25px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Encabezado del login */
+.login-header h4 {
+    font-weight: bold;
+    color: #5A3E2B;
+    font-family: 'Georgia', serif;
+}
+
+/* Etiquetas de formulario */
+.form-label {
+    font-weight: 600;
+    color: #5A3E2B;
+}
+
+/* Campos del formulario */
+.form-control {
+    background-color: #fff;
+    border: 1px solid #d0b894;
+    color: #333;
+    border-radius: 10px;
+    padding-left: 12px;
+}
+
+/* Placeholder de los campos */
+.form-control::placeholder {
+    color: #B8A47A;
+}
+
+/* Centrado de columnas */
+.col-md-6.col-lg-5 {
+    margin-left: auto;
+    margin-right: auto;
+}
