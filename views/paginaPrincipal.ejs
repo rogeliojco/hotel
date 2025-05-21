@@ -7,11 +7,11 @@
 <div class="hero-image position-relative">
   <div class="search-form-container position-absolute top-50 start-50 translate-middle w-100 px-3">
     <form id="reservationForm" action="/reservar" method="POST">
-      <div class="d-flex justify-content-center gap-2 flex-wrap">
+      <div class="d-flex justify-content-center gap-2 flex-wrap align-items-center"> <!-- Añadido align-items-center -->
 
         <!-- Input de ciudad con dropdown -->
         <div class="position-relative" style="max-width: 200px;">
-          <input type="text" id="ciudadInput" name="ciudad" class="form-control" placeholder="Ingresar ciudad / Hotel" autocomplete="off" required>
+          <input type="text" id="ciudadInput" name="ciudad" class="form-control custom-input-text-center" placeholder="Ingresar ciudad / Hotel" autocomplete="off" required> <!-- Añadido custom-input-text-center -->
           <div id="estadoDropdown" class="position-absolute w-100 d-none">
             <% estados.forEach(function(estado) { %>
               <div class="estado-opcion" onclick="seleccionarCiudad('<%= estado.nombre %>')">
@@ -262,7 +262,7 @@
 </script>
 
 <script>
-  const ciudadInput = document.getElementById('ciudadInput');
+const ciudadInput = document.getElementById('ciudadInput');
   const estadoDropdown = document.getElementById('estadoDropdown');
 
   ciudadInput.addEventListener('focus', () => {
@@ -279,7 +279,7 @@
 
   document.querySelectorAll('.estado-opcion').forEach(opcion => {
     opcion.addEventListener('click', () => {
-      ciudadInput.value = opcion.textContent;
+      ciudadInput.value = opcion.textContent.trim(); // Trim the whitespace!
       estadoDropdown.classList.add('d-none');
     });
   });
