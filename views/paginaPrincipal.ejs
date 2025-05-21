@@ -4,35 +4,56 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 
-<!-- Imagen de fondo a pantalla completa -->
 <div class="hero-image position-relative">
-  <!-- Contenedor encima de la imagen -->
   <div class="search-form-container position-absolute top-50 start-50 translate-middle w-100 px-3">
-<form id="reservationForm" action="/reservar" method="POST">
-    <div class="d-flex justify-content-center gap-2 flex-wrap">
-      <input type="text" name="ciudad" class="form-control" placeholder="Ingresar ciudad / Hotel" style="max-width: 200px;" required>
-      <input type="text" name="fechas" id="fechas" class="form-control" placeholder="13/05/25 – 14/05/25" style="max-width: 180px;" required>
-      <input type="text" name="habitacion" class="form-control" placeholder="1 Habitación - 2 Personas" style="max-width: 220px;" required>
-      <input type="text" name="codigo" class="form-control" placeholder="Código Promocional" style="max-width: 180px;">
-      <button type="submit" class="btn btn-danger">RESERVAR</button>
-    </div>
-  </form>
+    <form id="reservationForm" action="/reservar" method="POST">
+      <div class="d-flex justify-content-center gap-2 flex-wrap">
 
+        <!-- Input de ciudad con dropdown -->
+        <div class="position-relative" style="max-width: 200px;">
+          <input type="text" id="ciudadInput" name="ciudad" class="form-control" placeholder="Ingresar ciudad / Hotel" autocomplete="off" required>
+          <div id="estadoDropdown" class="position-absolute w-100 d-none">
+            <% estados.forEach(function(estado) { %>
+              <div class="estado-opcion" onclick="seleccionarCiudad('<%= estado.nombre %>')">
+                <%= estado.nombre %>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Input de fechas -->
+        <input type="text" name="fechas" id="fechas" class="form-control" placeholder="13/05/25 – 14/05/25" style="max-width: 180px;" required>
+
+        <!-- Selector de habitaciones -->
+        <div class="position-relative" style="max-width: 260px;">
+          <input type="text" id="habitacionInput" name="habitacionResumen" class="form-control" placeholder="Seleccionar habitaciones" readonly required>
+          <div id="habitacionDropdown" class="d-none position-absolute w-100 p-3">
+            <% const tipos = [1, 2, 4, 6]; %>
+            <% tipos.forEach(function(tipo) { %>
+              <div class="mb-2">
+                <label class="form-label fw-bold">Habitación para <%= tipo %> persona<%= tipo > 1 ? 's' : '' %></label>
+                <div class="d-flex justify-content-between align-items-center">
+                  <button type="button" class="btn btn-outline-secondary btn-sm" onclick="updateTipo(<%= tipo %>, -1)">-</button>
+                  <span class="spanC" id="tipo<%= tipo %>Count">0</span>
+                  <button type="button" class="btn btn-outline-secondary btn-sm" onclick="updateTipo(<%= tipo %>, 1)">+</button>
+                </div>
+              </div>
+            <% }); %>
+            <button type="button" class="btn btn-danger btn-sm w-100" onclick="cerrarDropdown()">Listo</button>
+          </div>
+        </div>
+
+        <!-- Código promocional -->
+        <input type="text" name="codigo" class="form-control" placeholder="Código Promocional" style="max-width: 180px;">
+
+        <!-- Botón reservar -->
+        <button type="submit" class="btn btn-danger">RESERVAR</button>
+
+      </div>
+    </form>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    flatpickr("#fechas", {
-      mode: "range",
-      dateFormat: "d/m/y",
-      locale: "es",
-      minDate: "today"
-    });
-  });
-</script>
 <!-- Sección de Beneficios -->
 <section class="benefits-section py-5 bg-light">
   <div class="container">
@@ -186,6 +207,91 @@
     </div>
   </div>
 </footer>
+<script>
+  const input = document.getElementById("habitacionInput");
+  const dropdown = document.getElementById("habitacionDropdown");
+
+  // Contadores por tipo de habitación
+  const habitaciones = {
+    1: 0,
+    2: 0,
+    4: 0,
+    6: 0
+  };
+
+  input.addEventListener("click", () => {
+    dropdown.classList.toggle("d-none");
+  });
+
+  function updateTipo(tipo, delta) {
+    habitaciones[tipo] = Math.max(0, habitaciones[tipo] + delta);
+    document.getElementById(`tipo${tipo}Count`).textContent = habitaciones[tipo];
+  }
+
+  function cerrarDropdown() {
+    let resumen = [];
+
+    for (let tipo in habitaciones) {
+      if (habitaciones[tipo] > 0) {
+        resumen.push(`${habitaciones[tipo]} Hab. x ${tipo} Pers.`);
+      }
+    }
+
+    input.value = resumen.length ? resumen.join(', ') : "Seleccionar habitaciones";
+    dropdown.classList.add("d-none");
+  }
+
+  document.addEventListener("click", (e) => {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add("d-none");
+    }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    flatpickr("#fechas", {
+      mode: "range",
+      dateFormat: "d/m/y",
+      locale: "es",
+      minDate: "today"
+    });
+  });
+</script>
+
+<script>
+  const ciudadInput = document.getElementById('ciudadInput');
+  const estadoDropdown = document.getElementById('estadoDropdown');
+
+  ciudadInput.addEventListener('focus', () => {
+    estadoDropdown.classList.remove('d-none');
+  });
+
+  ciudadInput.addEventListener('input', () => {
+    const filtro = ciudadInput.value.toLowerCase();
+    document.querySelectorAll('.estado-opcion').forEach(opcion => {
+      const texto = opcion.textContent.toLowerCase();
+      opcion.style.display = texto.includes(filtro) ? '' : 'none';
+    });
+  });
+
+  document.querySelectorAll('.estado-opcion').forEach(opcion => {
+    opcion.addEventListener('click', () => {
+      ciudadInput.value = opcion.textContent;
+      estadoDropdown.classList.add('d-none');
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!estadoDropdown.contains(e.target) && e.target !== ciudadInput) {
+      estadoDropdown.classList.add('d-none');
+    }
+  });
+  
+</script>
+
 
 <!-- Script para año actual -->
 <script>

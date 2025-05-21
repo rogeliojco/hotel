@@ -13,6 +13,8 @@ body {
   height: 600px;
   position: relative; /* Asegura que el contenido encima se posicione relativo a este contenedor */
   max-width: 100%;  /* Añade esto */
+    position: relative;
+  z-index: 1;
 
 }
 
@@ -203,3 +205,75 @@ body {
   background-color: #d9534f;
   transform: translateY(-3px);
 } 
+
+/* === Dropdowns (habitaciones y estados) === */
+#habitacionDropdown,
+#estadoDropdown {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* === Opciones del dropdown de estados === */
+.estado-opcion {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #212529;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.estado-opcion:hover {
+  background-color: #f0f0f0;
+}
+
+/* === Estilos del input de ciudad y habitaciones === */
+#ciudadInput,
+#habitacionInput {
+  cursor: pointer;
+  background-color: #fff;
+  color: #212529;
+}
+
+/* === Contador de habitaciones === */
+#habitacionDropdown span[id^="tipo"] {
+  display: inline-block;
+  min-width: 32px;
+  text-align: center;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  padding: 4px 8px;
+  color: #7A8EA4;
+  font-weight: bold;
+  
+}
+
+/* === Botones + y - del contador === */
+#habitacionDropdown button.btn-outline-secondary {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  text-align: center;
+}
+
+/* === Espaciado entre bloques de tipo de habitación === */
+#habitacionDropdown .mb-2 {
+  margin-bottom: 1rem;
+}
+
+/* === Botón Listo del dropdown de habitaciones === */
+#habitacionDropdown .btn-danger {
+  margin-top: 1rem;
+}
+
+.estado-opcion{
+  color: #7A8EA4;
+}
+
