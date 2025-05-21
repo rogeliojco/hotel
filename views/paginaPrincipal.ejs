@@ -26,12 +26,12 @@
 
         <!-- Selector de habitaciones -->
         <div class="position-relative" style="max-width: 260px;">
-          <input type="text" id="habitacionInput" name="habitacionResumen" class="form-control" placeholder="Seleccionar habitaciones" readonly required>
+          <input type="text" id="habitacionInput" name="habitacion" class="form-control" placeholder="Seleccionar habitaciones" readonly required>
           <div id="habitacionDropdown" class="d-none position-absolute w-100 p-3">
             <% const tipos = [1, 2, 4, 6]; %>
             <% tipos.forEach(function(tipo) { %>
               <div class="mb-2">
-                <label class="form-label fw-bold">Habitación para <%= tipo %> persona<%= tipo > 1 ? 's' : '' %></label>
+                <label class="form-label fw-bold">Habitación para <%= tipo %> persona <%= tipo > 1 ? 's' : '' %></label>
                 <div class="d-flex justify-content-between align-items-center">
                   <button type="button" class="btn btn-outline-secondary btn-sm" onclick="updateTipo(<%= tipo %>, -1)">-</button>
                   <span class="spanC" id="tipo<%= tipo %>Count">0</span>
