@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Reserva = require('../models/reserva'); // asegúrate que la ruta al modelo sea correcta
+const Reserva = require('../models/reserva');
 
 router.post('/confirmar-reserva', async (req, res) => {
   console.log('Datos recibidos del formulario:', req.body);
@@ -23,12 +23,12 @@ router.post('/confirmar-reserva', async (req, res) => {
       vencimiento,
       cvv,
       titular,
-      estado: 'pendiente' // se puede cambiar a 'confirmada' si se desea guardar como confirmada
+      estado: 'pendiente'
     });
 
     await nuevaReserva.save();
 
-    res.render('reserva-confirmada', { nombre }); // o redirigir a otra página de éxito
+    res.render('reserva-confirmada', { nombre });
   } catch (error) {
     console.error('Error al guardar la reserva:', error);
     res.status(500).send('Error al guardar la reserva.');
