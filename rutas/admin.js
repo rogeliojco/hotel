@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const Reserva = require('../models/reserva');
 
 
 function isAuthenticated(req, res, next) {
@@ -11,13 +12,30 @@ function isAuthenticated(req, res, next) {
 }
 
 
-router.get('/admin', isAuthenticated, (req, res) => {
+router.get('/', isAuthenticated, (req, res) => {
   res.render('admin/panel');
 });
 
-router.get('/reservas-por-hotel', isAuthenticated, (req, res) => {
-  res.render('admin/reservas-por-hotel');
+router.get('/reservas-por-hotel', isAuthenticated, async (req, res) => {
+  try {
+    const reservas = await Reserva.find();
+
+    // Agrupar por ciudad
+    const agrupadas = {};
+    reservas.forEach(res => {
+      if (!agrupadas[res.ciudad]) {
+        agrupadas[res.ciudad] = [];
+      }
+      agrupadas[res.ciudad].push(res);
+    });
+
+    res.render('admin/reservas-por-hotel', { agrupadas });
+  } catch (err) {
+    console.error('Error al obtener reservas:', err);
+    res.status(500).send('Error interno del servidor');
+  }
 });
+
 
 router.get('/usuarios-sistema', isAuthenticated, async (req, res) => {
   try {

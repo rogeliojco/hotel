@@ -9,10 +9,13 @@
         <h5 class="mb-0"><%= ciudad %></h5>
       </div>
       <div class="card-body">
-        <% agrupadas[ciudad].forEach(reserva => { %>
-          <p><strong>Nombre:</strong> <%= reserva.nombre %> | <strong>Email:</strong> <%= reserva.email %> | <strong>Fechas:</strong> <%= reserva.fechas %> | <strong>Habitación:</strong> <%= reserva.habitacion %></p>
-          <hr>
-        <% }) %>
+        <ul class="list-group">
+          <% agrupadas[ciudad].forEach(res => { %>
+            <li class="list-group-item">
+              <strong><%= res.nombre %></strong> - <%= res.fechas %> - <%= res.habitacion %> - <%= res.estado %>
+            </li>
+          <% }) %>
+        </ul>
       </div>
     </div>
   <% }) %>
