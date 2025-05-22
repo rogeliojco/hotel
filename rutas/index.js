@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const Producto = require('../models/Producto');
+const hotel = require('../models/hotel');
 const perfilController = require('../controllers/perfil_controller');
 
 // Estados para dropdown en página principal
@@ -22,6 +22,19 @@ const estadosMexico = [
 // Página principal
 router.get('/', (req, res) => {
   res.render('paginaPrincipal', { estados: estadosMexico });
+});
+
+router.get('/Hoteles', async (req, res) => {
+  try {
+    // Obtén todos los hoteles de la base de datos
+    const hoteles = await hotel.find({}); // Usa el modelo 'hotel' para buscar todos los documentos
+
+    // Renderiza la vista 'Hoteles' y pasa los datos de los hoteles
+    res.render('Hoteles', { hoteles: hoteles, estados: estadosMexico }); // Pasa 'hoteles' a la vista
+  } catch (error) {
+    console.error('Error al obtener los hoteles:', error);
+    res.status(500).send('Error al obtener los hoteles'); // Manejo de errores
+  }
 });
 
 // Formulario de reservación inicial

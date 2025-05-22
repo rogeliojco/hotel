@@ -1,10 +1,39 @@
 /* Fondo en tonos más relajantes tipo hotel boutique */
+html, body {
+  height: 100%; /* Asegura que el html y body ocupen toda la altura */
+}
 body {
-    background-color: #4A4A4A; /* Gris oscuro */
+    background-color: #e8edf3; /* Gris oscuro */
     font-family: 'Segoe UI', sans-serif;
     color: #fff; /* Texto blanco o gris claro para mejor legibilidad */
 }
+.navbar-light .nav-link {
+  position: relative;
+  font-weight: 500;
+  color: #593196;
+  padding: 0.5rem 1rem;
+  text-transform: capitalize;
+  transition: color 0.3s ease;
+  text-decoration: none;
+    text-transform: capitalize;
 
+}
+
+/* Línea animada debajo del texto */
+.navbar-light .nav-link::after {
+  content: '';
+  position: absolute;
+  left: 10%;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: #593196;
+  transition: width 0.3s ease;
+}
+
+.navbar-light .nav-link:hover::after {
+  width: 80%;
+}
 .hero-image {
   background-image: url('../asset//principalImg.png'); /* Revisa que el path sea correcto */
   background-size: cover;
@@ -275,5 +304,11 @@ body {
 
 .estado-opcion{
   color: #7A8EA4;
+}
+
+footer {
+  /* No necesitas cambiar tu clase bg-dark, text-white, text-center, py-3 porque ya están en tu html */
+  position: sticky;
+  bottom: 0;
 }
 

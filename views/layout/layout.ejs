@@ -19,33 +19,32 @@
 <body class="<%= typeof reservasActivas !== 'undefined' ? 'perfil-body' : '' %>">
 
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg" style="background-color: #AAAAAA; padding-top: 0.25rem; padding-bottom: 0.25rem;" data-bs-theme="dark">
-    <div class="container position-relative">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #cfd8e3; padding-top: 0.25rem; padding-bottom: 0.25rem;" data-bs-theme="light"> 
+  <div class="container position-relative">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-      <div class="collapse navbar-collapse justify-content-end" id="navbarColor01">
-        <% if (user) { %>
-          <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link text-white" href="/perfil">HOTELES</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="/Salir">PAQUETES HOTEL + AVIÓN</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="/Salir">OFERTAS</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="/Salir">DESTINOS</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="/perfil">PERFIL</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="/">PÁGINA PRINCIPAL</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="/Salir">SALIR</a></li>
-          </ul>
-        <% } else { %>
-          <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link text-white" href="/login">INGRESAR</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="/registro">REGISTRO</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="/">PÁGINA PRINCIPAL</a></li>
-          </ul>
-        <% } %>
-      </div>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarColor01">
+      <% if (user) { %>
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="/Hoteles">Hoteles</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Salir">Paquetes hotel + avión</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Salir">Ofertas</a></li>
+          <li class="nav-item"><a class="nav-link" href="/perfil">Perfil</a></li>
+          <li class="nav-item"><a class="nav-link" href="/">Página principal</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Salir">Salir</a></li>
+        </ul>
+      <% } else { %>
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="/login">Ingresar</a></li>
+          <li class="nav-item"><a class="nav-link" href="/registro">Registro</a></li>
+          <li class="nav-item"><a class="nav-link" href="/">Página principal</a></li>
+        </ul>
+      <% } %>
     </div>
-  </nav>
+  </div>
+</nav>
 
   <!-- Flash messages -->
   <div class="container mt-3">
