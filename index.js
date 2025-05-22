@@ -6,49 +6,52 @@ const passport = require('passport');
 const session = require('express-session');
 const flash = require('connect-flash');
 
-
-
-
-
 const app = express();
-require('./database');
-require('./passport/local-auth')
 
+// Conexión a base de datos y configuración de Passport
+require('./database');
+require('./passport/local-auth');
+
+// Configuración del puerto
 app.set('port', process.env.PORT || 3000);
 
+// Configuración de vistas y motor EJS
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
-
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 
-//middlewares
+// Archivos estáticos (CSS, imágenes, JS)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Middlewares
 app.use(morgan('dev'));
-app.use(express.urlencoded({extended:false}))
-app.use(flash())
+app.use(express.urlencoded({ extended: false }));
+app.use(flash());
 
 app.use(session({
-    secret: 'mysecretsession',
-    resave: false,
-    saveUninitialized:false
-}))
-
+  secret: 'mysecretsession',
+  resave: false,
+  saveUninitialized: false
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use((req, res, next)=>{
-    app.locals.mensajeRegistro = req.flash('mensajeRegistro')
-    app.locals.mensajeLogin = req.flash('mensajeLogin')
-    app.locals.user = req.user;    
-    next();
-})
+// Variables globales disponibles en todas las vistas
+app.use((req, res, next) => {
+  app.locals.mensajeRegistro = req.flash('mensajeRegistro');
+  app.locals.mensajeLogin = req.flash('mensajeLogin');
+  app.locals.successMessage = req.query.success || null;
+  app.locals.errorMessage = req.query.error || null;
+  app.locals.user = req.user;
+  next();
+});
+
+// Rutas del sistema
 app.use('/', require('./rutas'));
 app.use('/', require('./rutas/reservas'));
 
-//iniciando el servidor
-
-app.listen(app.get('port'), () =>{
-    console.log('Servidor iniciado en el puerto', app.get('port'));
+// Iniciar el servidor
+app.listen(app.get('port'), () => {
+  console.log('Servidor iniciado en el puerto', app.get('port'));
 });
-

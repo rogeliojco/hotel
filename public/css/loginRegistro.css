@@ -1,77 +1,89 @@
 /* Estilos para títulos de bienvenida */
 .bienvenida-titulo {
-    color: #fff; /* Blanco */
+    color: #fff;
     font-weight: bold;
     font-size: 2rem;
     font-family: 'Georgia', serif;
 }
 
 .bienvenida-texto {
-    color: #C6D1DF; /* Gris claro */
+    color: #C6D1DF;
     font-size: 1.1rem;
     max-width: 400px;
     font-family: 'Segoe UI', sans-serif;
     line-height: 1.5;
+    margin: 0 auto;
 }
 
 /* Botón de registro */
 .btn-registrar {
-    background-color: #7A8EA4; /* Gris azulado más oscuro */
+    background-color: #7A8EA4;
     color: white;
     border: none;
     border-radius: 8px;
     padding: 0.6rem 1.2rem;
     font-weight: bold;
-    transition: background-color 0.3s, box-shadow 0.3s; /* Transiciones suaves */
-    box-shadow: 0 2px 6px rgba(122, 142, 164, 0.4); /* Sombra sutil */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 2px 6px rgba(122, 142, 164, 0.4);
 }
 
 .btn-registrar:hover {
-    background-color: #5D718A; /* Gris azulado aún más oscuro al pasar el mouse */
+    background-color: #5D718A;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(122, 142, 164, 0.6); /* Sombra más pronunciada al pasar el mouse */
+    box-shadow: 0 4px 12px rgba(122, 142, 164, 0.6);
 }
 
 /* Tarjeta de login con estilo moderno y minimalista */
 .login-card {
-    background-color: #D1D8E2; /* Blanco ligeramente más brillante y saturado */
+    background-color: #D1D8E2;
     border-radius: 12px;
     padding: 40px 25px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra ligeramente más fuerte */
-    border: 1px solid rgba(122, 142, 164, 0.2); /* Borde sutil */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(122, 142, 164, 0.2);
 }
 
 /* Encabezado del login */
 .login-header h4 {
     font-weight: bold;
-    color: #8EA9C6; /* Gris azulado más claro */
+    color: #8EA9C6;
     font-family: 'Georgia', serif;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Etiquetas de formulario */
 .form-label {
     font-weight: 600;
-    color: #7A8EA4; /* Gris azulado más oscuro */
+    color: #7A8EA4;
 }
 
 /* Campos del formulario */
 .form-control {
-    background-color: #F0F4F7; /* Blanco ligeramente más brillante */
-    border: 1px solid #8EA9C6; /* Gris azulado más claro */
-    color: #333; /* Texto oscuro para contraste */
+    background-color: #F0F4F7;
+    border: 1px solid #8EA9C6;
+    color: #333;
     border-radius: 8px;
     padding-left: 12px;
-    transition: border-color 0.3s; /* Transición suave al hacer foco */
+    transition: border-color 0.3s;
 }
 
 /* Placeholder de los campos */
 .form-control::placeholder {
-    color: #7A8EA4; /* Gris más oscuro */
+    color: #7A8EA4;
 }
 
 /* Centrado de columnas */
 .col-md-6.col-lg-5 {
     margin-left: auto;
     margin-right: auto;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .bienvenida-texto {
+        font-size: 1rem;
+        max-width: 90%;
+    }
+    .login-card {
+        padding: 30px 20px;
+    }
 }

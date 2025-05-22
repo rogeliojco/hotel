@@ -1,4 +1,4 @@
-// models/Reserva.js
+// models/reserva.js
 const mongoose = require('mongoose');
 
 const reservaSchema = new mongoose.Schema({
@@ -14,7 +14,11 @@ const reservaSchema = new mongoose.Schema({
   cvv: String,
   titular: String,
   fechaReserva: { type: Date, default: Date.now },
-  estado: { type: String, default: 'pendiente' } // o 'confirmada'
+  estado: { type: String, default: 'pendiente' }, // o 'confirmada', 'cancelada'
+  usuario: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 });
 
 module.exports = mongoose.model('Reserva', reservaSchema);
