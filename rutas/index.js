@@ -128,11 +128,24 @@ router.post('/registro', passport.authenticate('registro-local', {
 }));
 
 // Procesar inicio de sesión
-router.post('/login', passport.authenticate('inicio-local', {
-  successRedirect: '/',
-  failureRedirect: '/login',
-  passReqToCallback: true
-}));
+router.post('/login', (req, res, next) => {
+  passport.authenticate('inicio-local', (err, user, info) => {
+    if (err) return next(err);
+    if (!user) return res.redirect('/login');
+
+    req.logIn(user, err => {
+      if (err) return next(err);
+
+      // Redirige según el rol del usuario
+      if (user.rol === 'admin') {
+        return res.redirect('/admin');
+      } else {
+        return res.redirect('/perfil'); // o la ruta que usas para usuarios normales
+      }
+    });
+  })(req, res, next);
+});
+
 
 // Vista del perfil (y funciones relacionadas)
 router.get('/perfil', isAuthenticated, perfilController.verPerfil);
