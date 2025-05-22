@@ -1,0 +1,198 @@
+<% layout('layout/layout.ejs') %>
+
+<style>
+    body {
+      background-color: #f2f2f2;
+      color: #222;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    .containersss {
+      max-width: 800px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #222; /* Color oscuro */
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="url"],
+    input[type="time"],
+    input[type="checkbox"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: #fff;
+      color: #000;
+      box-sizing: border-box;
+    }
+
+    .checkbox-group label {
+      font-weight: normal;
+      display: inline-block;
+      margin-right: 10px;
+    }
+
+    input[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    .seccion {
+      margin-top: 30px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+    }
+
+    .checkbox-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  </style>
+<% if (typeof mensajeExito !== 'undefined') { %>
+  <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+    <%= mensajeExito %>
+  </div>
+<% } %>
+
+
+<div class="containersss">
+<h1>Añadir Hotel</h1>
+
+<form action="/nuevo" method="POST">
+  <label>Nombre:</label>
+  <input type="text" name="nombre" required>
+
+  <label>Descripción Corta:</label>
+  <input type="text" name="descripcionCorta">
+
+  <label>Zona:</label>
+  <input type="text" name="zona" required>
+
+  <label>Distancia al centro:</label>
+  <input type="text" name="distanciaCentro">
+
+  <label>¿Está cerca de?</label>
+  <select name="tipo" required>
+    <option value="playa">Playa</option>
+    <option value="centro">Centro</option>
+    <option value="malecon">Malecón</option>
+    <option value="otro">Otro</option>
+  </select>
+  <input type="text" name="distanciaCercana" placeholder="Distancia">
+
+  <label>Estado:</label>
+  <input type="text" name="estado" required>
+
+  <fieldset>
+    <legend>Habitaciones Disponibles</legend>
+    1 persona: <input type="number" name="unaPersona">
+    2 personas: <input type="number" name="dosPersonas">
+    4 personas: <input type="number" name="cuatroPersonas">
+    6 personas: <input type="number" name="seisPersonas">
+  </fieldset>
+
+  <label>Detalles de la habitación:</label>
+  <textarea name="detallesHabitacion"></textarea>
+
+  <label>Calificación general:</label>
+  <input type="number" name="calificacionGeneral" step="0.1">
+
+  <label>Número de comentarios:</label>
+  <input type="number" name="numeroComentarios">
+
+  <fieldset>
+    <legend>Precios por noche</legend>
+    1 persona: <input type="number" name="precioUna">
+    2 personas: <input type="number" name="precioDos">
+    4 personas: <input type="number" name="precioCuatro">
+    6 personas: <input type="number" name="precioSeis">
+  </fieldset>
+
+  <label>Impuestos y cargos:</label>
+  <input type="number" name="impuestosCargos">
+
+  <label>Ubicación (puntuación):</label>
+  <input type="number" name="ubicacion">
+
+  <label>URL de imagen:</label>
+  <input type="text" name="urlImagen">
+
+  <label>Acepta mascotas:</label>
+  <input type="checkbox" name="aceptaMascotas">
+
+  <label>Hora check-in:</label>
+  <input type="time" name="horaCheckIn">
+
+  <label>Hora check-out:</label>
+  <input type="time" name="horaCheckOut">
+
+  <label>Latitud:</label>
+  <input type="number" name="latitud" step="any">
+
+  <label>Longitud:</label>
+  <input type="number" name="longitud" step="any">
+
+  <label>Calle:</label>
+  <input type="text" name="calle">
+
+  <label>Número:</label>
+  <input type="text" name="numero">
+
+  <label>Código postal:</label>
+  <input type="text" name="codigoPostal">
+
+  <label>Teléfono:</label>
+  <input type="text" name="telefono">
+
+  <label>Email:</label>
+  <input type="email" name="email">
+
+  <fieldset>
+    <legend>Servicios</legend>
+    <input type="checkbox" name="servicios[]" value="piscina"> Piscina<br>
+    <input type="checkbox" name="servicios[]" value="wifi"> WiFi<br>
+    <input type="checkbox" name="servicios[]" value="desayuno"> Desayuno<br>
+    <input type="checkbox" name="servicios[]" value="estacionamiento"> Estacionamiento<br>
+    <input type="checkbox" name="servicios[]" value="spa"> Spa<br>
+    <input type="checkbox" name="servicios[]" value="gimnasio"> Gimnasio<br>
+    <input type="checkbox" name="servicios[]" value="otros"> Otros<br>
+  </fieldset>
+
+  <button type="submit">Guardar Hotel</button>
+</form>
+</div>

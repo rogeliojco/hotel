@@ -37,6 +37,79 @@ router.get('/Hoteles', async (req, res) => {
   }
 });
 
+
+// Mostrar formulario (vista: views/hoteles/formularioHotel.ejs)
+router.get('/FormularioHotel', (req, res) => {
+  res.render('hoteles/formularioHotel'); // Asegúrate de que está en views/hoteles/
+});
+
+// (Opcional) redirigir /nuevo al formulario
+router.get('/nuevo', (req, res) => {
+  res.redirect('/hoteles/FormularioHotel');
+});
+
+// Procesar formulario enviado desde /FormularioHotel (action="/hoteles/nuevo")
+// POST /nuevo
+router.post('/nuevo', async (req, res) => {
+  try {
+    const nuevoHotel = new hotel({
+      nombre: req.body.nombre,
+      descripcionCorta: req.body.descripcionCorta,
+      zona: req.body.zona,
+      distanciaCentro: req.body.distanciaCentro,
+      estaCercaDe: {
+        tipo: req.body.tipo,
+        distancia: req.body.distanciaCercana
+      },
+      estado: req.body.estado,
+      habitacionesDisponibles: {
+        unaPersona: req.body.unaPersona,
+        dosPersonas: req.body.dosPersonas,
+        cuatroPersonas: req.body.cuatroPersonas,
+        seisPersonas: req.body.seisPersonas
+      },
+      detallesHabitacion: req.body.detallesHabitacion,
+      calificacionGeneral: req.body.calificacionGeneral,
+      numeroComentarios: req.body.numeroComentarios,
+      preciosNoche: {
+        unaPersona: req.body.precioUna,
+        dosPersonas: req.body.precioDos,
+        cuatroPersonas: req.body.precioCuatro,
+        seisPersonas: req.body.precioSeis
+      },
+      impuestosCargos: req.body.impuestosCargos,
+      ubicacion: req.body.ubicacion,
+      urlImagen: req.body.urlImagen,
+      aceptaMascotas: req.body.aceptaMascotas === 'on',
+      horaCheckIn: req.body.horaCheckIn,
+      horaCheckOut: req.body.horaCheckOut,
+      latitud: req.body.latitud,
+      longitud: req.body.longitud,
+      calle: req.body.calle,
+      numero: req.body.numero,
+      codigoPostal: req.body.codigoPostal,
+      telefono: req.body.telefono,
+      email: req.body.email,
+      servicios: Array.isArray(req.body.servicios)
+        ? req.body.servicios
+        : req.body.servicios
+        ? [req.body.servicios]
+        : []
+    });
+
+    await nuevoHotel.save();
+    res.render('hoteles/formularioHotel', { mensajeExito: '✅ ¡El hotel se registró correctamente!' });
+  } catch (err) {
+    res.status(500).send('Error al guardar el hotel: ' + err.message);
+  }
+});
+
+
+
+
+
+
+
 // Formulario de reservación inicial
 router.post('/reservar', (req, res) => {
   const { ciudad, fechas, habitacion, codigo } = req.body;
