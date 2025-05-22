@@ -27,6 +27,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(flash());
+app.use(express.json());
+
 
 app.use(session({
   secret: 'mysecretsession',
@@ -50,6 +52,8 @@ app.use((req, res, next) => {
 // Rutas del sistema
 app.use('/', require('./rutas'));
 app.use('/', require('./rutas/reservas'));
+app.use('/admin', require('./rutas/admin'));
+
 
 // Iniciar el servidor
 app.listen(app.get('port'), () => {
