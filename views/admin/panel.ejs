@@ -1,5 +1,43 @@
 <% layout('layout/layout.ejs') %>
 
+<style>
+  .list-group-item {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: inherit !important; /* asegura que no se imponga el fondo por defecto */
+  }
+
+  .list-group-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: inherit !important; /* evita el oscurecimiento al hacer hover */
+  }
+
+  .reservas {
+    background-color: #fff5f5 !important;
+    border-left: 5px solid #dc3545;
+  }
+
+  .usuarios {
+    background-color: #f0f7ff !important;
+    border-left: 5px solid #0d6efd;
+  }
+
+  .habitacion {
+    background-color: #f6f0ff !important;
+    border-left: 5px solid #6f42c1;
+  }
+
+  .hotel {
+    background-color: #f0fff5 !important;
+    border-left: 5px solid #198754;
+  }
+
+  .badge-custom {
+    font-size: 0.85rem;
+    padding: 0.4em 0.7em;
+  }
+</style>
+
 <div class="container mt-5">
   <div class="card shadow">
     <div class="card-header bg-dark text-white text-center">
@@ -7,26 +45,40 @@
     </div>
     <div class="card-body">
       <p class="text-muted mb-4 text-center">Seleccione una opción para gestionar el sistema</p>
-      <div class="list-group">
-        <a href="/admin/reservas-por-hotel" class="list-group-item list-group-item-action bg-light border rounded mb-3 d-flex justify-content-between align-items-center text-dark">
-          <div>
-            <i class="fas fa-hotel me-2 text-danger"></i> Reservas por Hotel
-          </div>
-          <span class="badge bg-danger rounded-pill">Ver</span>
-        </a>
-        <a href="/admin/usuarios-sistema" class="list-group-item list-group-item-action bg-light border rounded mb-3 d-flex justify-content-between align-items-center text-dark">
-          <div>
-            <i class="fas fa-users-cog me-2 text-primary"></i> Gestión de Usuarios del Sistema
-          </div>
-          <span class="badge bg-primary rounded-pill">Ver</span>
-        </a>
-        <a href="/admin/nueva-habitacion" class="list-group-item list-group-item-action bg-light border rounded mb-3 d-flex justify-content-between align-items-center text-dark">
-          <div>
-            <i class="fas fa-users-cog me-2 text-primary"></i> Añadir habitación
-          </div>
-          <span class="badge bg-primary rounded-pill">Ver</span>
-        </a>        
-      </div>
+<div class="list-group">
+  <a href="/admin/reservas-por-hotel"
+     class="list-group-item reservas list-group-item-action border rounded mb-3 d-flex justify-content-between align-items-center text-dark">
+    <div>
+      <i class="fas fa-calendar-check me-2 text-danger"></i> Reservas por Hotel
+    </div>
+    <span class="badge bg-danger rounded-pill badge-custom">Ver</span>
+  </a>
+
+  <a href="/admin/usuarios-sistema"
+     class="list-group-item usuarios list-group-item-action border rounded mb-3 d-flex justify-content-between align-items-center text-dark">
+    <div>
+      <i class="fas fa-user-shield me-2 text-primary"></i> Gestión de Usuarios del Sistema
+    </div>
+    <span class="badge bg-primary rounded-pill badge-custom">Ver</span>
+  </a>
+
+  <a href="/admin/nueva-habitacion"
+     class="list-group-item habitacion list-group-item-action border rounded mb-3 d-flex justify-content-between align-items-center text-dark">
+    <div>
+      <i class="fas fa-bed me-2 text-purple"></i> Añadir Habitación
+    </div>
+    <span class="badge bg-purple rounded-pill badge-custom" style="background-color: #6f42c1;">Ver</span>
+  </a>
+
+  <a href="/admin/nuevo-hotel"
+     class="list-group-item hotel list-group-item-action border rounded mb-3 d-flex justify-content-between align-items-center text-dark">
+    <div>
+      <i class="fas fa-building me-2 text-success"></i> Añadir Hotel
+    </div>
+    <span class="badge bg-success rounded-pill badge-custom">Ver</span>
+  </a>
+
+</div>
     </div>
   </div>
 </div>

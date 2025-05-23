@@ -131,4 +131,59 @@ router.put('/usuarios-sistema/:id/rol', isAdmin, async (req, res) => {
 
 
 
+router.get('/nuevo-hotel', (req, res) => {
+  res.render('admin/nuevo-hotel'); 
+});
+
+// (Opcional) redirigir /nuevo al formulario
+router.get('/nuevo', (req, res) => {
+  res.redirect('admin/nuevo-hotel'); 
+});
+
+// Procesar formulario enviado desde /FormularioHotel (action="/hoteles/nuevo")
+// POST /nuevo
+router.post('/nuevo-hotel', async (req, res) => {
+  try {
+    const nuevoHotel = new Hotel({
+      nombre: req.body.nombre,
+      descripcionCorta: req.body.descripcionCorta,
+      zona: req.body.zona,
+      distanciaCentro: req.body.distanciaCentro,
+      estaCercaDe: {
+        tipo: req.body['estaCercaDe.tipo'],
+        distancia: req.body['estaCercaDe.distancia']
+      },
+      estado: req.body.estado,
+      calificacionGeneral: req.body.calificacionGeneral,
+      numeroComentarios: req.body.numeroComentarios,
+      impuestosCargos: req.body.impuestosCargos,
+      ubicacion: req.body.ubicacion,
+      urlImagen: req.body.urlImagen,
+      aceptaMascotas: req.body.aceptaMascotas === 'on',
+      horaCheckIn: req.body.horaCheckIn,
+      horaCheckOut: req.body.horaCheckOut,
+      latitud: req.body.latitud,
+      longitud: req.body.longitud,
+      calle: req.body.calle,
+      numero: req.body.numero,
+      codigoPostal: req.body.codigoPostal,
+      telefono: req.body.telefono,
+      email: req.body.email,
+      servicios: Array.isArray(req.body.servicios)
+        ? req.body.servicios
+        : req.body.servicios
+        ? [req.body.servicios]
+        : []
+    });
+
+    await nuevoHotel.save();
+    res.render('admin/nuevo-hotel', { mensajeExito: '✅ ¡El hotel se registró correctamente!' });
+  } catch (err) {
+    res.status(500).send('Error al guardar el hotel: ' + err.message);
+  }
+});
+
+
+
+
 module.exports = router;
