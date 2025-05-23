@@ -2,21 +2,15 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const Reserva = require('../models/reserva');
+const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 
 
-function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/');
-}
 
-
-router.get('/', isAuthenticated, (req, res) => {
+router.get('/', isAdmin, (req, res) => {
   res.render('admin/panel');
 });
 
-router.get('/reservas-por-hotel', isAuthenticated, async (req, res) => {
+router.get('/reservas-por-hotel', isAdmin, async (req, res) => {
   try {
     const reservas = await Reserva.find();
 
@@ -37,7 +31,7 @@ router.get('/reservas-por-hotel', isAuthenticated, async (req, res) => {
 });
 
 
-router.get('/usuarios-sistema', isAuthenticated, async (req, res) => {
+router.get('/usuarios-sistema', isAdmin, async (req, res) => {
   try {
     const usuarios = await User.find();
     res.render('admin/usuarios-sistema', { usuarios });
@@ -47,7 +41,7 @@ router.get('/usuarios-sistema', isAuthenticated, async (req, res) => {
   }
 });
 
-router.put('/usuarios-sistema/:id/rol', isAuthenticated, async (req, res) => {
+router.put('/usuarios-sistema/:id/rol', isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { rol } = req.body;

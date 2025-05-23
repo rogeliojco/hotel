@@ -1,3 +1,11 @@
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/login');
+}
+
+
 function isAdmin(req, res, next) {
   if (req.isAuthenticated() && req.user.rol === 'admin') {
     return next();
@@ -5,4 +13,5 @@ function isAdmin(req, res, next) {
   res.redirect('/');
 }
 
-module.exports = { isAdmin };
+
+module.exports = { isAuthenticated, isAdmin };

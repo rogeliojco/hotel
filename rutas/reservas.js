@@ -1,12 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Reserva = require('../models/reserva');
+const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 
-// Middleware para proteger rutas
-function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) return next();
-  res.redirect('/login');
-}
 
 // Crear nueva reserva
 router.post('/confirmar-reserva', isAuthenticated, async (req, res) => {
@@ -118,4 +114,5 @@ router.get('/historial-canceladas', isAuthenticated, async (req, res) => {
     res.status(500).send('Error al cargar el historial de canceladas');
   }
 });
+
 module.exports = router;

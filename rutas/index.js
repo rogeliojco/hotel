@@ -3,6 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const hotel = require('../models/hotel');
 const perfilController = require('../controllers/perfil_controller');
+const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 
 // Estados para dropdown en página principal
 const estadosMexico = [
@@ -118,14 +119,8 @@ router.post('/nuevo', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
 // Formulario de reservación inicial
-router.post('/reservar', (req, res) => {
+router.post('/reservar', isAuthenticated, (req, res) => {
   const { ciudad, fechas, habitacion, codigo } = req.body;
   res.render('reserva', { ciudad, fechas, habitacion, codigo });
 });
@@ -174,11 +169,7 @@ router.get('/salir', (req, res, next) => {
   });
 });
 
-// Middleware para proteger rutas
-function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) return next();
-  res.redirect('/');
-}
+
 // Formulario de reservación desde el botón “Reservar ahora”
 router.get('/reservar', isAuthenticated, (req, res) => {
   res.render('reserva', {
@@ -188,4 +179,5 @@ router.get('/reservar', isAuthenticated, (req, res) => {
     codigo: ''
   });
 });
+
 module.exports = router;
