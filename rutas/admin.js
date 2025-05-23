@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/user');
 const Reserva = require('../models/reserva');
 const Hotel = require('../models/soloHotel');
+const Habitacion = require('../models/habitacion');
 
 
 
