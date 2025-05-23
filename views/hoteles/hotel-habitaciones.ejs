@@ -1,0 +1,25 @@
+<% layout('layout/layout.ejs') %>
+
+<div class="container mt-4">
+  <h2><%= hotel.nombre %></h2>
+  <p><strong>Ubicación:</strong> <%= hotel.zona %>, <%= hotel.estado %></p>
+
+  <div class="row">
+    <% habitaciones.forEach(habitacion => { %>
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <% if (habitacion.imagenes.length > 0) { %>
+            <img src="<%= habitacion.imagenes[0] %>" class="card-img-top" alt="Imagen habitación">
+          <% } %>
+          <div class="card-body">
+            <h5 class="card-title"><%= habitacion.nombre %></h5>
+            <p class="card-text"><%= habitacion.descripcion %></p>
+            <p class="card-text"><strong>Capacidad:</strong> <%= habitacion.tipo %></p>
+            <p class="card-text"><strong>Precio:</strong> $<%= habitacion.precioNoche %> MXN por noche</p>
+            <p class="card-text"><strong>Disponible:</strong> <%= habitacion.disponible ? 'Sí' : 'No' %></p>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>

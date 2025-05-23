@@ -13,17 +13,17 @@
             <div class="col-md-6">
               <div class="card-body">
                 <h5 class="card-title"><%= hotel.nombre %></h5>
-                <p class="card-text hotel-ubicacion"><i class="fas fa-map-marker-alt"></i> <%= hotel.zona %>, <%= hotel.estado %></p>
+                <p class="card-text hotel-ubicacion">
+                  <i class="fas fa-map-marker-alt"></i> <%= hotel.zona %>, <%= hotel.estado %>
+                </p>
+
                 <% if (hotel.estaCercaDe && hotel.estaCercaDe.tipo) { %>
-                  <p class="card-text small">Cerca de: <%= hotel.estaCercaDe.tipo %> (<%= hotel.estaCercaDe.distancia %>)</p>
+                  <p class="card-text small">
+                    Cerca de: <%= hotel.estaCercaDe.tipo %> (<%= hotel.estaCercaDe.distancia %>)
+                  </p>
                 <% } %>
 
-                <div class="hotel-details">
-                  <p class="card-text mb-0 mt-2 small text-muted">Desde:</p>
-                  <p class="card-text mb-0 precio">MXN <%= hotel.preciosNoche.dosPersonas %></p>
-                  <p class="card-text mb-0 small text-muted">2 noches, 2 adultos</p>
-                  <a href="#" class="btn btn-primary btn-sm btn-block mt-3 ver-disponibilidad-btn">Ver disponibilidad</a>
-                </div>
+                <a href="/hotel/<%= hotel.nombre %>" class="btn btn-primary btn-sm btn-block mt-3">Ver disponibilidad</a>
 
               </div>
             </div>
