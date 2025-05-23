@@ -1,0 +1,22 @@
+<% layout('layout/layout.ejs') %>
+
+<div class="container mt-5">
+  <h2 class="mb-4">Reservas por Hotel</h2>
+
+  <% Object.keys(agrupadas).forEach(ciudad => { %>
+    <div class="card mb-3">
+      <div class="card-header bg-dark text-white">
+        <h5 class="mb-0"><%= ciudad %></h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-group">
+          <% agrupadas[ciudad].forEach(res => { %>
+            <li class="list-group-item">
+              <strong><%= res.nombre %></strong> - <%= res.fechas %> - <%= res.habitacion %> - <%= res.estado %>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+  <% }) %>
+</div>

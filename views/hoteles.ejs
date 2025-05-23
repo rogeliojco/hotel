@@ -1,0 +1,35 @@
+<% layout('layout/layout.ejs') %>
+<% block('stylesheets', '<link rel="stylesheet" href="/css/hotel.css">') -%>
+
+<div class="container mt-4">
+  <div class="row">
+    <% hoteles.forEach(hotel => { %>
+      <div class="col-md-6 mb-4">
+        <div class="card hotel-card">
+          <div class="row no-gutters">
+            <div class="col-md-6">
+              <img src="<%= hotel.urlImagen %>" class="card-img hotel-image" alt="<%= hotel.nombre %>">
+            </div>
+            <div class="col-md-6">
+              <div class="card-body">
+                <h5 class="card-title"><%= hotel.nombre %></h5>
+                <p class="card-text hotel-ubicacion"><i class="fas fa-map-marker-alt"></i> <%= hotel.zona %>, <%= hotel.estado %></p>
+                <% if (hotel.estaCercaDe && hotel.estaCercaDe.tipo) { %>
+                  <p class="card-text small">Cerca de: <%= hotel.estaCercaDe.tipo %> (<%= hotel.estaCercaDe.distancia %>)</p>
+                <% } %>
+
+                <div class="hotel-details">
+                  <p class="card-text mb-0 mt-2 small text-muted">Desde:</p>
+                  <p class="card-text mb-0 precio">MXN <%= hotel.preciosNoche.dosPersonas %></p>
+                  <p class="card-text mb-0 small text-muted">2 noches, 2 adultos</p>
+                  <a href="#" class="btn btn-primary btn-sm btn-block mt-3 ver-disponibilidad-btn">Ver disponibilidad</a>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+/* Tarjetas de reservaciones */
+.card-reserva {
+  background-color: #ffffff;
+  border-left: 4px solid #0d6efd;
+  border-radius: 10px;
+  transition: box-shadow 0.3s ease;
+}
+
+.card-reserva:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-reserva.cancelada {
+  border-left-color: #dc3545;
+}
+
+.card-reserva .estado {
+  font-weight: bold;
+}
+
+.btn-outline-primary.btn-sm,
+.btn-outline-secondary.btn-sm {
+  border-radius: 20px;
+  font-weight: 500;
+  padding: 0.3rem 1rem;
+}
+
+#btn-activas.btn-primary,
+#btn-canceladas.btn-danger {
+  color: #fff;
+}
+
+/* Animación para mostrar las tarjetas */
+#reservas-activas,
+#reservas-canceladas {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

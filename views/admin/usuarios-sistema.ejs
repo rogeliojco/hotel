@@ -1,0 +1,83 @@
+<% layout('layout/layout.ejs') %>
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Usuarios del Sistema</h2>
+
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (usuarios.length > 0) { %>
+        <% usuarios.forEach((usuario, index) => { %>
+          <tr>
+            <td class="text-dark"><%= index + 1 %></td>
+            <td class="text-dark"><%= usuario.email %></td>
+            <td>
+              <select class="form-select rol-selector" data-id="<%= usuario._id %>">
+                <% ['cliente', 'empleado', 'admin'].forEach(rol => { %>
+                  <option value="<%= rol %>" <%= usuario.rol === rol ? 'selected' : '' %>><%= rol %></option>
+                <% }) %>
+              </select>
+            </td>
+            <td>
+              <button class="btn btn-primary btn-sm guardar-btn" data-id="<%= usuario._id %>" disabled>Guardar</button>
+            </td>
+          </tr>
+        <% }) %>
+      <% } else { %>
+        <tr>
+          <td colspan="4" class="text-center text-dark">No hay usuarios registrados.</td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+
+<script>
+  document.querySelectorAll('.rol-selector').forEach(selector => {
+    const original = selector.value;
+    const button = selector.closest('tr').querySelector('.guardar-btn');
+
+    selector.addEventListener('change', () => {
+      if (selector.value !== original) {
+        button.disabled = false;
+      } else {
+        button.disabled = true;
+      }
+    });
+  });
+
+  document.querySelectorAll('.guardar-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+      const row = button.closest('tr');
+      const selector = row.querySelector('.rol-selector');
+      const userId = selector.dataset.id;
+      const nuevoRol = selector.value;
+
+      try {
+        const res = await fetch(`/admin/usuarios-sistema/${userId}/rol`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rol: nuevoRol })
+        });
+
+        if (res.ok) {
+          alert('Rol actualizado correctamente');
+          button.disabled = true;
+        } else {
+          alert('Error al actualizar rol');
+        }
+      } catch (err) {
+        console.error('Error al enviar solicitud:', err);
+        alert('Error de red');
+      }
+    });
+  });
+</script>
