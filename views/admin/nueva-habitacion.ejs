@@ -1,12 +1,18 @@
 <% layout('layout/layout.ejs') %>
+
 <style>
-  .form-group { margin-bottom: 1.5rem; }
+  .form-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
   label {
-    display: block;
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: #333;
   }
+
   select, input, textarea {
     width: 100%;
     padding: 10px 12px;
@@ -17,31 +23,61 @@
     background-color: #fff;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
+
   select:focus, input:focus, textarea:focus {
     border-color: #593196;
     outline: none;
     box-shadow: 0 0 0 0.2rem rgba(89, 49, 150, 0.25);
   }
-  option, optgroup {
-    padding: 8px;
-    font-size: 0.95rem;
-  }
-  optgroup {
-    font-weight: bold;
-    background-color: #f2f2f2;
-    color: #593196;
-  }
+
   .preview-images {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 10px;
   }
+
   .preview-images img {
     max-width: 150px;
     max-height: 150px;
     border: 1px solid #ccc;
     border-radius: 6px;
+  }
+
+  .boton-guardar-habitacion {
+    width: 100%;
+    background-color: #593196;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(89, 49, 150, 0.2);
+    margin-top: 1rem;
+  }
+
+  .boton-guardar-habitacion:hover {
+    background-color: #45287c;
+    transform: translateY(-2px);
+  }
+
+  .boton-guardar-habitacion:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  @media (min-width: 768px) {
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+
+    .form-col {
+      flex: 1;
+    }
   }
 </style>
 
@@ -52,7 +88,7 @@
     </div>
     <div class="card-body">
       <form action="/admin/nueva-habitacion" method="POST">
-        <div class="mb-3">
+        <div class="form-group">
           <label for="hotel">Hotel:</label>
           <select name="hotel" id="hotel" required>
             <% for (const estado in hotelesPorEstado) { %>
@@ -65,39 +101,41 @@
           </select>
         </div>
 
-        <div class="mb-3">
-          <label for="nombre">Nombre de la habitación</label>
-          <input type="text" id="nombre" name="nombre" required>
+        <div class="form-row">
+          <div class="form-group form-col">
+            <label for="nombre">Nombre de la habitación</label>
+            <input type="text" id="nombre" name="nombre" required>
+          </div>
+
+          <div class="form-group form-col">
+            <label for="tipo">Capacidad</label>
+            <select id="tipo" name="tipo" required>
+              <option value="" disabled selected>Seleccione una opción</option>
+              <option value="unaPersona">1 persona</option>
+              <option value="dosPersonas">2 personas</option>
+              <option value="cuatroPersonas">4 personas</option>
+              <option value="seisPersonas">6 personas</option>
+            </select>
+          </div>
         </div>
 
-        <div class="mb-3">
+        <div class="form-group">
           <label for="descripcion">Descripción</label>
           <textarea id="descripcion" name="descripcion" rows="3"></textarea>
         </div>
 
-        <div class="mb-3">
-          <label for="tipo">Capacidad de la habitación</label>
-          <select id="tipo" name="tipo" required>
-            <option value="" disabled selected>Seleccione una opción</option>
-            <option value="unaPersona">1 persona</option>
-            <option value="dosPersonas">2 personas</option>
-            <option value="cuatroPersonas">4 personas</option>
-            <option value="seisPersonas">6 personas</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
+        <div class="form-group">
           <label for="precio">Precio por noche (MXN)</label>
           <input type="number" id="precio" name="precio" min="0" required>
         </div>
 
-        <div class="mb-3">
+        <div class="form-group">
           <label for="imagenes">Enlaces de Fotos (uno por línea)</label>
           <textarea id="imagenes" name="imagenes" rows="3" placeholder="https://ejemplo.com/foto1.jpg&#10;https://ejemplo.com/foto2.jpg"></textarea>
           <div id="preview" class="preview-images"></div>
         </div>
 
-        <button type="submit" class="btn btn-success">Guardar Habitación</button>
+        <button type="submit" class="boton-guardar-habitacion">💾 Guardar Habitación</button>
       </form>
     </div>
   </div>
@@ -109,7 +147,10 @@
 
   fotosTextarea.addEventListener('input', () => {
     previewDiv.innerHTML = '';
-    const urls = fotosTextarea.value.split('\n').map(url => url.trim()).filter(url => url.startsWith('http'));
+    const urls = fotosTextarea.value
+      .split('\n')
+      .map(url => url.trim())
+      .filter(url => url.startsWith('http'));
     urls.forEach(url => {
       const img = document.createElement('img');
       img.src = url;
