@@ -4,7 +4,6 @@ const User = require('../models/user');
 const Reserva = require('../models/reserva');
 const Habitacion = require('../models/habitacion');
 const Hotel = require('../models/soloHotel');
-const Habitacion = require('../models/habitacion');
 
 
 
