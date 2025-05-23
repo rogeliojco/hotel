@@ -13,25 +13,9 @@ const hotelSchema = new mongoose.Schema({
     },
     distancia: String
   },
-  estado: {
-    type: String,
-    required: true
-  },
-  habitacionesDisponibles: {
-    unaPersona: { type: Number, default: 0 },
-    dosPersonas: { type: Number, default: 0 },
-    cuatroPersonas: { type: Number, default: 0 },
-    seisPersonas: { type: Number, default: 0 }
-  },
-  detallesHabitacion: String,
+  estado: { type: String, required: true },
   calificacionGeneral: { type: Number, min: 0, max: 10 },
   numeroComentarios: { type: Number, min: 0 },
-  preciosNoche: {
-    unaPersona: { type: Number, min: 0, max: 10000 },
-    dosPersonas: { type: Number, min: 0, max: 15000 },
-    cuatroPersonas: { type: Number, min: 0, max: 20000 },
-    seisPersonas: { type: Number, min: 0, max: 25000 }
-  },
   impuestosCargos: Number,
   ubicacion: Number,
   urlImagen: String,
@@ -51,7 +35,6 @@ const hotelSchema = new mongoose.Schema({
   }
 });
 
-// Índices para mejorar el rendimiento de las búsquedas (ejemplo)
 hotelSchema.index({ zona: 1 });
 hotelSchema.index({ estado: 1 });
 

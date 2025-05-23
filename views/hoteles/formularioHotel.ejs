@@ -89,110 +89,90 @@
   </div>
 <% } %>
 
-
 <div class="containersss">
-<h1>Añadir Hotel</h1>
+  <h1>Añadir Hotel</h1>
 
-<form action="/nuevo" method="POST">
-  <label>Nombre:</label>
-  <input type="text" name="nombre" required>
+  <form action="/nuevo" method="POST">
+    <label>Nombre:</label>
+    <input type="text" name="nombre" required>
 
-  <label>Descripción Corta:</label>
-  <input type="text" name="descripcionCorta">
+    <label>Descripción Corta:</label>
+    <input type="text" name="descripcionCorta">
 
-  <label>Zona:</label>
-  <input type="text" name="zona" required>
+    <label>Zona:</label>
+    <input type="text" name="zona" required>
 
-  <label>Distancia al centro:</label>
-  <input type="text" name="distanciaCentro">
+    <label>Distancia al centro:</label>
+    <input type="text" name="distanciaCentro">
 
-  <label>¿Está cerca de?</label>
-  <select name="tipo" required>
-    <option value="playa">Playa</option>
-    <option value="centro">Centro</option>
-    <option value="malecon">Malecón</option>
-    <option value="otro">Otro</option>
-  </select>
-  <input type="text" name="distanciaCercana" placeholder="Distancia">
+    <label>¿Está cerca de?</label>
+    <select name="estaCercaDe.tipo" required>
+      <option value="playa">Playa</option>
+      <option value="centro">Centro</option>
+      <option value="malecon">Malecón</option>
+      <option value="otro">Otro</option>
+    </select>
+    <input type="text" name="estaCercaDe.distancia" placeholder="Distancia">
 
-  <label>Estado:</label>
-  <input type="text" name="estado" required>
+    <label>Estado:</label>
+    <input type="text" name="estado" required>
 
-  <fieldset>
-    <legend>Habitaciones Disponibles</legend>
-    1 persona: <input type="number" name="unaPersona">
-    2 personas: <input type="number" name="dosPersonas">
-    4 personas: <input type="number" name="cuatroPersonas">
-    6 personas: <input type="number" name="seisPersonas">
-  </fieldset>
+    <label>Calificación general:</label>
+    <input type="number" name="calificacionGeneral" step="0.1">
 
-  <label>Detalles de la habitación:</label>
-  <textarea name="detallesHabitacion"></textarea>
+    <label>Número de comentarios:</label>
+    <input type="number" name="numeroComentarios">
 
-  <label>Calificación general:</label>
-  <input type="number" name="calificacionGeneral" step="0.1">
+    <label>Impuestos y cargos:</label>
+    <input type="number" name="impuestosCargos">
 
-  <label>Número de comentarios:</label>
-  <input type="number" name="numeroComentarios">
+    <label>Ubicación (puntuación):</label>
+    <input type="number" name="ubicacion">
 
-  <fieldset>
-    <legend>Precios por noche</legend>
-    1 persona: <input type="number" name="precioUna">
-    2 personas: <input type="number" name="precioDos">
-    4 personas: <input type="number" name="precioCuatro">
-    6 personas: <input type="number" name="precioSeis">
-  </fieldset>
+    <label>URL de imagen:</label>
+    <input type="text" name="urlImagen">
 
-  <label>Impuestos y cargos:</label>
-  <input type="number" name="impuestosCargos">
+    <label>Acepta mascotas:</label>
+    <input type="checkbox" name="aceptaMascotas">
 
-  <label>Ubicación (puntuación):</label>
-  <input type="number" name="ubicacion">
+    <label>Hora check-in:</label>
+    <input type="time" name="horaCheckIn">
 
-  <label>URL de imagen:</label>
-  <input type="text" name="urlImagen">
+    <label>Hora check-out:</label>
+    <input type="time" name="horaCheckOut">
 
-  <label>Acepta mascotas:</label>
-  <input type="checkbox" name="aceptaMascotas">
+    <label>Latitud:</label>
+    <input type="number" name="latitud" step="any">
 
-  <label>Hora check-in:</label>
-  <input type="time" name="horaCheckIn">
+    <label>Longitud:</label>
+    <input type="number" name="longitud" step="any">
 
-  <label>Hora check-out:</label>
-  <input type="time" name="horaCheckOut">
+    <label>Calle:</label>
+    <input type="text" name="calle">
 
-  <label>Latitud:</label>
-  <input type="number" name="latitud" step="any">
+    <label>Número:</label>
+    <input type="text" name="numero">
 
-  <label>Longitud:</label>
-  <input type="number" name="longitud" step="any">
+    <label>Código postal:</label>
+    <input type="text" name="codigoPostal">
 
-  <label>Calle:</label>
-  <input type="text" name="calle">
+    <label>Teléfono:</label>
+    <input type="text" name="telefono">
 
-  <label>Número:</label>
-  <input type="text" name="numero">
+    <label>Email:</label>
+    <input type="email" name="email">
 
-  <label>Código postal:</label>
-  <input type="text" name="codigoPostal">
+    <fieldset>
+      <legend>Servicios</legend>
+      <input type="checkbox" name="servicios" value="piscina"> Piscina<br>
+      <input type="checkbox" name="servicios" value="wifi"> WiFi<br>
+      <input type="checkbox" name="servicios" value="desayuno"> Desayuno<br>
+      <input type="checkbox" name="servicios" value="estacionamiento"> Estacionamiento<br>
+      <input type="checkbox" name="servicios" value="spa"> Spa<br>
+      <input type="checkbox" name="servicios" value="gimnasio"> Gimnasio<br>
+      <input type="checkbox" name="servicios" value="otros"> Otros<br>
+    </fieldset>
 
-  <label>Teléfono:</label>
-  <input type="text" name="telefono">
-
-  <label>Email:</label>
-  <input type="email" name="email">
-
-  <fieldset>
-    <legend>Servicios</legend>
-    <input type="checkbox" name="servicios[]" value="piscina"> Piscina<br>
-    <input type="checkbox" name="servicios[]" value="wifi"> WiFi<br>
-    <input type="checkbox" name="servicios[]" value="desayuno"> Desayuno<br>
-    <input type="checkbox" name="servicios[]" value="estacionamiento"> Estacionamiento<br>
-    <input type="checkbox" name="servicios[]" value="spa"> Spa<br>
-    <input type="checkbox" name="servicios[]" value="gimnasio"> Gimnasio<br>
-    <input type="checkbox" name="servicios[]" value="otros"> Otros<br>
-  </fieldset>
-
-  <button type="submit">Guardar Hotel</button>
-</form>
+    <button type="submit">Guardar Hotel</button>
+  </form>
 </div>

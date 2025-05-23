@@ -1,56 +1,50 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const hotel = require('../models/hotel');
+const Hotel = require('../models/soloHotel'); // Renombrado
+const Habitacion = require('../models/habitacion');
 const perfilController = require('../controllers/perfil_controller');
 const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 
-// Estados para dropdown en página principal
-const estadosMexico = [
-  { id: 1, nombre: "Aguascalientes" }, { id: 2, nombre: "Baja California" }, { id: 3, nombre: "Baja California Sur" },
-  { id: 4, nombre: "Campeche" }, { id: 5, nombre: "Chiapas" }, { id: 6, nombre: "Chihuahua" },
-  { id: 7, nombre: "Ciudad de México" }, { id: 8, nombre: "Coahuila" }, { id: 9, nombre: "Colima" },
-  { id: 10, nombre: "Durango" }, { id: 11, nombre: "Estado de México" }, { id: 12, nombre: "Guanajuato" },
-  { id: 13, nombre: "Guerrero" }, { id: 14, nombre: "Hidalgo" }, { id: 15, nombre: "Jalisco" },
-  { id: 16, nombre: "Michoacán" }, { id: 17, nombre: "Morelos" }, { id: 18, nombre: "Nayarit" },
-  { id: 19, nombre: "Nuevo León" }, { id: 20, nombre: "Oaxaca" }, { id: 21, nombre: "Puebla" },
-  { id: 22, nombre: "Querétaro" }, { id: 23, nombre: "Quintana Roo" }, { id: 24, nombre: "San Luis Potosí" },
-  { id: 25, nombre: "Sinaloa" }, { id: 26, nombre: "Sonora" }, { id: 27, nombre: "Tabasco" },
-  { id: 28, nombre: "Tamaulipas" }, { id: 29, nombre: "Tlaxcala" }, { id: 30, nombre: "Veracruz" },
-  { id: 31, nombre: "Yucatán" }, { id: 32, nombre: "Zacatecas" }
-];
-
-// Página principal
 // Página principal
 router.get('/', async (req, res) => {
   try {
-    // Obtén los hoteles desde la base de datos
-    const hoteles = await hotel.find({}); // Asegúrate de haber importado el modelo 'hotel'
-
-    // Renderiza la vista con estados y hoteles
-    res.render('paginaPrincipal', {
-      estados: estadosMexico,
-      hoteles: hoteles
-    });
+    const hoteles = await Hotel.find({});
+    res.render('paginaPrincipal', { hoteles });
   } catch (error) {
     console.error('Error al cargar la página principal:', error);
     res.status(500).send('Error al cargar la página principal');
   }
 });
 
-
+// Vista general de hoteles
 router.get('/Hoteles', async (req, res) => {
   try {
-    // Obtén todos los hoteles de la base de datos
-    const hoteles = await hotel.find({}); // Usa el modelo 'hotel' para buscar todos los documentos
-
-    // Renderiza la vista 'Hoteles' y pasa los datos de los hoteles
-    res.render('Hoteles', { hoteles: hoteles, estados: estadosMexico }); // Pasa 'hoteles' a la vista
+    const hoteles = await Hotel.find({});
+    res.render('Hoteles', { hoteles });
   } catch (error) {
     console.error('Error al obtener los hoteles:', error);
-    res.status(500).send('Error al obtener los hoteles'); // Manejo de errores
+    res.status(500).send('Error al obtener los hoteles');
   }
 });
+
+// Vista de habitaciones por hotel
+router.get('/hotel/:nombre', async (req, res) => {
+  try {
+    const nombreHotel = req.params.nombre;
+    const hotel = await Hotel.findOne({ nombre: nombreHotel }); // Corregido aquí
+
+    if (!hotel) return res.status(404).send('Hotel no encontrado');
+
+    const habitaciones = await Habitacion.find({ hotel: hotel._id });
+
+    res.render('hoteles/hotel-habitaciones', { hotel, habitaciones });
+  } catch (error) {
+    console.error('Error al cargar habitaciones:', error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
 
 
 // Mostrar formulario (vista: views/hoteles/formularioHotel.ejs)

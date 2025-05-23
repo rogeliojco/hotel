@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const Reserva = require('../models/reserva');
+const Hotel = require('../models/soloHotel');
+
+
+
 const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 
 
@@ -30,6 +34,66 @@ router.get('/reservas-por-hotel', isAdmin, async (req, res) => {
   }
 });
 
+
+
+router.post('/nueva-habitacion', async (req, res) => {
+  try {
+    const { nombre, tipo, descripcion, precio, imagenes, hotel } = req.body;
+
+    const imagenesArray = typeof imagenes === 'string'
+      ? imagenes
+          .split('\n')
+          .map(url => url.trim())
+          .filter(url => url.length > 0)
+      : [];
+
+    const nuevaHabitacion = new Habitacion({
+      nombre,
+      tipo,
+      descripcion,
+      precioNoche: precio,
+      imagenes: imagenesArray,
+      hotel
+    });
+
+    await nuevaHabitacion.save();
+    res.redirect('/admin');
+  } catch (error) {
+    if (error.code === 11000) {
+      res.status(400).send('El nombre de la habitación ya está registrado en este hotel.');
+    } else {
+      console.error('Error al guardar habitación:', error);
+      res.status(500).send('Error al guardar habitación');
+    }
+  }
+});
+
+
+
+router.get('/nueva-habitacion', async (req, res) => {
+  try {
+    const hoteles = await Hotel.find().select('_id nombre estado');
+
+    // Agrupar por estado
+    const hotelesPorEstado = {};
+    hoteles.forEach(hotel => {
+      if (!hotelesPorEstado[hotel.estado]) {
+        hotelesPorEstado[hotel.estado] = [];
+      }
+      hotelesPorEstado[hotel.estado].push(hotel);
+    });
+
+    res.render('admin/nueva-habitacion', { hotelesPorEstado });
+  } catch (error) {
+    console.error('Error al cargar hoteles:', error);
+    res.status(500).send('Error al cargar hoteles');
+  }
+});
+
+
+router.get('/', isAuthenticated, (req, res) => {
+  res.render('admin/panel');
+});
 
 router.get('/usuarios-sistema', isAdmin, async (req, res) => {
   try {
