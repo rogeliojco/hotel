@@ -20,9 +20,23 @@ const estadosMexico = [
 ];
 
 // Página principal
-router.get('/', (req, res) => {
-  res.render('paginaPrincipal', { estados: estadosMexico });
+// Página principal
+router.get('/', async (req, res) => {
+  try {
+    // Obtén los hoteles desde la base de datos
+    const hoteles = await hotel.find({}); // Asegúrate de haber importado el modelo 'hotel'
+
+    // Renderiza la vista con estados y hoteles
+    res.render('paginaPrincipal', {
+      estados: estadosMexico,
+      hoteles: hoteles
+    });
+  } catch (error) {
+    console.error('Error al cargar la página principal:', error);
+    res.status(500).send('Error al cargar la página principal');
+  }
 });
+
 
 router.get('/Hoteles', async (req, res) => {
   try {
