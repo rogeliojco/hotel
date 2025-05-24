@@ -48,13 +48,27 @@ router.post('/nueva-habitacion', async (req, res) => {
           .filter(url => url.length > 0)
       : [];
 
+    const detalles = {
+      camas: parseInt(req.body['detalleHabitacion.camas'] || 1),
+      televisiones: parseInt(req.body['detalleHabitacion.televisiones'] || 1),
+      banos: parseInt(req.body['detalleHabitacion.banos'] || 1),
+      aireAcondicionado: req.body['detalleHabitacion.aireAcondicionado'] === 'true' ? 1 : 0,
+      alberca: req.body['detalleHabitacion.alberca'] === 'true',
+      jacuzzi: req.body['detalleHabitacion.jacuzzi'] === 'true',
+      wifi: req.body['detalleHabitacion.wifi'] === 'true',
+      balcon: req.body['detalleHabitacion.balcon'] === 'true',
+      cocina: req.body['detalleHabitacion.cocina'] === 'true',
+      minibar: req.body['detalleHabitacion.minibar'] === 'true'
+    };
+
     const nuevaHabitacion = new Habitacion({
       nombre,
       tipo,
       descripcion,
-      precioNoche: precio,
+      precioNoche: parseFloat(precio),
       imagenes: imagenesArray,
-      hotel
+      hotel,
+      detalleHabitacion: detalles
     });
 
     await nuevaHabitacion.save();

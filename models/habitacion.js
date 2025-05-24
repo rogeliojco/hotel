@@ -10,7 +10,10 @@ const habitacionSchema = new mongoose.Schema({
     enum: ['unaPersona', 'dosPersonas', 'cuatroPersonas', 'seisPersonas'],
     required: true
   },
-  descripcion: String,
+  descripcion: {
+    type: String,
+    trim: true
+  },
   precioNoche: {
     type: Number,
     min: 0,
@@ -25,7 +28,7 @@ const habitacionSchema = new mongoose.Schema({
       type: String,
       validate: {
         validator: function (v) {
-          return /^https?:\/\/.+/i.test(v); // acepta cualquier URL
+          return /^https?:\/\/.+/i.test(v);
         },
         message: props => `${props.value} no es un URL válido.`
       }
@@ -37,6 +40,18 @@ const habitacionSchema = new mongoose.Schema({
       fechaFin: { type: Date, required: true }
     }
   ],
+  detalleHabitacion: {
+    aireAcondicionado: { type: Number, default: 0, min: 0 },
+    camas: { type: Number, default: 1, min: 1 },
+    televisiones: { type: Number, default: 0, min: 0 },
+    banos: { type: Number, default: 1, min: 0 },
+    alberca: { type: Boolean, default: false },
+    jacuzzi: { type: Boolean, default: false },
+    wifi: { type: Boolean, default: true },
+    balcon: { type: Boolean, default: false },
+    cocina: { type: Boolean, default: false },
+    minibar: { type: Boolean, default: false }
+  },
   hotel: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Hotel',

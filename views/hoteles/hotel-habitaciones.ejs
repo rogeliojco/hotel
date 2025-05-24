@@ -1,5 +1,116 @@
 <% layout('layout/layout.ejs') %>
 
+<style>
+  .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
+  .card {
+    border: 1px solid #593196;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(89, 49, 150, 0.1);
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+  }
+
+  .card-title {
+    color: #593196;
+    font-weight: 700;
+  }
+
+  .card-text {
+    color: #444;
+  }
+
+  .btn-primary {
+    background-color: #593196;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: #45287c;
+  }
+
+  #carouselImagenes img {
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .modal-title {
+    color: #593196;
+    font-weight: bold;
+  }
+
+  .modal-body {
+    font-size: 0.95rem;
+  }
+
+  .modal-body p {
+    margin-bottom: 0.3rem;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: rgba(89, 49, 150, 0.6);
+    border-radius: 50%;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 5%;
+  }
+
+  .detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.5rem 1rem;
+  }
+
+  .detalle-grid p {
+    margin: 0;
+    padding: 0.25rem 0;
+  }
+    .detalle-extra-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-top: 1rem;
+  }
+
+  .detalle-extra-card {
+    background-color: #f4f0fb;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .detalle-extra-card strong {
+    display: block;
+    font-weight: 600;
+    color: #5e3db0;
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+  }
+
+  .detalle-extra-card span {
+    color: #333;
+    font-size: 0.75rem;
+  }
+</style>
+
 <div class="container mt-4">
   <h2><%= hotel.nombre %></h2>
   <p><strong>Ubicación:</strong> <%= hotel.zona %>, <%= hotel.estado %></p>
@@ -17,9 +128,105 @@
             <p class="card-text"><strong>Capacidad:</strong> <%= habitacion.tipo %></p>
             <p class="card-text"><strong>Precio:</strong> $<%= habitacion.precioNoche %> MXN por noche</p>
             <p class="card-text"><strong>Disponible:</strong> <%= habitacion.disponible ? 'Sí' : 'No' %></p>
+            <button class="btn btn-primary mt-2" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modalDetalles" 
+                    data-habitacion='<%- JSON.stringify(habitacion) %>'>
+              Ver detalles
+            </button>
           </div>
         </div>
       </div>
     <% }) %>
   </div>
 </div>
+
+<!-- Modal de detalles -->
+<div class="modal fade" id="modalDetalles" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDetallesLabel">Detalles de la habitación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Carrusel de imágenes -->
+        <div id="carouselImagenes" class="carousel slide mb-3" data-bs-ride="carousel">
+          <div class="carousel-inner" id="carouselInner"></div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselImagenes" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselImagenes" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="detalle-grid mb-3">
+          <p><strong>Nombre:</strong> <span id="modalNombre"></span></p>
+          <p><strong>Tipo:</strong> <span id="modalTipo"></span></p>
+          <p><strong>Precio:</strong> $<span id="modalPrecio"></span> MXN</p>
+          <p><strong>Disponible:</strong> <span id="modalDisponible"></span></p>
+        </div>
+
+        <p><strong>Descripción:</strong> <span id="modalDescripcion"></span></p>
+
+        <hr>
+<h6 class="mb-2">Detalles adicionales:</h6>
+<div class="detalle-extra-grid">
+  <div class="detalle-extra-card"><strong>Aire acondicionado</strong><span id="modalAire"></span></div>
+  <div class="detalle-extra-card"><strong>Camas</strong><span id="modalCamas"></span></div>
+  <div class="detalle-extra-card"><strong>Televisiones</strong><span id="modalTVs"></span></div>
+  <div class="detalle-extra-card"><strong>Baños</strong><span id="modalBanos"></span></div>
+  <div class="detalle-extra-card"><strong>Alberca</strong><span id="modalAlberca"></span></div>
+  <div class="detalle-extra-card"><strong>Jacuzzi</strong><span id="modalJacuzzi"></span></div>
+  <div class="detalle-extra-card"><strong>Wi-Fi</strong><span id="modalWifi"></span></div>
+  <div class="detalle-extra-card"><strong>Balcón</strong><span id="modalBalcon"></span></div>
+  <div class="detalle-extra-card"><strong>Cocina</strong><span id="modalCocina"></span></div>
+  <div class="detalle-extra-card"><strong>Minibar</strong><span id="modalMinibar"></span></div>
+</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('modalDetalles');
+
+  modal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const habitacion = JSON.parse(button.getAttribute('data-habitacion'));
+
+    document.getElementById('modalNombre').textContent = habitacion.nombre;
+    document.getElementById('modalTipo').textContent = habitacion.tipo;
+    document.getElementById('modalDescripcion').textContent = habitacion.descripcion;
+    document.getElementById('modalPrecio').textContent = habitacion.precioNoche;
+    document.getElementById('modalDisponible').textContent = habitacion.disponible ? 'Sí' : 'No';
+
+    const detalles = habitacion.detalleHabitacion || {};
+    document.getElementById('modalAire').textContent = detalles.aireAcondicionado ?? 'No especificado';
+    document.getElementById('modalCamas').textContent = detalles.camas ?? 'No especificado';
+    document.getElementById('modalTVs').textContent = detalles.televisiones ?? 'No especificado';
+    document.getElementById('modalBanos').textContent = detalles.banos ?? 'No especificado';
+    document.getElementById('modalAlberca').textContent = detalles.alberca ? 'Sí' : 'No';
+    document.getElementById('modalJacuzzi').textContent = detalles.jacuzzi ? 'Sí' : 'No';
+    document.getElementById('modalWifi').textContent = detalles.wifi ? 'Sí' : 'No';
+    document.getElementById('modalBalcon').textContent = detalles.balcon ? 'Sí' : 'No';
+    document.getElementById('modalCocina').textContent = detalles.cocina ? 'Sí' : 'No';
+    document.getElementById('modalMinibar').textContent = detalles.minibar ? 'Sí' : 'No';
+
+    const carouselInner = document.getElementById('carouselInner');
+    carouselInner.innerHTML = '';
+
+    if (habitacion.imagenes && habitacion.imagenes.length > 0) {
+      habitacion.imagenes.forEach((url, index) => {
+        const item = document.createElement('div');
+        item.classList.add('carousel-item');
+        if (index === 0) item.classList.add('active');
+        item.innerHTML = `<img src="${url}" class="d-block w-100" alt="Imagen ${index + 1}">`;
+        carouselInner.appendChild(item);
+      });
+    } else {
+      carouselInner.innerHTML = '<div class="carousel-item active"><p class="text-center">Sin imágenes disponibles</p></div>';
+    }
+  });
+</script>
