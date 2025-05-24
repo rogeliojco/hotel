@@ -20,25 +20,56 @@ router.get('/', async (req, res) => {
     }
 });
 
+
 router.get('/Hoteles', async (req, res) => {
     try {
-        const estado = req.query.estado;
-        const fechas = req.query.fechas;
+        // Recoger todos los parámetros de búsqueda de req.query
+        const { estado, hotel: nombreHotel, fechas, codigo } = req.query;
 
-        let hoteles;
+        let filterQuery = {};
 
-        if (estado) {
-            hoteles = await Hotel.find({ estado: estado });
-        } else {
-            hoteles = await Hotel.find({});
+        if (estado && estado !== "") {
+            filterQuery.estado = estado;
+        }
+        if (nombreHotel && nombreHotel.trim() !== "") {
+            // Búsqueda flexible por nombre de hotel (case-insensitive, parcial)
+            filterQuery.nombre = { $regex: nombreHotel.trim(), $options: 'i' };
         }
 
-        res.render('Hoteles', { hoteles: hoteles, fechas: fechas });
+        // Aquí aún no filtramos por fechas, ya que eso usualmente se hace
+        // para la disponibilidad de habitaciones, no para la lista de hoteles.
+        // Pero pasaremos 'fechas' a la vista para rellenar el campo.
+
+        const hotelesFiltrados = await Hotel.find(filterQuery);
+
+        // Necesitamos todos los estados únicos para el dropdown en Hoteles.ejs
+        const todosLosHoteles = await Hotel.find({}); // Podrías optimizar esto si solo necesitas estados
+        const estadosUnicos = [...new Set(todosLosHoteles.map(h => h.estado))].sort();
+
+
+        res.render('Hoteles', {
+            hoteles: hotelesFiltrados,
+            // Pasa los valores de búsqueda para rellenar el formulario en Hoteles.ejs
+            valoresBusqueda: {
+                estado: estado || '',
+                hotel: nombreHotel || '',
+                fechas: fechas || '',
+                codigo: codigo || ''
+            },
+            estadosUnicos: estadosUnicos, // Para el dropdown de estados
+            // También puedes pasar 'fechas' directamente si lo prefieres en la vista
+            // para el enlace "Ver disponibilidad", aunque ya está en valoresBusqueda.
+            // Si el 'fechas' del query es 'undefined' (string), cámbialo a cadena vacía
+            fechas: (fechas === 'undefined' || !fechas) ? '' : decodeURIComponent(fechas)
+        });
     } catch (error) {
         console.error('Error al obtener los hoteles:', error);
         res.status(500).send('Error al obtener los hoteles');
     }
 });
+
+
+
 
 function isValidDate(dateString) {
     // Expresión regular para el formato dd/mm/yy
@@ -46,51 +77,114 @@ function isValidDate(dateString) {
     return dateRegex.test(dateString);
 }
 
+
+
 router.get('/hotel/:nombre', async (req, res) => {
     try {
         const nombreHotel = req.params.nombre;
-        let fechas = req.query.fechas;
-        const hotel = await Hotel.findOne({ nombre: nombreHotel });
+        let fechasQuery = req.query.fechas; // Renombré 'fechas' a 'fechasQuery' para evitar confusión
 
-        if (!hotel) return res.status(404).send('Hotel no encontrado');
-
-        let habitaciones = await Habitacion.find({ hotel: hotel._id });
-
-        // Si hay fechas seleccionadas, filtrar las habitaciones
-        if (fechas) {
-            fechas = decodeURIComponent(fechas);
-            console.log("Valor de fechas en /hotel/:nombre (después de decode):", fechas);
-            const fechaArray = fechas.split(" a ");
-
-            if (fechaArray.length === 2) {
-                const [fechaInicioStr, fechaFinStr] = fechaArray;
-
-                if (isValidDate(fechaInicioStr) && isValidDate(fechaFinStr)) {
-                    const fechaInicio = new Date(fechaInicioStr.split('/').reverse().join('-'));
-                    const fechaFin = new Date(fechaFinStr.split('/').reverse().join('-'));
-
-                    habitaciones = habitaciones.filter(habitacion => {
-                        return !habitacion.reservas.some(reserva => {
-                            return !(reserva.fechaFin < fechaInicio || reserva.fechaInicio > fechaFin);
-                        });
-                    });
-                } else {
-                    console.error("Formato de fecha incorrecto:", fechaInicioStr, fechaFinStr);
-                    return res.status(400).send("Formato de fecha incorrecto. Debe ser dd/mm/yy");
-                }
-            } else {
-                console.error("Formato de fechas incorrecto:", fechas);
-                return res.status(400).send("Formato de fechas incorrecto. Debe ser 'fechaInicio a fechaFin'");
-            }
+        // Normalizar fechasQuery: si es 'undefined' (string), null, o vacío, se trata como null.
+        if (fechasQuery === 'undefined' || !fechasQuery || fechasQuery.trim() === '') {
+            fechasQuery = null;
         }
 
-        // La variable habitaciones siempre está definida aquí
-        res.render('hoteles/hotel-habitaciones', { hotel, habitaciones, fechas: fechas });
+        const hotel = await Hotel.findOne({ nombre: nombreHotel });
+        if (!hotel) {
+            console.log(`Hotel no encontrado: ${nombreHotel}`);
+            return res.status(404).send('Hotel no encontrado');
+        }
+
+        // Obtener TODAS las habitaciones del hotel primero
+        let todasLasHabitacionesDelHotel = await Habitacion.find({ hotel: hotel._id });
+        let habitacionesDisponibles = [...todasLasHabitacionesDelHotel]; // Copiamos para filtrar
+
+        console.log(`Ruta /hotel/${nombreHotel} - Fechas solicitadas (query): ${fechasQuery}`);
+
+        if (fechasQuery) {
+            const fechasDecodificadas = decodeURIComponent(fechasQuery.trim());
+            console.log("Fechas decodificadas:", fechasDecodificadas);
+            const fechaArray = fechasDecodificadas.split(" a ");
+
+            if (fechaArray.length === 2) {
+                const [fechaInicioSolicitadaStr, fechaFinSolicitadaStr] = fechaArray;
+
+                if (isValidDate(fechaInicioSolicitadaStr) && isValidDate(fechaFinSolicitadaStr)) {
+                    // Convertir fechas solicitadas a objetos Date de JS
+                    // ¡IMPORTANTE! Usar moment para parsear y luego .toDate() para comparar con las fechas de la BD
+                    // que también son objetos Date.
+                    const inicioSolicitado = moment(fechaInicioSolicitadaStr, "DD/MM/YY").toDate();
+                    const finSolicitado = moment(fechaFinSolicitadaStr, "DD/MM/YY").toDate();
+
+                    // Ajustar finSolicitado para que la comparación sea inclusiva del último día
+                    // Si una reserva termina el día X, y la nueva empieza el día X, no hay conflicto.
+                    // La lógica de conflicto es:
+                    // (reserva.fechaFin > inicioSolicitado && reserva.fechaInicio < finSolicitado)
+                    // Esto significa que hay solapamiento si el final de una reserva existente es DESPUÉS
+                    // del inicio solicitado Y el inicio de la reserva existente es ANTES del final solicitado.
+
+                    console.log(`Rango solicitado: Inicio=${inicioSolicitado}, Fin=${finSolicitado}`);
+
+                    habitacionesDisponibles = todasLasHabitacionesDelHotel.filter(habitacion => {
+                        if (!habitacion.reservas || habitacion.reservas.length === 0) {
+                            // Si no tiene reservas, está disponible
+                            console.log(`Habitación ${habitacion.nombre}: Sin reservas, disponible.`);
+                            return true;
+                        }
+
+                        // Verificar si ALGUNA reserva existente se solapa con el rango solicitado
+                        const seSolapa = habitacion.reservas.some(reservaExistente => {
+                            // Asegurarse que las fechas de reservaExistente son objetos Date
+                            const inicioExistente = new Date(reservaExistente.fechaInicio);
+                            const finExistente = new Date(reservaExistente.fechaFin);
+
+                            // Lógica de solapamiento:
+                            // Un solapamiento ocurre si:
+                            // El inicio solicitado es ANTES del fin de la reserva existente Y
+                            // El fin solicitado es DESPUÉS del inicio de la reserva existente.
+                            const haySolapamiento = inicioSolicitado < finExistente && finSolicitado > inicioExistente;
+
+                            if (haySolapamiento) {
+                                console.log(`Habitación ${habitacion.nombre}: CONFLICTO con reserva existente [${inicioExistente.toLocaleDateString()} - ${finExistente.toLocaleDateString()}] para el rango solicitado [${inicioSolicitado.toLocaleDateString()} - ${finSolicitado.toLocaleDateString()}]`);
+                            }
+                            return haySolapamiento;
+                        });
+
+                        if (!seSolapa) {
+                             console.log(`Habitación ${habitacion.nombre}: DISPONIBLE para el rango solicitado.`);
+                        }
+                        return !seSolapa; // La habitación está disponible si NO se solapa con NINGUNA reserva existente
+                    });
+
+                } else {
+                    console.error("Formato de fecha incorrecto en query:", fechaInicioSolicitadaStr, fechaFinSolicitadaStr);
+                    // No se filtrará por fechas si el formato es incorrecto, se mostrarán todas las habitaciones.
+                    // Podrías optar por enviar un error 400 aquí si lo prefieres.
+                    // return res.status(400).send("Formato de fecha incorrecto. Debe ser dd/mm/yy");
+                }
+            } else {
+                console.error("Formato de rango de fechas incorrecto en query:", fechasDecodificadas);
+                // No se filtrará por fechas si el formato es incorrecto.
+                // return res.status(400).send("Formato de fechas incorrecto. Debe ser 'fechaInicio a fechaFin'");
+            }
+        } else {
+            console.log("No se proporcionaron fechas, mostrando todas las habitaciones del hotel.");
+        }
+
+        // Renderizar con las habitaciones (filtradas o todas) y las fechas originales del query
+        res.render('hoteles/hotel-habitaciones', {
+            hotel,
+            habitaciones: habitacionesDisponibles,
+            fechas: fechasQuery || '' // Pasar las fechas originales del query (o vacío) a la vista
+        });
+
     } catch (error) {
         console.error('Error al cargar habitaciones:', error);
         res.status(500).send('Error interno del servidor');
     }
 });
+
+
 
 router.post('/reservarHabitaciones', isAuthenticated, async (req, res) => {
     try {
@@ -172,95 +266,135 @@ router.post('/reservarHabitaciones', isAuthenticated, async (req, res) => {
     }
 });
 
-// Función para simular el procesamiento del pago
-async function simularPago(tarjeta, vencimiento, cvv, titular, precioTotal) {
-    // Simula un tiempo de procesamiento
-    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Simula la validación de la tarjeta
+async function simularPago(tarjeta, vencimiento, cvv, titular, precioTotal) {
+    // ... (tu lógica de simulación de pago)
+    await new Promise(resolve => setTimeout(resolve, 1000));
     if (tarjeta.length !== 16 || vencimiento.length !== 4 || cvv.length !== 3) {
         return { success: false, message: 'Datos de tarjeta inválidos.' };
     }
-
-    // Simula la aprobación del pago
     const randomNumber = Math.random();
-    if (randomNumber < 0.8) { // 80% de probabilidad de éxito
+    if (randomNumber < 0.8) {
         return { success: true, transactionId: 'TRANSACCION_' + Math.random().toString(36).substring(7) };
     } else {
         return { success: false, message: 'Pago rechazado por el banco.' };
     }
 }
 
+
 router.post('/confirmar-reserva', isAuthenticated, async (req, res) => {
     try {
-        const habitaciones = req.body.habitaciones;
-        const fechas = req.body.fechas;
-        const precioTotal = req.body.precioTotal;
-        const numeroNoches = req.body.numeroNoches;
-        const nombre = req.body.nombre;
-        const email = req.body.email;
-        const telefono = req.body.telefono;
-        const tarjeta = req.body.tarjeta;
-        const vencimiento = req.body.vencimiento;
-        const cvv = req.body.cvv;
-        const titular = req.body.titular;
+        const {
+            habitaciones: habitacionesData, // Array de objetos con id, nombre, precioNoche
+            fechas,
+            precioTotal,
+            // numeroNoches, // Ya no lo necesitamos directamente aquí si las fechas son el origen
+            nombre: nombreCliente, // Renombrado para evitar confusión con nombre de habitación
+            email,
+            telefono,
+            tarjeta,
+            vencimiento,
+            cvv,
+            titular
+        } = req.body;
 
-        // Validar los datos recibidos
-        if (!habitaciones || !fechas || !precioTotal || !nombre || !email || !telefono || !tarjeta || !vencimiento || !cvv || !titular) {
-            return res.status(400).send('Todos los campos son obligatorios.');
+        // --- Validación de Datos Recibidos ---
+        if (!habitacionesData || !Array.isArray(habitacionesData) || habitacionesData.length === 0 ||
+            !fechas || !precioTotal || !nombreCliente || !email || !telefono ||
+            !tarjeta || !vencimiento || !cvv || !titular) {
+            console.error("Datos incompletos:", req.body);
+            return res.status(400).send('Todos los campos son obligatorios y debe haber al menos una habitación.');
         }
 
-         // Simular el procesamiento del pago
-         const pago = await simularPago(tarjeta, vencimiento, cvv, titular, precioTotal);
-
-         if (!pago.success) {
-             return res.status(400).send(`Error al procesar el pago: ${pago.message}`);
-         }
-
-        // Crear la reserva en la base de datos
+        // --- Procesar Fechas ---
         const [fechaInicioStr, fechaFinStr] = fechas.split(" a ");
-        const fechaInicio = moment(fechaInicioStr, 'DD/MM/YY');
-        const fechaFin = moment(fechaFinStr, 'DD/MM/YY');
+        const fechaInicioMoment = moment(fechaInicioStr, 'DD/MM/YY');
+        const fechaFinMoment = moment(fechaFinStr, 'DD/MM/YY');
 
-        if (!fechaInicio.isValid() || !fechaFin.isValid()) {
-            return res.status(400).send("Formato de fecha incorrecto. Debe ser dd/mm/yy");
+        if (!fechaInicioMoment.isValid() || !fechaFinMoment.isValid()) {
+            return res.status(400).send("Formato de fecha incorrecto. Debe ser DD/MM/YY a DD/MM/YY");
         }
 
-        const habitacionesIds = Array.isArray(habitaciones)
-        ? habitaciones.map(h => h.id)
-        : [habitaciones.id];
+        const fechaInicioDate = fechaInicioMoment.toDate();
+        const fechaFinDate = fechaFinMoment.toDate(); // Convertir a Date de JS para guardar en MongoDB
 
-        const reserva = new Reserva({
+        // --- Simular Pago ---
+        const pago = await simularPago(tarjeta, vencimiento, cvv, titular, precioTotal);
+        if (!pago.success) {
+            return res.status(400).send(`Error al procesar el pago: ${pago.message}`);
+        }
+
+        // --- Crear el Documento de Reserva ---
+        // Extraer solo los IDs de las habitaciones para el modelo Reserva
+        const habitacionesIds = habitacionesData.map(h => h.id);
+
+        const nuevaReserva = new Reserva({
             usuario: req.user._id,
-            habitaciones: habitacionesIds, // Asume que habitaciones es un array de IDs
-            fechaInicio: fechaInicio.toDate(),
-            fechaFin: fechaFin.toDate(),
+            habitaciones: habitacionesIds,
+            fechaInicio: fechaInicioDate,
+            fechaFin: fechaFinDate,
             precioTotal: precioTotal,
-            nombre: nombre,
+            nombre: nombreCliente,
             email: email,
             telefono: telefono,
             transaccionId: pago.transactionId,
-            tarjeta: tarjeta,
-            vencimiento: vencimiento,
-            cvv: cvv,
+            // Guardar datos de tarjeta NO ES RECOMENDADO en producción sin medidas de seguridad PCI DSS
+            // Para este ejemplo, se asume un entorno de desarrollo/prueba.
+            tarjeta: "XXXX-XXXX-XXXX-" + tarjeta.slice(-4), // Ejemplo de enmascaramiento simple
+            vencimiento: vencimiento, // También sensible
+            cvv: cvv, // CVV NUNCA debe almacenarse
             titular: titular
         });
 
-        await reserva.save();
+        await nuevaReserva.save();
+        console.log("Nueva reserva guardada:", nuevaReserva._id);
 
-        console.log("Datos recibidos en /confirmar-reserva:", {
-            reserva: reserva,
-        });
+        // --- ACTUALIZAR CADA HABITACIÓN CON LAS FECHAS DE LA RESERVA ---
+        for (const habitacionInfo of habitacionesData) {
+            try {
+                const habitacionId = habitacionInfo.id;
+                // Usamos findOneAndUpdate para añadir el nuevo rango de fechas al array 'reservas'
+                // de la habitación correspondiente.
+                const habitacionActualizada = await Habitacion.findByIdAndUpdate(
+                    habitacionId,
+                    {
+                        $push: { // $push añade un elemento a un array
+                            reservas: {
+                                fechaInicio: fechaInicioDate,
+                                fechaFin: fechaFinDate
+                                // Opcional: podrías añadir el ID de la reserva aquí si quieres una referencia cruzada
+                                // reservaId: nuevaReserva._id
+                            }
+                        }
+                    },
+                    { new: true } // Devuelve el documento modificado
+                );
 
-        // 4. Enviar un correo electrónico de confirmación al usuario
+                if (!habitacionActualizada) {
+                    // Esto sería un error grave si la habitación existía al principio del proceso
+                    console.error(`Error: No se pudo encontrar la habitación con ID ${habitacionId} para actualizar sus fechas de reserva.`);
+                    // Podrías considerar revertir la reserva principal aquí o marcarla para revisión.
+                } else {
+                    console.log(`Habitación ${habitacionActualizada.nombre} (ID: ${habitacionId}) actualizada con nuevas fechas de reserva.`);
+                }
+            } catch (errorActualizandoHabitacion) {
+                console.error(`Error al actualizar la habitación con ID ${habitacionInfo.id}:`, errorActualizandoHabitacion);
+                // Manejar el error: podrías decidir si la reserva principal sigue siendo válida
+                // o si necesitas revertir/marcarla.
+            }
+        }
+
+        // 4. Enviar un correo electrónico de confirmación al usuario (lógica omitida por brevedad)
         // ...
 
         // 5. Redirigir al usuario a una página de confirmación final
-        res.send('Reserva confirmada! Revisa la consola para ver los datos recibidos.');
+        // Idealmente, pasar el ID de la reserva para mostrar detalles
+        res.render('confirmacionReserva', { reserva: nuevaReserva, mensaje: "¡Reserva confirmada exitosamente!" });
+        // o res.send('Reserva confirmada! Revisa la consola para ver los datos recibidos.');
 
     } catch (error) {
         console.error('Error al confirmar la reserva:', error);
-        res.status(500).send('Error al confirmar la reserva.');
+        res.status(500).send('Error interno al confirmar la reserva.');
     }
 });
 

@@ -1,37 +1,151 @@
 <% layout('layout/layout.ejs') %>
-<% block('stylesheets', '<link rel="stylesheet" href="/css/hotel.css">') -%>
+
+<link rel="stylesheet" href="/css/hotel.css">
+<link rel="stylesheet" href="/css/loginRegistro.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <div class="container mt-4">
+  <!-- Formulario de Búsqueda/Filtro -->
+  <div class="mb-4 p-3 border rounded bg-light">
+    <h4 class="mb-3">Filtrar Hoteles</h4>
+    <form id="filterHotelesForm" action="/Hoteles" method="GET">
+      <div class="d-flex justify-content-start gap-2 flex-wrap align-items-center">
+        <!-- Dropdown de Estado -->
+        <div style="max-width: 200px;">
+          <select id="estadoSelectHoteles" name="estado" class="form-select custom-input-text-center">
+            <option value="">Todos los Estados</option>
+            <% estadosUnicos.forEach(est => { %>
+              <option value="<%= est %>" <%= (valoresBusqueda.estado === est) ? 'selected' : '' %>>
+                <%= est %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+        <!-- Input de Hotel -->
+        <div style="max-width: 200px;">
+          <input type="text" id="hotelInputHoteles" name="hotel" class="form-control custom-input-text-center" placeholder="Nombre del Hotel" value="<%= valoresBusqueda.hotel %>" autocomplete="off">
+        </div>
+        <!-- Input de fechas (requerido para "Ver disponibilidad") -->
+        <div style="max-width: 190px;">
+          <input type="text" name="fechas" id="fechasHoteles" class="form-control" placeholder="Seleccionar Fechas" value="<%= valoresBusqueda.fechas %>">
+        </div>
+        <!-- Código promocional -->
+        <div style="max-width: 180px;">
+          <input type="text" name="codigo" id="codigoHoteles" class="form-control" placeholder="Código Promocional" value="<%= valoresBusqueda.codigo %>" style="max-width: 180px;">
+        </div>
+        <!-- Botón buscar/filtrar -->
+        <button type="submit" class="btn btn-danger">BUSCAR</button>
+      </div>
+    </form>
+  </div>
+
   <div class="row">
-    <% hoteles.forEach(hotel => { %>
-      <div class="col-md-6 mb-4">
-        <div class="card hotel-card">
-          <div class="row no-gutters">
-            <div class="col-md-6">
-              <img src="<%= hotel.urlImagen %>" class="card-img hotel-image" alt="<%= hotel.nombre %>">
-            </div>
-            <div class="col-md-6">
-              <div class="card-body">
-                <h5 class="card-title"><%= hotel.nombre %></h5>
-                <p class="card-text hotel-ubicacion">
-                  <i class="fas fa-map-marker-alt"></i> <%= hotel.zona %>, <%= hotel.estado %>
-                </p>
-
-                <% if (hotel.estaCercaDe && hotel.estaCercaDe.tipo) { %>
-                  <p class="card-text small">
-                    Cerca de: <%= hotel.estaCercaDe.tipo %> (<%= hotel.estaCercaDe.distancia %>)
+    <% if (hoteles && hoteles.length > 0) { %>
+      <% hoteles.forEach(hotel => { %>
+        <div class="col-md-6 mb-4">
+          <div class="card hotel-card">
+            <div class="row g-0">
+              <div class="col-md-6">
+                <img src="<%= hotel.urlImagen || '/asset/default-hotel.jpg' %>" class="card-img hotel-image" alt="<%= hotel.nombre %>">
+              </div>
+              <div class="col-md-6">
+                <div class="card-body">
+                  <h5 class="card-title"><%= hotel.nombre %></h5>
+                  <p class="card-text hotel-ubicacion">
+                    <i class="fas fa-map-marker-alt"></i> <%= hotel.zona %>, <%= hotel.estado %>
                   </p>
-                <% } %>
-
-<script>
-    console.log("Valor de fechas en Hoteles.ejs:", '<%= fechas %>');
-</script>
-<a href="/hotel/<%= hotel.nombre %>?fechas=<%= encodeURIComponent(fechas) %>" class="btn btn-primary btn-sm btn-block mt-3">Ver disponibilidad</a>
+                  <% if (hotel.estaCercaDe && hotel.estaCercaDe.tipo) { %>
+                    <p class="card-text small">
+                      Cerca de: <%= hotel.estaCercaDe.tipo %> (<%= hotel.estaCercaDe.distancia %>)
+                    </p>
+                  <% } %>
+                  <%
+                    // Determinar si hay fechas válidas (un rango)
+                    const fechasActuales = valoresBusqueda.fechas || '';
+                    const tieneRangoDeFechas = fechasActuales.includes(' a '); // Asumimos que " a " separa las fechas de un rango
+                    const clasesBotonDisponibilidad = "btn btn-primary btn-sm d-block mt-3 btn-ver-disponibilidad" + (tieneRangoDeFechas ? "" : " disabled");
+                    const ariaDisabled = tieneRangoDeFechas ? "false" : "true";
+                  %>
+                  <a href="/hotel/<%= hotel.nombre %>?fechas=<%= encodeURIComponent(fechasActuales) %>"
+                     class="<%= clasesBotonDisponibilidad %>"
+                     aria-disabled="<%= ariaDisabled %>"
+                     <% if (!tieneRangoDeFechas) { %>tabindex="-1"<% } %>
+                     data-base-href="/hotel/<%= hotel.nombre %>?fechas=">
+                    Ver disponibilidad
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      <% }); %>
+    <% } else { %>
+      <div class="col">
+        <p class="text-center">No se encontraron hoteles con los criterios seleccionados.</p>
       </div>
-    <% }); %>
+    <% } %>
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputFechasHoteles = document.getElementById('fechasHoteles');
+    const botonesVerDisponibilidad = document.querySelectorAll('.btn-ver-disponibilidad');
+
+    // Función para actualizar el estado y href de los botones de disponibilidad
+    function actualizarBotonesDisponibilidad(fechasSeleccionadasStr) {
+        const esRangoValido = fechasSeleccionadasStr && fechasSeleccionadasStr.includes(' a ');
+
+        botonesVerDisponibilidad.forEach(boton => {
+            if (esRangoValido) {
+                boton.classList.remove('disabled');
+                boton.setAttribute('aria-disabled', 'false');
+                boton.removeAttribute('tabindex');
+                // Actualizar el href con las nuevas fechas
+                const baseHref = boton.getAttribute('data-base-href');
+                boton.href = baseHref + encodeURIComponent(fechasSeleccionadasStr);
+            } else {
+                boton.classList.add('disabled');
+                boton.setAttribute('aria-disabled', 'true');
+                boton.setAttribute('tabindex', '-1');
+                // Opcional: podrías cambiar el href a '#' o 'javascript:void(0)'
+                // boton.href = '#';
+            }
+        });
+    }
+
+    // Inicializar Flatpickr
+    const fp = flatpickr(inputFechasHoteles, {
+        mode: "range",
+        dateFormat: "d/m/y", // Asegúrate que este formato sea consistente
+        locale: "es",
+        minDate: "today",
+        onChange: function(selectedDates, dateStr, instance) {
+            // dateStr es la representación en string del rango de fechas
+            actualizarBotonesDisponibilidad(dateStr);
+        },
+        onClose: function(selectedDates, dateStr, instance) {
+
+            actualizarBotonesDisponibilidad(inputFechasHoteles.value);
+        }
+    });
+
+    actualizarBotonesDisponibilidad(inputFechasHoteles.value);
+
+    botonesVerDisponibilidad.forEach(boton => {
+        boton.addEventListener('click', function(event) {
+            // Verificar directamente el valor del input de fechas al momento del clic
+            const fechasActualesAlClic = inputFechasHoteles.value;
+            const esRangoValidoAlClic = fechasActualesAlClic && fechasActualesAlClic.includes(' a ');
+
+            if (!esRangoValidoAlClic) {
+                event.preventDefault(); // Prevenir la acción por defecto del enlace
+                alert('Por favor, seleccione un rango de fechas para ver la disponibilidad.');
+            }
+
+        });
+    });
+});
+</script>
