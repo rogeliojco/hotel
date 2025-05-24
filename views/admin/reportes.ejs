@@ -1,0 +1,117 @@
+<% layout('layout/layout.ejs') %>
+
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-header bg-dark text-white text-center">
+      <h3 class="mb-0">Generar Reportes</h3>
+    </div>
+    <div class="card-body">
+      <form method="GET" action="/admin/reportes/generar">
+  <div class="row g-3 align-items-end">
+    <div class="col-md-4">
+      <label for="tipoReporte" class="form-label">Tipo de Reporte</label>
+      <select name="tipo" id="tipoReporte" class="form-select" required>
+        <option value="">Seleccione...</option>
+        <option value="ingresos">Ingresos por periodo</option>
+        <option value="habitaciones">Habitaciones más reservadas</option>
+        <option value="clientes">Clientes frecuentes</option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label for="modoPeriodo" class="form-label">Periodo</label>
+      <select name="modo" id="modoPeriodo" class="form-select" required onchange="toggleFechas()">
+        <option value="mes">Mensual</option>
+        <option value="anio">Anual</option>
+      </select>
+    </div>
+
+    <div class="col-md-2" id="campoMes">
+      <label for="mes" class="form-label">Mes</label>
+      <input type="month" id="mes" name="mes" class="form-control">
+    </div>
+
+    <div class="col-md-2" id="campoAnio" style="display: none;">
+      <label for="anio" class="form-label">Año</label>
+      <input type="number" id="anio" name="anio" class="form-control" min="2000" value="2025" max="2100">
+    </div>
+
+    <div class="col-md-2 d-grid">
+      <button type="submit" class="btn btn-primary">Generar</button>
+    </div>
+  </div>
+</form>
+    </div>
+  </div>
+</div>
+
+<!-- Aquí va la sección de resultados -->
+<% if (reporte) { %>
+  <div class="card mt-4 shadow">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Resultado del Reporte</h5>
+    </div>
+    <div class="card-body">
+      <% if (reporte.error) { %>
+        <div class="alert alert-danger"><%= reporte.error %></div>
+      <% } else if (reporte.tipo === 'Ingresos') { %>
+        <p><strong>Periodo:</strong> <%= reporte.periodo %></p>
+        <h5>Desglose por hotel:</h5>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Hotel</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% reporte.desglose.forEach(r => { %>
+              <tr>
+                <td><%= r.hotel %></td>
+                <td><%= r.total %></td>
+              </tr>
+            <% }) %>
+            <tr class="table-success fw-bold">
+              <td>Total</td>
+              <td><%= reporte.total %></td>
+            </tr>
+          </tbody>
+        </table>
+
+      <% } else if (Array.isArray(reporte)) { %>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <% Object.keys(reporte[0]).forEach(key => { %>
+                <th><%= key.charAt(0).toUpperCase() + key.slice(1) %></th>
+              <% }) %>
+            </tr>
+          </thead>
+          <tbody>
+            <% reporte.forEach(item => { %>
+              <tr>
+                <% Object.values(item).forEach(valor => { %>
+                  <td><%= valor %></td>
+                <% }) %>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+
+      <% } else { %>
+        <pre><%= JSON.stringify(reporte, null, 2) %></pre>
+      <% } %>
+    </div>
+  </div>
+<% } %>
+
+
+
+
+<script>
+  function toggleFechas() {
+    const modo = document.getElementById('modoPeriodo').value;
+    document.getElementById('campoMes').style.display = modo === 'mes' ? 'block' : 'none';
+    document.getElementById('campoAnio').style.display = modo === 'anio' ? 'block' : 'none';
+  }
+</script>
