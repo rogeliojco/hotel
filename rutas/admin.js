@@ -4,12 +4,9 @@ const User = require('../models/user');
 const Reserva = require('../models/reserva');
 const Habitacion = require('../models/habitacion');
 const Hotel = require('../models/soloHotel');
-
-
+const moment = require('moment');
 
 const { isAuthenticated, isAdmin } = require('../middlewares/auth');
-
-
 
 router.get('/', isAdmin, (req, res) => {
   res.render('admin/panel');
@@ -18,8 +15,6 @@ router.get('/', isAdmin, (req, res) => {
 router.get('/reservas-por-hotel', isAdmin, async (req, res) => {
   try {
     const reservas = await Reserva.find();
-
-    // Agrupar por ciudad
     const agrupadas = {};
     reservas.forEach(res => {
       if (!agrupadas[res.ciudad]) {
@@ -27,7 +22,6 @@ router.get('/reservas-por-hotel', isAdmin, async (req, res) => {
       }
       agrupadas[res.ciudad].push(res);
     });
-
     res.render('admin/reservas-por-hotel', { agrupadas });
   } catch (err) {
     console.error('Error al obtener reservas:', err);
@@ -35,168 +29,176 @@ router.get('/reservas-por-hotel', isAdmin, async (req, res) => {
   }
 });
 
-
-
-router.post('/nueva-habitacion', async (req, res) => {
+router.get('/reportes', isAdmin, async (req, res) => {
   try {
-    const { nombre, tipo, descripcion, precio, imagenes, hotel } = req.body;
-
-    const imagenesArray = typeof imagenes === 'string'
-      ? imagenes
-          .split('\n')
-          .map(url => url.trim())
-          .filter(url => url.length > 0)
-      : [];
-
-    const detalles = {
-      camas: parseInt(req.body['detalleHabitacion.camas'] || 1),
-      televisiones: parseInt(req.body['detalleHabitacion.televisiones'] || 1),
-      banos: parseInt(req.body['detalleHabitacion.banos'] || 1),
-      aireAcondicionado: req.body['detalleHabitacion.aireAcondicionado'] === 'true' ? 1 : 0,
-      alberca: req.body['detalleHabitacion.alberca'] === 'true',
-      jacuzzi: req.body['detalleHabitacion.jacuzzi'] === 'true',
-      wifi: req.body['detalleHabitacion.wifi'] === 'true',
-      balcon: req.body['detalleHabitacion.balcon'] === 'true',
-      cocina: req.body['detalleHabitacion.cocina'] === 'true',
-      minibar: req.body['detalleHabitacion.minibar'] === 'true'
-    };
-
-    const nuevaHabitacion = new Habitacion({
-      nombre,
-      tipo,
-      descripcion,
-      precioNoche: parseFloat(precio),
-      imagenes: imagenesArray,
-      hotel,
-      detalleHabitacion: detalles
-    });
-
-    await nuevaHabitacion.save();
-    res.redirect('/admin');
+    res.render('admin/reportes', { reporte: null });
   } catch (error) {
-    if (error.code === 11000) {
-      res.status(400).send('El nombre de la habitación ya está registrado en este hotel.');
+    console.error('Error al cargar la vista de reportes:', error);
+    res.status(500).send('Error al cargar la vista de reportes');
+  }
+});
+
+router.get('/reportes/generar', isAdmin, async (req, res) => {
+  const { tipo, modo, mes, anio } = req.query;
+  let reporte = null;
+  try {
+    let inicio, fin;
+    if (modo === 'mes') {
+      if (!mes) return res.render('admin/reportes', { reporte: { error: 'Debes seleccionar un mes' } });
+      inicio = moment(mes).startOf('month').toDate();
+      fin = moment(mes).endOf('month').toDate();
+    } else if (modo === 'anio') {
+      if (!anio) return res.render('admin/reportes', { reporte: { error: 'Debes ingresar un año válido' } });
+      inicio = moment(`${anio}-01-01`).startOf('year').toDate();
+      fin = moment(`${anio}-12-31`).endOf('year').toDate();
     } else {
-      console.error('Error al guardar habitación:', error);
-      res.status(500).send('Error al guardar habitación');
+      return res.render('admin/reportes', { reporte: { error: 'Modo de periodo no válido' } });
     }
-  }
-});
 
+    if (tipo === 'ingresos') {
+      const ingresos = await Reserva.aggregate([
+        {
+          $match: {
+            fechaInicio: { $gte: inicio },
+            fechaFin: { $lte: fin }
+          }
+        },
+        {
+          $lookup: {
+            from: "habitacions",
+            localField: "habitaciones",
+            foreignField: "_id",
+            as: "habitaciones"
+          }
+        },
+        { $unwind: "$habitaciones" },
+        {
+          $lookup: {
+            from: "hotels",
+            localField: "habitaciones.hotel",
+            foreignField: "_id",
+            as: "hotel"
+          }
+        },
+        { $unwind: "$hotel" },
+        {
+          $group: {
+            _id: "$hotel.nombre",
+            totalPorHotel: { $sum: "$precioTotal" }
+          }
+        },
+        { $sort: { totalPorHotel: -1 } }
+      ]);
 
+      const total = ingresos.reduce((acc, h) => acc + h.totalPorHotel, 0);
 
-router.get('/nueva-habitacion', async (req, res) => {
-  try {
-    const hoteles = await Hotel.find().select('_id nombre estado');
+      reporte = {
+        tipo: 'Ingresos',
+        periodo: modo === 'mes' ? moment(inicio).format('MMMM YYYY') : anio,
+        total: `$${total.toFixed(2)} MXN`,
+        desglose: ingresos.map(i => ({
+          hotel: i._id,
+          total: `$${i.totalPorHotel.toFixed(2)} MXN`
+        }))
+      };
+    } else if (tipo === 'habitaciones') {
+      const habitaciones = await Habitacion.aggregate([
+        { $unwind: "$reservas" },
+        {
+          $match: {
+            "reservas.fechaInicio": { $gte: inicio },
+            "reservas.fechaFin": { $lte: fin }
+          }
+        },
+        {
+          $lookup: {
+            from: "hotels",
+            localField: "hotel",
+            foreignField: "_id",
+            as: "hotel"
+          }
+        },
+        { $unwind: "$hotel" },
+        {
+          $group: {
+            _id: {
+              hotel: "$hotel.nombre",
+              habitacion: "$nombre"
+            },
+            cantidad: { $sum: 1 }
+          }
+        },
+        { $sort: { cantidad: -1 } }
+      ]);
 
-    // Agrupar por estado
-    const hotelesPorEstado = {};
-    hoteles.forEach(hotel => {
-      if (!hotelesPorEstado[hotel.estado]) {
-        hotelesPorEstado[hotel.estado] = [];
-      }
-      hotelesPorEstado[hotel.estado].push(hotel);
-    });
+      reporte = habitaciones.map(h => ({
+        hotel: h._id.hotel,
+        habitacion: h._id.habitacion,
+        cantidad: h.cantidad
+      }));
+    } else if (tipo === 'clientes') {
+      const clientes = await Reserva.aggregate([
+        {
+          $match: {
+            fechaInicio: { $gte: inicio },
+            fechaFin: { $lte: fin }
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "usuario",
+            foreignField: "_id",
+            as: "usuario"
+          }
+        },
+        { $unwind: "$usuario" },
+        {
+          $lookup: {
+            from: "habitacions",
+            localField: "habitaciones",
+            foreignField: "_id",
+            as: "habitaciones"
+          }
+        },
+        { $unwind: "$habitaciones" },
+        {
+          $lookup: {
+            from: "hotels",
+            localField: "habitaciones.hotel",
+            foreignField: "_id",
+            as: "hotel"
+          }
+        },
+        { $unwind: "$hotel" },
+        {
+          $group: {
+            _id: {
+              hotel: "$hotel.nombre",
+              clienteId: "$usuario._id"
+            },
+            hotel: { $first: "$hotel.nombre" },
+            name: { $first: "$usuario.name" },
+            email: { $first: "$usuario.email" },
+            cantidad: { $sum: 1 }
+          }
+        },
+        { $sort: { cantidad: -1 } }
+      ]);
 
-    res.render('admin/nueva-habitacion', { hotelesPorEstado });
+      reporte = clientes.map(c => ({
+        hotel: c.hotel,
+        cliente: c.name ? c.name : `[sin nombre] (${c.email})`,
+        email: c.email,
+        cantidad: c.cantidad
+      }));
+    }
+
+    res.render('admin/reportes', { reporte });
   } catch (error) {
-    console.error('Error al cargar hoteles:', error);
-    res.status(500).send('Error al cargar hoteles');
+    console.error('Error al generar reporte:', error);
+    res.status(500).send('Error interno al generar el reporte.');
   }
 });
-
-
-router.get('/', isAuthenticated, (req, res) => {
-  res.render('admin/panel');
-});
-
-router.get('/usuarios-sistema', isAdmin, async (req, res) => {
-  try {
-    const usuarios = await User.find();
-    res.render('admin/usuarios-sistema', { usuarios });
-  } catch (err) {
-    console.error('Error al obtener usuarios:', err);
-    res.status(500).send('Error interno del servidor');
-  }
-});
-
-router.put('/usuarios-sistema/:id/rol', isAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { rol } = req.body;
-
-    if (!['cliente', 'empleado', 'admin'].includes(rol)) {
-      return res.status(400).json({ error: 'Rol no válido' });
-    }
-
-    const resultado = await User.findByIdAndUpdate(id, { rol });
-
-    if (!resultado) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-
-    res.json({ mensaje: 'Rol actualizado correctamente' });
-  } catch (error) {
-    console.error('Error al actualizar rol:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
-  }
-});
-
-
-
-router.get('/nuevo-hotel', (req, res) => {
-  res.render('admin/nuevo-hotel'); 
-});
-
-// (Opcional) redirigir /nuevo al formulario
-router.get('/nuevo', (req, res) => {
-  res.redirect('admin/nuevo-hotel'); 
-});
-
-// Procesar formulario enviado desde /FormularioHotel (action="/hoteles/nuevo")
-// POST /nuevo
-router.post('/nuevo-hotel', async (req, res) => {
-  try {
-    const nuevoHotel = new Hotel({
-      nombre: req.body.nombre,
-      descripcionCorta: req.body.descripcionCorta,
-      zona: req.body.zona,
-      distanciaCentro: req.body.distanciaCentro,
-      estaCercaDe: {
-        tipo: req.body['estaCercaDe.tipo'],
-        distancia: req.body['estaCercaDe.distancia']
-      },
-      estado: req.body.estado,
-      calificacionGeneral: req.body.calificacionGeneral,
-      numeroComentarios: req.body.numeroComentarios,
-      impuestosCargos: req.body.impuestosCargos,
-      ubicacion: req.body.ubicacion,
-      urlImagen: req.body.urlImagen,
-      aceptaMascotas: req.body.aceptaMascotas === 'on',
-      horaCheckIn: req.body.horaCheckIn,
-      horaCheckOut: req.body.horaCheckOut,
-      latitud: req.body.latitud,
-      longitud: req.body.longitud,
-      calle: req.body.calle,
-      numero: req.body.numero,
-      codigoPostal: req.body.codigoPostal,
-      telefono: req.body.telefono,
-      email: req.body.email,
-      servicios: Array.isArray(req.body.servicios)
-        ? req.body.servicios
-        : req.body.servicios
-        ? [req.body.servicios]
-        : []
-    });
-
-    await nuevoHotel.save();
-    res.render('admin/nuevo-hotel', { mensajeExito: '✅ ¡El hotel se registró correctamente!' });
-  } catch (err) {
-    res.status(500).send('Error al guardar el hotel: ' + err.message);
-  }
-});
-
-
-
 
 module.exports = router;
