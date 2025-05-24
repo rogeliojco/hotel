@@ -6,57 +6,41 @@
 
 <div class="hero-image position-relative">
   <div class="search-form-container position-absolute top-50 start-50 translate-middle w-100 px-3">
-    <form id="reservationForm" action="/reservar" method="POST">
-      <div class="d-flex justify-content-center gap-2 flex-wrap align-items-center">
+<form id="reservationForm" action="/Hoteles" method="GET">
+  <input type="hidden" id="estadoSeleccionado" name="estado" value="">
+  <div class="d-flex justify-content-center gap-2 flex-wrap align-items-center">
 
-        <!-- Input de ciudad con dropdown -->
-        <div class="position-relative" style="max-width: 200px;">
-          <input type="text" id="ciudadInput" name="ciudad" class="form-control custom-input-text-center" placeholder="Ingresar ciudad / Hotel" autocomplete="off" required>
-          <div id="estadoDropdown" class="position-absolute w-100 d-none">
-            <% hoteles.forEach(function(hotel) { %>
-              <div 
-                class="estado-opcion" 
-                data-valor="<%= hotel.estado + ' - ' + hotel.nombre %>" 
-                onclick="seleccionarCiudad('<%= hotel.estado %>')"
-              >
-                <strong><%= hotel.estado %></strong><br>
-                <small><%= hotel.nombre %></small>
-              </div>
-            <% }) %>
+    <!-- Input de ciudad con dropdown -->
+    <div class="position-relative" style="max-width: 200px;">
+      <input type="text" id="ciudadInput" name="ciudad" class="form-control custom-input-text-center" placeholder="Ingresar ciudad / Hotel" autocomplete="off" required>
+      <div id="estadoDropdown" class="position-absolute w-100 d-none">
+        <%
+          const estadosUnicos = [...new Set(hoteles.map(hotel => hotel.estado))];
 
-          </div>
-        </div>
-
-        <!-- Input de fechas -->
-        <input type="text" name="fechas" id="fechas" class="form-control" placeholder="13/05/25 – 14/05/25" style="max-width: 180px;" required>
-
-        <!-- Selector de habitaciones -->
-        <div class="position-relative" style="max-width: 260px;">
-          <input type="text" id="habitacionInput" name="habitacion" class="form-control" placeholder="Seleccionar habitaciones" readonly required>
-          <div id="habitacionDropdown" class="d-none position-absolute w-100 p-3">
-            <% const tipos = [1, 2, 4, 6]; %>
-            <% tipos.forEach(function(tipo) { %>
-              <div class="mb-2">
-                <label class="form-label fw-bold">Habitación para <%= tipo %> persona <%= tipo > 1 ? 's' : '' %></label>
-                <div class="d-flex justify-content-between align-items-center">
-                  <button type="button" class="btn btn-outline-secondary btn-sm" onclick="updateTipo(<%= tipo %>, -1)">-</button>
-                  <span class="spanC" id="tipo<%= tipo %>Count">0</span>
-                  <button type="button" class="btn btn-outline-secondary btn-sm" onclick="updateTipo(<%= tipo %>, 1)">+</button>
-                </div>
-              </div>
-            <% }); %>
-            <button type="button" class="btn btn-danger btn-sm w-100" onclick="cerrarDropdown()">Listo</button>
-          </div>
-        </div>
-
-        <!-- Código promocional -->
-        <input type="text" name="codigo" class="form-control" placeholder="Código Promocional" style="max-width: 180px;">
-
-        <!-- Botón reservar -->
-        <button type="submit" class="btn btn-danger">RESERVAR</button>
-
+          estadosUnicos.forEach(estado => { %>
+            <div 
+              class="estado-opcion" 
+              data-valor="<%= estado %>"
+              onclick="seleccionarCiudad('<%= estado %>')"
+            >
+              <strong><%= estado %></strong>
+            </div>
+          <% });
+        %>
       </div>
-    </form>
+    </div>
+
+    <!-- Input de fechas -->
+    <input type="text" name="fechas" id="fechas" class="form-control" placeholder="13/05/25 – 14/05/25" style="max-width: 180px;" required>
+
+    <!-- Código promocional -->
+    <input type="text" name="codigo" class="form-control" placeholder="Código Promocional" style="max-width: 180px;">
+
+    <!-- Botón reservar -->
+    <button type="submit" class="btn btn-danger">RESERVAR</button>
+
+  </div>
+</form>
   </div>
 </div>
 
@@ -210,51 +194,12 @@
     <!-- Línea divisoria y copyright -->
     <div class="border-top border-secondary mt-3 pt-3 text-center">
       <p class="small mb-0 text-muted">
-        &copy; <span id="current-year"></span> Hoteles Premium. Todos los derechos reservados.
+        © <span id="current-year"></span> Hoteles Premium. Todos los derechos reservados.
       </p>
     </div>
   </div>
 </footer>
-<script>
-  const input = document.getElementById("habitacionInput");
-  const dropdown = document.getElementById("habitacionDropdown");
 
-  // Contadores por tipo de habitación
-  const habitaciones = {
-    1: 0,
-    2: 0,
-    4: 0,
-    6: 0
-  };
-
-  input.addEventListener("click", () => {
-    dropdown.classList.toggle("d-none");
-  });
-
-  function updateTipo(tipo, delta) {
-    habitaciones[tipo] = Math.max(0, habitaciones[tipo] + delta);
-    document.getElementById(`tipo${tipo}Count`).textContent = habitaciones[tipo];
-  }
-
-  function cerrarDropdown() {
-    let resumen = [];
-
-    for (let tipo in habitaciones) {
-      if (habitaciones[tipo] > 0) {
-        resumen.push(`${habitaciones[tipo]} Hab. x ${tipo} Pers.`);
-      }
-    }
-
-    input.value = resumen.length ? resumen.join(', ') : "Seleccionar habitaciones";
-    dropdown.classList.add("d-none");
-  }
-
-  document.addEventListener("click", (e) => {
-    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.classList.add("d-none");
-    }
-  });
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
@@ -299,11 +244,14 @@
   });
 </script>
 
-
-
-
-
 <!-- Script para año actual -->
 <script>
   document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
+
+<script>
+  function seleccionarCiudad(estado) {
+    document.getElementById('ciudadInput').value = estado; // Opcional: Si quieres que el estado aparezca en el input
+    document.getElementById('estadoSeleccionado').value = estado; // Guarda el estado en el campo oculto
+  }
 </script>

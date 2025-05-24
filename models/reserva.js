@@ -1,23 +1,64 @@
-// models/reserva.js
 const mongoose = require('mongoose');
 
 const reservaSchema = new mongoose.Schema({
-  ciudad: String,
-  fechas: String,
-  habitacion: String,
-  codigo: String,
-  nombre: String,
-  email: String,
-  telefono: String,
-  tarjeta: String,
-  vencimiento: String,
-  cvv: String,
-  titular: String,
-  fechaReserva: { type: Date, default: Date.now },
-  estado: { type: String, default: 'pendiente' }, // o 'confirmada', 'cancelada'
   usuario: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
+  },
+  habitaciones: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Habitacion',
+    required: true
+  }],
+  fechaInicio: {
+    type: Date,
+    required: true
+  },
+  fechaFin: {
+    type: Date,
+    required: true
+  },
+  precioTotal: {
+    type: Number,
+    required: true
+  },
+  fechaReserva: {
+    type: Date,
+    default: Date.now
+  },
+  estado: {
+    type: String,
+    enum: ['pendiente', 'confirmada', 'cancelada', 'completada'],
+    default: 'pendiente'
+  },
+  nombre: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  telefono: {
+    type: String,
+    required: true
+  },
+  tarjeta: {
+    type: String,
+    required: true
+  },
+  vencimiento: {
+    type: String,
+    required: true
+  },
+  cvv: {
+    type: String,
+    required: true
+  },
+  titular: {
+    type: String,
+    required: true
   }
 });
 

@@ -23,8 +23,10 @@
                   </p>
                 <% } %>
 
-                <a href="/hotel/<%= hotel.nombre %>" class="btn btn-primary btn-sm btn-block mt-3">Ver disponibilidad</a>
-
+<script>
+    console.log("Valor de fechas en Hoteles.ejs:", '<%= fechas %>');
+</script>
+<a href="/hotel/<%= hotel.nombre %>?fechas=<%= encodeURIComponent(fechas) %>" class="btn btn-primary btn-sm btn-block mt-3">Ver disponibilidad</a>
               </div>
             </div>
           </div>

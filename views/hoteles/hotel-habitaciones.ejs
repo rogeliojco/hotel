@@ -41,6 +41,19 @@
     background-color: #45287c;
   }
 
+  .btn-success { /* Estilo para el botón de reservar */
+    background-color: #28a745;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-success:hover {
+    background-color: #218838;
+  }
+
   #carouselImagenes img {
     height: 300px;
     object-fit: cover;
@@ -115,30 +128,40 @@
   <h2><%= hotel.nombre %></h2>
   <p><strong>Ubicación:</strong> <%= hotel.zona %>, <%= hotel.estado %></p>
 
-  <div class="row">
-    <% habitaciones.forEach(habitacion => { %>
-      <div class="col-md-4 mb-4">
-        <div class="card">
-          <% if (habitacion.imagenes.length > 0) { %>
-            <img src="<%= habitacion.imagenes[0] %>" class="card-img-top" alt="Imagen habitación">
-          <% } %>
-          <div class="card-body">
-            <h5 class="card-title"><%= habitacion.nombre %></h5>
-            <p class="card-text"><%= habitacion.descripcion %></p>
-            <p class="card-text"><strong>Capacidad:</strong> <%= habitacion.tipo %></p>
-            <p class="card-text"><strong>Precio:</strong> $<%= habitacion.precioNoche %> MXN por noche</p>
-            <p class="card-text"><strong>Disponible:</strong> <%= habitacion.disponible ? 'Sí' : 'No' %></p>
-            <button class="btn btn-primary mt-2" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#modalDetalles" 
-                    data-habitacion='<%- JSON.stringify(habitacion) %>'>
-              Ver detalles
-            </button>
+  <form action="/reservarHabitaciones" method="POST">
+      <input type="hidden" name="fechas" value="<%= fechas %>"> 
+    <div class="row">
+      <% habitaciones.forEach(habitacion => { %>
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <% if (habitacion.imagenes.length > 0) { %>
+              <img src="<%= habitacion.imagenes[0] %>" class="card-img-top" alt="Imagen habitación">
+            <% } %>
+            <div class="card-body">
+              <h5 class="card-title"><%= habitacion.nombre %></h5>
+              <p class="card-text"><%= habitacion.descripcion %></p>
+              <p class="card-text"><strong>Capacidad:</strong> <%= habitacion.tipo %></p>
+              <p class="card-text"><strong>Precio:</strong> $<%= habitacion.precioNoche %> MXN por noche</p>
+              <p class="card-text"><strong>Disponible:</strong> <%= habitacion.disponible ? 'Sí' : 'No' %></p>
+<button type="button" class="btn btn-primary mt-2" 
+        data-bs-toggle="modal" 
+        data-bs-target="#modalDetalles" 
+        data-habitacion='<%- JSON.stringify(habitacion) %>'>
+  Ver detalles
+</button>
+              <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" name="habitacionesSeleccionadas" value="<%= habitacion._id %>" id="habitacion<%= habitacion._id %>">
+                <label class="form-check-label" for="habitacion<%= habitacion._id %>">
+                  Seleccionar
+                </label>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    <% }) %>
-  </div>
+      <% }) %>
+    </div>
+    <button type="submit" class="btn btn-success mt-3">Reservar Habitaciones Seleccionadas</button>
+  </form>
 </div>
 
 <!-- Modal de detalles -->
