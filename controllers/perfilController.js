@@ -3,9 +3,7 @@ const Reserva = require('../models/reserva');
 const Recomendacion = require('../models/recomendacion');
 const Resena = require('../models/resena');
 
-// ===============================
 // Vista principal del perfil
-// ===============================
 exports.verPerfil = async (req, res) => {
   try {
     const user = req.user;
@@ -15,7 +13,7 @@ exports.verPerfil = async (req, res) => {
     const reservasActivas = reservas.filter(r => r.estado !== 'cancelada');
     const reservasCanceladas = reservas.filter(r => r.estado === 'cancelada');
 
-    // Recomendaciones (simuladas si no hay en DB)
+    // Recomendaciones reales o simuladas
     let recomendaciones = await Recomendacion.find().limit(3);
     if (!recomendaciones.length) {
       recomendaciones = [
@@ -25,7 +23,7 @@ exports.verPerfil = async (req, res) => {
       ];
     }
 
-    // Reseñas del usuario (o simuladas)
+    // Reseñas reales o simuladas
     let reseñas = await Resena.find({ usuario: user._id }).populate('hotel');
     if (!reseñas.length) {
       reseñas = [
@@ -58,21 +56,17 @@ exports.verPerfil = async (req, res) => {
   }
 };
 
-// ===============================
 // Actualizar nombre y/o contraseña
-// ===============================
 exports.actualizarPerfil = async (req, res) => {
   const { nuevoUsuario, nuevaContrasena } = req.body;
 
   try {
     const user = await User.findById(req.user._id);
 
-    // Actualizar nombre si se proporciona
     if (nuevoUsuario?.trim()) {
       user.name = nuevoUsuario.trim();
     }
 
-    // Validar nueva contraseña
     if (nuevaContrasena?.trim()) {
       if (nuevaContrasena.length < 6) {
         return res.redirect('/perfil?error=La contraseña debe tener al menos 6 caracteres');
@@ -89,9 +83,7 @@ exports.actualizarPerfil = async (req, res) => {
   }
 };
 
-// ===============================
 // Cambiar contraseña desde formulario independiente
-// ===============================
 exports.cambiarPassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -116,9 +108,7 @@ exports.cambiarPassword = async (req, res) => {
   }
 };
 
-// ===============================
-// Editar solo el nombre (opcional)
-///===============================
+// Editar solo el nombre
 exports.editarNombre = async (req, res) => {
   try {
     const { name } = req.body;
