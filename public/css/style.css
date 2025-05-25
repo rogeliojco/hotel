@@ -306,10 +306,16 @@ body {
   color: #7A8EA4;
 }
 
-footer {
-  /* No necesitas cambiar tu clase bg-dark, text-white, text-center, py-3 porque ya están en tu html */
-  position: sticky;
-  bottom: 0;
+.fixed-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  background: #1a1a1a !important;
+    color: white; /* text-white */
+    text-align: center; /* text-center */
+    padding: 10px 0; /* py-3 */
+    z-index: 100; /* Asegura que esté encima de otros elementos */
 }
 
 
