@@ -13,17 +13,6 @@ const reservaSchema = new mongoose.Schema({
   }],
   fechaInicio: {
     type: Date,
-<<<<<<< HEAD
-    required: true
-  },
-  fechaFin: {
-    type: Date,
-    required: true
-  },
-  precioTotal: {
-    type: Number,
-    required: true
-=======
     required: [true, 'La fecha de inicio es obligatoria']
   },
   fechaFin: {
@@ -40,7 +29,6 @@ const reservaSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'El precio total es obligatorio'],
     min: [0, 'El precio no puede ser negativo']
->>>>>>> 229a026 (Subiendo módulos nuevos del perfil con diseño actualizado)
   },
   fechaReserva: {
     type: Date,
@@ -51,41 +39,8 @@ const reservaSchema = new mongoose.Schema({
     enum: ['pendiente', 'confirmada', 'cancelada', 'completada'],
     default: 'pendiente'
   },
-<<<<<<< HEAD
-  nombre: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true
-  },
-  telefono: {
-    type: String,
-    required: true
-  },
-  tarjeta: {
-    type: String,
-    required: true
-  },
-  vencimiento: {
-    type: String,
-    required: true
-  },
-  cvv: {
-    type: String,
-    required: true
-  },
-  titular: {
-    type: String,
-    required: true
-  }
-});
 
-module.exports = mongoose.model('Reserva', reservaSchema);
-=======
-
-  // Datos personales del cliente (en el momento de reservar)
+  // Datos personales del cliente al momento de reservar
   nombre: {
     type: String,
     required: true,
@@ -104,7 +59,7 @@ module.exports = mongoose.model('Reserva', reservaSchema);
     trim: true
   },
 
-  // Información de pago (se recomienda en producción NO guardar esto)
+  // Información de pago (no recomendado guardar en producción real)
   tarjeta: {
     type: String,
     required: true,
@@ -128,5 +83,3 @@ module.exports = mongoose.model('Reserva', reservaSchema);
 });
 
 module.exports = mongoose.model('Reserva', reservaSchema);
-
->>>>>>> 229a026 (Subiendo módulos nuevos del perfil con diseño actualizado)
