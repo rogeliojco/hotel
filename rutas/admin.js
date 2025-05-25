@@ -22,24 +22,52 @@ router.get('/', isAdmin, (req, res) => {
 
 // Ruta para las reservas por hotel
 router.get('/reservas-por-hotel', isAdmin, async (req, res) => {
-    console.log("Entrando a /reservas-por-hotel");
-    try {
-        const reservas = await Reserva.find();
-        console.log("Reservas encontradas:", reservas);
-        const agrupadas = {};
-        reservas.forEach(res => {
-            if (!agrupadas[res.ciudad]) {
-                agrupadas[res.ciudad] = [];
-            }
-            agrupadas[res.ciudad].push(res);
-        });
-        console.log("Reservas agrupadas:", agrupadas);
-        res.render('admin/reservas-por-hotel', { agrupadas });
-        console.log("Renderizando la vista admin/reservas-por-hotel");
-    } catch (err) {
-        console.error('Error al obtener reservas:', err);
-        res.status(500).send('Error interno del servidor');
+  try {
+    const reservas = await Reserva.find()
+      .sort({ fechaReserva: -1 })
+      .populate('habitaciones') // traer habitaciones completas
+      .lean();
+
+    const hotelesMap = {}; // cache local de hoteles
+    const agrupadas = {};
+
+    for (const res of reservas) {
+      const habitaciones = res.habitaciones || [];
+      const nombresHabitaciones = habitaciones.map(h => h?.nombre || 'N/A').join(', ');
+
+      // Obtener nombre del hotel desde la primera habitación (asumimos que todas son del mismo hotel)
+      let hotelNombre = 'Hotel desconocido';
+      if (habitaciones.length > 0 && habitaciones[0].hotel) {
+        const hotelId = habitaciones[0].hotel.toString();
+        if (!hotelesMap[hotelId]) {
+          const hotel = await Hotel.findById(hotelId).lean();
+          hotelesMap[hotelId] = hotel?.nombre || 'Hotel sin nombre';
+        }
+        hotelNombre = hotelesMap[hotelId];
+      }
+
+      const noches = moment(res.fechaFin).diff(moment(res.fechaInicio), 'days');
+      const precioNoche = noches > 0 ? (res.precioTotal / noches).toFixed(2) : 'N/A';
+
+      const fila = {
+        nombre: res.nombre,
+        habitaciones: nombresHabitaciones,
+        hotel: hotelNombre,
+        noches,
+        precioNoche,
+        precioTotal: res.precioTotal,
+        fechaReserva: moment(res.fechaReserva).format('DD/MM/YYYY')
+      };
+
+      if (!agrupadas[hotelNombre]) agrupadas[hotelNombre] = [];
+      agrupadas[hotelNombre].push(fila);
     }
+
+    res.render('admin/reservas-por-hotel', { agrupadas });
+  } catch (err) {
+    console.error('Error al obtener reservas:', err);
+    res.status(500).send('Error interno del servidor');
+  }
 });
 
 // Ruta para la gestión de usuarios del sistema
