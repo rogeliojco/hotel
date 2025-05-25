@@ -1,32 +1,34 @@
 <% layout('layout/layout.ejs') %>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bs-stepper/dist/css/bs-stepper.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 <style>
     /* Estilos generales */
     .bs-stepper {
-        border: none; /* Elimina el borde del stepper */
+        border: none;
         padding: 0;
     }
 
     .bs-stepper .step-trigger {
         padding: 10px 20px;
-        border-radius: 20px; /* Hace los bordes más redondeados */
+        border-radius: 20px;
         font-weight: 500;
-        color: #6c757d; /* Color de texto gris */
-        background-color: #f8f9fa; /* Fondo gris claro */
-        border: 1px solid #dee2e6; /* Borde sutil */
+        color: #6c757d;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
         display: flex;
         align-items: center;
-        text-decoration: none; /* Elimina el subrayado */
+        text-decoration: none;
     }
 
     .bs-stepper .step-trigger:hover {
-        background-color: #e9ecef; /* Fondo un poco más oscuro al pasar el ratón */
+        background-color: #e9ecef;
     }
 
     .bs-stepper .step-trigger:not(:disabled):not(.disabled).active {
-        background-color: #0d6efd; /* Fondo azul para el paso activo */
-        color: white; /* Texto blanco para el paso activo */
+        background-color: #0d6efd;
+        color: white;
         border-color: #0d6efd;
     }
 
@@ -35,7 +37,7 @@
         width: 30px;
         height: 30px;
         font-size: 0.8rem;
-        background-color: #adb5bd; /* Círculo gris */
+        background-color: #adb5bd;
         color: white;
         border-radius: 50%;
         display: inline-flex;
@@ -45,13 +47,13 @@
     }
 
     .bs-stepper .step-trigger:not(:disabled):not(.disabled).active .bs-stepper-circle {
-        background-color: white; /* Círculo blanco en el paso activo */
-        color: #0d6efd; /* Texto azul en el círculo del paso activo */
+        background-color: white;
+        color: #0d6efd;
     }
 
     /* Línea entre los pasos */
     .bs-stepper .line {
-        background-color: #dee2e6; /* Línea gris */
+        background-color: #dee2e6;
         height: 2px;
         margin: 0 1rem;
     }
@@ -59,12 +61,12 @@
     /* Contenido de los pasos */
     .bs-stepper-content {
         padding: 20px;
-        border: 1px solid #dee2e6; /* Borde alrededor del contenido */
+        border: 1px solid #dee2e6;
         border-radius: 0.5rem;
         margin-top: 1rem;
     }
 
-    /* Estilos para el stepper horizontal (si lo prefieres) */
+    /* Estilos para el stepper horizontal */
     .bs-stepper.horizontal .bs-stepper-header {
         display: flex;
         justify-content: space-between;
@@ -78,6 +80,28 @@
     .bs-stepper.horizontal .step {
         flex: 0 0 auto;
         text-align: center;
+    }
+
+    /* Estilos adicionales para la información de pago */
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .form-control.is-valid {
+        border-color: #198754;
+    }
+
+    .invalid-feedback {
+        display: block;
+    }
+
+    .valid-feedback {
+        display: block;
     }
 </style>
 
@@ -112,7 +136,7 @@
         </div>
 
         <div class="bs-stepper-content">
-            <form action="/confirmar-reserva" method="POST">
+            <form action="/confirmar-reserva" method="POST" id="paymentForm" class="needs-validation" novalidate>
                 <!-- Campos ocultos para enviar las fechas, el número de noches y el precio total -->
                 <input type="hidden" name="fechas" value="<%= data.fechas %>">
                 <input type="hidden" name="numeroNoches" value="<%= data.numeroNoches %>">
@@ -149,7 +173,7 @@
                     <% } %>
                     <!-- Botones de navegación -->
                     <div class="d-flex justify-content-end">
-                        <button class="btn btn-primary" onclick="stepper.next()">Siguiente</button>
+                        <button type="button" class="btn btn-primary" onclick="stepper.next()">Siguiente</button>
                     </div>
                 </div>
 
@@ -172,8 +196,8 @@
                     </div>
                     <!-- Botones de navegación -->
                     <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary" onclick="stepper.previous()">Anterior</button>
-                        <button class="btn btn-primary" onclick="stepper.next()">Siguiente</button>
+                        <button type="button" class="btn btn-secondary" onclick="stepper.previous()">Anterior</button>
+                        <button type="button" class="btn btn-primary" onclick="stepper.next()">Siguiente</button>
                     </div>
                 </div>
 
@@ -182,26 +206,29 @@
                     <h4 class="mb-3">Información de Pago</h4>
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
-                            <label for="tarjeta" class="form-label">Número de Tarjeta</label>
-                            <input type="text" class="form-control" id="tarjeta" name="tarjeta" required>
+                            <label for="tarjeta" class="form-label"><i class="fas fa-credit-card"></i> Número de Tarjeta</label>
+                            <input type="text" class="form-control" id="tarjeta" name="tarjeta" placeholder="**** **** **** ****" required maxlength="19" data-valida="tarjeta">
+
                         </div>
                         <div class="col-md-3">
-                            <label for="vencimiento" class="form-label">Fecha de Vencimiento</label>
-                            <input type="text" class="form-control" id="vencimiento" name="vencimiento" placeholder="MM/AA" required>
+                            <label for="vencimiento" class="form-label"><i class="far fa-calendar-alt"></i> Fecha de Vencimiento</label>
+                            <input type="text" class="form-control" id="vencimiento" name="vencimiento" placeholder="MM/AA" required maxlength="5" data-valida="fecha">
+
                         </div>
                         <div class="col-md-3">
-                            <label for="cvv" class="form-label">CVV</label>
-                            <input type="text" class="form-control" id="cvv" name="cvv" required>
+                            <label for="cvv" class="form-label"><i class="fas fa-lock"></i> CVV</label>
+                            <input type="password" class="form-control" id="cvv" name="cvv" placeholder="000" required maxlength="3" data-valida="cvv" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+
                         </div>
                         <div class="col-md-6">
-                            <label for="titular" class="form-label">Nombre del Titular</label>
+                            <label for="titular" class="form-label"><i class="fas fa-user"></i> Nombre del Titular</label>
                             <input type="text" class="form-control" id="titular" name="titular" required>
                         </div>
                     </div>
-                     <!-- Botones de navegación -->
+                    <!-- Botones de navegación -->
                     <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary" onclick="stepper.previous()">Anterior</button>
-                        <button type="submit" class="btn btn-danger btn-lg">Confirmar Reserva</button>
+                        <button type="button" class="btn btn-secondary" onclick="stepper.previous()">Anterior</button>
+                        <button type="submit" class="btn btn-danger btn-lg" id="confirm-button" onclick="return validateForm()" disabled>Confirmar Reserva</button>
                     </div>
                 </div>
             </form>
@@ -210,9 +237,280 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bs-stepper/dist/js/bs-stepper.min.js"></script>
+
 <script>
     var stepper = new Stepper(document.querySelector('#stepper'), {
         linear: false,
         animation: true
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentForm = document.getElementById('paymentForm');
+
+        // Obtener el botón de "Confirmar Reserva"
+        const confirmButton = document.getElementById('confirm-button');
+
+        // Obtener los campos de información personal
+        const nombreInput = document.getElementById('nombre');
+        const emailInput = document.getElementById('email');
+        const telefonoInput = document.getElementById('telefono');
+
+        // Obtener los campos de información de pago
+        const tarjetaInputPago = document.getElementById('tarjeta');
+        const vencimientoInputPago = document.getElementById('vencimiento');
+        const cvvInputPago = document.getElementById('cvv');
+        const titularInput = document.getElementById('titular');
+
+
+
+         //Función para validar fecha de vencimiento
+        function validateExpiry() {
+            const expiry = vencimientoInputPago.value.replace(/\D/g, ''); //Elimina caracteres no numericos
+            if (expiry.length === 4) {
+                const month = parseInt(expiry.substring(0, 2), 10);
+                const year = parseInt(expiry.substring(2, 4), 10);
+
+                const currentDate = new Date();
+                const currentMonth = currentDate.getMonth() + 1;
+                const currentYear = currentDate.getFullYear() % 100;
+
+
+                 if (month >= 1 && month <= 12) {
+                    if (year > currentYear || (year === currentYear && month >= currentMonth)) {
+
+                         vencimientoInputPago.classList.remove('is-invalid');
+                         vencimientoInputPago.classList.add('is-valid');
+                    } else{
+                         vencimientoInputPago.classList.remove('is-valid');
+                         vencimientoInputPago.classList.add('is-invalid');
+                    }
+
+                 }else{
+                         vencimientoInputPago.classList.remove('is-valid');
+                         vencimientoInputPago.classList.add('is-invalid');
+                 }
+            }else{
+                         vencimientoInputPago.classList.remove('is-valid');
+                         vencimientoInputPago.classList.add('is-invalid');
+                 }
+        }
+
+
+
+
+         //Permitir solo números en el campo CVV
+        cvvInputPago.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, ''); //Elimina caracteres no numéricos
+             if (this.value.length > 3) {
+                this.value = this.value.slice(0, 3);
+            }
+           if (this.value.length === 3) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        });
+
+
+
+
+        //Formatear número de tarjeta
+        tarjetaInputPago.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += '-';
+                }
+                formattedValue += value[i];
+            }
+            this.value = formattedValue;
+             if (this.value.replace(/[^0-9]/g, '').length === 16) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        });
+
+        //Formatear fecha de vencimiento
+        vencimientoInputPago.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '').substring(0, 4);
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            this.value = value;
+
+          validateExpiry();
+        });
+
+
+        //Función para validar el formulario
+        function validateForm() {
+            let isValid = true;
+
+            // Paso 3: Validación de información de pago
+           // const tarjetaInput = document.getElementById('tarjeta');
+            //const vencimientoInput = document.getElementById('vencimiento');
+           // const cvvInput = document.getElementById('cvv');
+           // const titularInput = document.getElementById('titular');
+
+            if (tarjetaInputPago.value.trim() === '') {
+                tarjetaInputPago.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                tarjetaInputPago.classList.remove('is-invalid');
+            }
+
+            if (vencimientoInputPago.value.trim() === '') {
+                vencimientoInputPago.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                vencimientoInputPago.classList.remove('is-invalid');
+            }
+
+            if (cvvInputPago.value.trim() === '') {
+                cvvInputPago.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                cvvInputPago.classList.remove('is-invalid');
+            }
+
+            if (titularInput.value.trim() === '') {
+                titularInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                titularInput.classList.remove('is-invalid');
+            }
+
+            paymentForm.classList.add('was-validated'); // Mostrar errores si los hay
+            return isValid;
+        }
+
+
+
+         // Evitar la validación automática al inicio
+        paymentForm.classList.remove('was-validated');
+
+
+         // Función para verificar si todos los campos de información personal y pago están llenos
+        function checkAllFields() {
+            const personalInfoFilled = (nombreInput.value.trim() !== '' &&
+                                        emailInput.value.trim() !== '' &&
+                                        telefonoInput.value.trim() !== '');
+
+            const paymentInfoFilled = (tarjetaInputPago.value.trim() !== '' &&
+                                       vencimientoInputPago.value.trim() !== '' &&
+                                       cvvInputPago.value.trim() !== '' &&
+                                       titularInput.value.trim() !== '');
+
+            if (personalInfoFilled && paymentInfoFilled) {
+                confirmButton.disabled = false; // Habilitar el botón "Confirmar Reserva"
+            } else {
+                confirmButton.disabled = true; // Deshabilitar el botón "Confirmar Reserva"
+            }
+        }
+
+        // Agregar listeners a todos los campos
+        nombreInput.addEventListener('input', checkAllFields);
+        emailInput.addEventListener('input', checkAllFields);
+        telefonoInput.addEventListener('input', checkAllFields);
+        tarjetaInputPago.addEventListener('input', checkAllFields);
+        vencimientoInputPago.addEventListener('input', checkAllFields);
+        cvvInputPago.addEventListener('input', checkAllFields);
+        titularInput.addEventListener('input', checkAllFields);
+
+        // Llamar a la función al cargar la página para establecer el estado inicial del botón
+        checkAllFields();
+
+        //Función para validar fecha de vencimiento
+         function validateExpiry() {
+            const expiry = vencimientoInputPago.value.replace(/\D/g, ''); //Elimina caracteres no numericos
+            if (expiry.length === 4) {
+                const month = parseInt(expiry.substring(0, 2), 10);
+                const year = parseInt(expiry.substring(2, 4), 10);
+
+                const currentDate = new Date();
+                const currentMonth = currentDate.getMonth() + 1;
+                const currentYear = currentDate.getFullYear() % 100;
+
+
+                 if (month >= 1 && month <= 12) {
+                    if (year > currentYear || (year === currentYear && month >= currentMonth)) {
+
+                         vencimientoInputPago.classList.remove('is-invalid');
+                         vencimientoInputPago.classList.add('is-valid');
+                         return true;
+                    } else{
+                         vencimientoInputPago.classList.remove('is-valid');
+                         vencimientoInputPago.classList.add('is-invalid');
+                         return false;
+                    }
+
+                 }else{
+                         vencimientoInputPago.classList.remove('is-valid');
+                         vencimientoInputPago.classList.add('is-invalid');
+                         return false;
+                 }
+            }else{
+                         vencimientoInputPago.classList.remove('is-valid');
+                         vencimientoInputPago.classList.add('is-invalid');
+                         return false;
+                 }
+        }
+
+
+         //Función para validar el formulario
+        function validateForm() {
+            let isValid = true;
+
+            // Paso 3: Validación de información de pago
+           // const tarjetaInput = document.getElementById('tarjeta');
+            //const vencimientoInput = document.getElementById('vencimiento');
+           // const cvvInput = document.getElementById('cvv');
+           // const titularInput = document.getElementById('titular');
+
+            if (tarjetaInputPago.value.trim() === '') {
+                tarjetaInputPago.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                tarjetaInputPago.classList.remove('is-invalid');
+            }
+
+            if (vencimientoInputPago.value.trim() === '') {
+                vencimientoInputPago.classList.add('is-invalid');
+                isValid = false;
+            } else {
+
+               if(!validateExpiry()){
+                isValid = false;
+               }else{
+                 vencimientoInputPago.classList.remove('is-invalid');
+               }
+
+
+            }
+
+            if (cvvInputPago.value.trim() === '') {
+                cvvInputPago.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                cvvInputPago.classList.remove('is-invalid');
+            }
+
+            if (titularInput.value.trim() === '') {
+                titularInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                titularInput.classList.remove('is-invalid');
+            }
+
+            paymentForm.classList.add('was-validated'); // Mostrar errores si los hay
+            return isValid;
+        }
+
     });
 </script>
