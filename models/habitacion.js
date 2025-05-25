@@ -5,9 +5,9 @@ const habitacionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  tipo: {
+  capacidad: {
     type: String,
-    enum: ['unaPersona', 'dosPersonas', 'cuatroPersonas', 'seisPersonas'],
+    enum: ['1 persona', '2 personas','3 personas', '4 personas','5 personas', '6 personas'],
     required: true
   },
   descripcion: {

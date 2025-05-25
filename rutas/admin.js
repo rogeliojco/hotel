@@ -274,23 +274,83 @@ router.get('/reportes/generar', isAdmin, async (req, res) => {
     }
 });
 
+// Ruta POST para añadir un nuevo hotel
+router.post('/nuevo-hotel', isAdmin, async (req, res) => {
+    console.log("Entrando a POST /nuevo-hotel");
+    console.log("Datos del formulario:", req.body);
+
+    try {
+        // Asegúrate de transformar los datos anidados
+        const datosHotel = {
+            nombre: req.body.nombre,
+            descripcionCorta: req.body.descripcionCorta,
+            zona: req.body.zona,
+            estaCercaDe: {
+                tipo: req.body['estaCercaDe.tipo'],
+                distancia: req.body['estaCercaDe.distancia']
+            },
+            estado: req.body.estado,
+            calificacionGeneral: req.body.calificacionGeneral,
+            numeroComentarios: req.body.numeroComentarios,
+            impuestosCargos: req.body.impuestosCargos,
+            ubicacion: req.body.ubicacion,
+            urlImagen: req.body.urlImagen || null,
+            aceptaMascotas: req.body.aceptaMascotas === 'on',
+            horaCheckIn: req.body.horaCheckIn,
+            horaCheckOut: req.body.horaCheckOut,
+            latitud: req.body.latitud,
+            longitud: req.body.longitud,
+            direccion: {
+                calle: req.body.calle,
+                numero: req.body.numero,
+                codigoPostal: req.body.codigoPostal
+            },
+            contacto: {
+                telefono: req.body.telefono,
+                email: req.body.email
+            },
+            servicios: Array.isArray(req.body.servicios) ? req.body.servicios : [req.body.servicios]
+        };
+
+        const nuevoHotel = new Hotel(datosHotel);
+        await nuevoHotel.save();
+
+        console.log("Hotel guardado correctamente:", nuevoHotel);
+        res.redirect('/admin'); // Redirige a donde necesites
+    } catch (error) {
+        console.error("Error al guardar el nuevo hotel:", error);
+        res.status(500).send("Error al guardar el nuevo hotel.");
+    }
+});
+
 // Ruta POST para añadir una nueva habitación
 router.post('/nueva-habitacion', isAdmin, async (req, res) => {
     console.log("Entrando a POST /nueva-habitacion");
     try {
         // 1. Obtener los datos del formulario
-        const { hotel, nombre, tipo, descripcion, precio, imagenes, detalleHabitacion } = req.body;
+        const { hotel, nombre, capacidad, descripcion, precioNoche, imagenes } = req.body;  // Cambié 'precio' a 'precioNoche'
         console.log("Datos del formulario:", req.body);
 
         // 2. Crear una nueva habitación
         const nuevaHabitacion = new Habitacion({
             hotel: hotel,
             nombre: nombre,
-            tipo: tipo,
+            capacidad: capacidad,
             descripcion: descripcion,
-            precio: precio,
+            precioNoche: Number(precioNoche),  // Usa precioNoche y conviértelo a número
             imagenes: imagenes.split('\n').map(url => url.trim()).filter(url => url !== ''), // Convierte las imágenes en un array
-            detalleHabitacion: detalleHabitacion
+            detalleHabitacion: {  // Asigna cada propiedad individualmente
+                aireAcondicionado: req.body['detalleHabitacion.aireAcondicionado'] === 'true', // Convierte a booleano
+                camas: Number(req.body['detalleHabitacion.camas']), // Convierte a número
+                televisiones: Number(req.body['detalleHabitacion.televisiones']), // Convierte a número
+                banos: Number(req.body['detalleHabitacion.banos']), // Convierte a número
+                alberca: req.body['detalleHabitacion.alberca'] === 'true', // Convierte a booleano
+                jacuzzi: req.body['detalleHabitacion.jacuzzi'] === 'true', // Convierte a booleano
+                wifi: req.body['detalleHabitacion.wifi'] === 'true', // Convierte a booleano
+                balcon: req.body['detalleHabitacion.balcon'] === 'true', // Convierte a booleano
+                cocina: req.body['detalleHabitacion.cocina'] === 'true', // Convierte a booleano
+                minibar: req.body['detalleHabitacion.minibar'] === 'true'  // Convierte a booleano
+            }
         });
 
         // 3. Guardar la nueva habitación en la base de datos
