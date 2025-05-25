@@ -2,16 +2,49 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt-nodejs');
 
 const userSchema = new mongoose.Schema({
-  name: String, // <- importante para el perfil
-  email: String,
-  password: String,
-  rol: { type: String, default: 'Cliente' } // cliente, empleado o admin
+  name: {
+    type: String,
+    required: [true, 'El nombre es obligatorio'],
+    trim: true
+  },
+  email: {
+    type: String,
+    required: [true, 'El correo es obligatorio'],
+    unique: true,
+    lowercase: true,
+    trim: true,
+    match: [/.+@.+\..+/, 'El correo no es válido']
+  },
+  password: {
+    type: String,
+    required: [true, 'La contraseña es obligatoria']
+  },
+  rol: {
+    type: String,
+    enum: ['Cliente', 'Empleado', 'Admin'],
+    default: 'Cliente'
+  },
+  fechaRegistro: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-userSchema.methods.encriptarContraseña = function (password) {
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-};
+// Encripta automáticamente antes de guardar, si la contraseña fue modificada
+userSchema.pre('save', function (next) {
+  const user = this;
+  if (!user.isModified('password')) return next();
 
+  try {
+    const salt = bcrypt.genSaltSync(10);
+    user.password = bcrypt.hashSync(user.password, salt);
+    next();
+  } catch (err) {
+    return next(err);
+  }
+});
+
+// Método para comparar contraseñas al iniciar sesión
 userSchema.methods.compararContraseña = function (password) {
   return bcrypt.compareSync(password, this.password);
 };

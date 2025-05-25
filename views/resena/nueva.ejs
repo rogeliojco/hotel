@@ -1,0 +1,56 @@
+<% layout('layout/layout.ejs') %>
+<link rel="stylesheet" href="/css/perfil.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow border-0 p-4">
+        <div class="card-body">
+          <h3 class="text-primary mb-4 text-center"><i class="bi bi-star-fill me-2"></i>Escribir Reseña</h3>
+
+          <form action="/resenas/nueva" method="POST">
+            <!-- Hotel -->
+            <div class="mb-3">
+              <label for="hotel" class="form-label">Hotel</label>
+              <select name="hotel" id="hotel" class="form-select" required>
+                <% if (hoteles && hoteles.length > 0) { %>
+                  <% hoteles.forEach(h => { %>
+                    <option value="<%= h._id %>"><%= h.nombre %></option>
+                  <% }) %>
+                <% } else { %>
+                  <option disabled selected>No hay hoteles disponibles</option>
+                <% } %>
+              </select>
+            </div>
+
+            <!-- Calificación -->
+            <div class="mb-3">
+              <label for="calificacion" class="form-label">Calificación</label>
+              <select name="calificacion" id="calificacion" class="form-select" required>
+                <option value="5">★★★★★ Excelente</option>
+                <option value="4">★★★★☆ Muy bueno</option>
+                <option value="3">★★★☆☆ Bueno</option>
+                <option value="2">★★☆☆☆ Regular</option>
+                <option value="1">★☆☆☆☆ Malo</option>
+              </select>
+            </div>
+
+            <!-- Comentario -->
+            <div class="mb-3">
+              <label for="comentario" class="form-label">Comentario</label>
+              <textarea name="comentario" id="comentario" rows="4" class="form-control" placeholder="Escribe tu experiencia..." required></textarea>
+            </div>
+
+            <div class="text-end">
+              <a href="/perfil" class="btn btn-outline-secondary me-2">Cancelar</a>
+              <button type="submit" class="btn btn-primary">Enviar Reseña</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

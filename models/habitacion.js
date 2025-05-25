@@ -62,4 +62,8 @@ const habitacionSchema = new mongoose.Schema({
 // Índice único para evitar nombres repetidos en el mismo hotel
 habitacionSchema.index({ hotel: 1, nombre: 1 }, { unique: true });
 
+<<<<<<< HEAD
 module.exports = mongoose.model('Habitacion', habitacionSchema);
+=======
+module.exports = mongoose.model('Habitacion', habitacionSchema);
+>>>>>>> 229a026 (Subiendo módulos nuevos del perfil con diseño actualizado)

@@ -1,25 +1,29 @@
-/* Fondo personalizado solo para la vista de perfil */
+/* === Fondo exclusivo para la vista de perfil === */
 body.perfil-body {
   background: linear-gradient(to bottom right, #7a8ea4, #c7d2db);
   background-attachment: fixed;
   color: #212529;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* Botones de navegación activos/inactivos */
+/* === Botones de navegación para cambiar vistas (activos/inactivos) === */
 .btn-toggle-view {
-  border-radius: 20px;
-  font-weight: bold;
-  padding: 0.4rem 1rem;
-  transition: background-color 0.3s ease;
+  border-radius: 25px;
+  font-weight: 600;
+  padding: 0.45rem 1.2rem;
   border: 1px solid #ccc;
+  background-color: white;
+  color: #495057;
+  transition: all 0.3s ease;
 }
 
 .btn-toggle-view.active {
-  background-color: #0d6efd;
-  color: white;
-  border-color: #0d6efd;
+  background-color: #6b4edb;  /* tono morado consistente con tu diseño */
+  color: #fff;
+  border-color: #6b4edb;
 }
 
 .btn-toggle-view:not(.active):hover {
-  background-color: #dee2e6;
+  background-color: #e9ecef;
+  color: #212529;
 }

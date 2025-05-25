@@ -20,7 +20,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-
 router.get('/Hoteles', async (req, res) => {
   try {
     // Recoger todos los parámetros de búsqueda de req.query
@@ -443,10 +442,9 @@ router.post('/registro', passport.authenticate('registro-local', {
 }));
 
 router.post('/login', (req, res, next) => {
-  passport.authenticate('inicio-local', (err, user, info) => {
+  passport.authenticate('inicio-local', (err, user) => {
     if (err) return next(err);
     if (!user) return res.redirect('/login');
-
     req.logIn(user, err => {
       if (err) return next(err);
 
@@ -471,12 +469,7 @@ router.get('/salir', (req, res, next) => {
 });
 
 router.get('/reservar', isAuthenticated, (req, res) => {
-  res.render('reserva', {
-    ciudad: '',
-    fechas: '',
-    habitacion: '',
-    codigo: ''
-  });
+  res.render('reserva', { ciudad: '', fechas: '', habitacion: '', codigo: '' });
 });
 
 module.exports = router;
