@@ -7,7 +7,7 @@ const habitacionSchema = new mongoose.Schema({
   },
   capacidad: {
     type: String,
-    enum: ['1 persona', '2 personas','3 personas', '4 personas','5 personas', '6 personas'],
+    enum: ['1 persona', '2 personas', '3 personas', '4 personas', '5 personas', '6 personas'],
     required: true
   },
   descripcion: {
@@ -62,8 +62,4 @@ const habitacionSchema = new mongoose.Schema({
 // Índice único para evitar nombres repetidos en el mismo hotel
 habitacionSchema.index({ hotel: 1, nombre: 1 }, { unique: true });
 
-<<<<<<< HEAD
 module.exports = mongoose.model('Habitacion', habitacionSchema);
-=======
-module.exports = mongoose.model('Habitacion', habitacionSchema);
->>>>>>> 229a026 (Subiendo módulos nuevos del perfil con diseño actualizado)
