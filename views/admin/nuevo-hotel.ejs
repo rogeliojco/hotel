@@ -74,47 +74,47 @@
   .btn {
     margin-top: 1rem;
   }
+
   .acepta-mascotas {
-  padding: 15px;
-  border: 2px dashed #593196;
-  background-color: #f9f5ff;
-  border-radius: 8px;
-  margin-top: 1rem;
-  margin-bottom: 1.5rem;
-}
-.acepta-mascotas label {
-  font-weight: bold;
-  font-size: 1.1rem;
-  color: #593196;
-}
+    padding: 15px;
+    border: 2px dashed #593196;
+    background-color: #f9f5ff;
+    border-radius: 8px;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+  }
 
-.boton-crear-hotel {
-  width: 100%;
-  background-color: #593196;
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: bold;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 4px 10px rgba(89, 49, 150, 0.2);
-  margin-top: 1rem;
-}
+  .acepta-mascotas label {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #593196;
+  }
 
-.boton-crear-hotel:hover {
-  background-color: #45287c;
-  transform: translateY(-2px);
-}
+  .boton-crear-hotel {
+    width: 100%;
+    background-color: #593196;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(89, 49, 150, 0.2);
+    margin-top: 1rem;
+  }
 
-.boton-crear-hotel:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
+  .boton-crear-hotel:hover {
+    background-color: #45287c;
+    transform: translateY(-2px);
+  }
 
+  .boton-crear-hotel:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
 </style>
-
 
 <% if (typeof mensajeExito !== 'undefined') { %>
   <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
@@ -129,97 +129,165 @@
     </div>
     <div class="card-body">
 
-<form action="/admin/nuevo-hotel" method="POST">
-  <div class="form-group">
-    <label>Nombre:</label>
-    <input type="text" name="nombre" required>
-  </div>
+      <form action="/admin/nuevo-hotel" method="POST">
+        <div class="form-group">
+          <label>Nombre:</label>
+          <input type="text" name="nombre" required>
+        </div>
 
-  <div class="form-row">
-    <div class="form-col">
-      <label>Descripción Corta:</label>
-      <input type="text" name="descripcionCorta">
-    </div>
-    <div class="form-col">
-      <label>Zona:</label>
-      <input type="text" name="zona" required>
-    </div>
-  </div>
+        <div class="form-row">
+          <div class="form-col">
+            <label>Descripción Corta:</label>
+            <input type="text" name="descripcionCorta">
+          </div>
+          <div class="form-col">
+            <label>Zona:</label>
+            <input type="text" name="zona" required>
+          </div>
+        </div>
 
-  <div class="form-row">
-    <div class="form-col">
-      <label>¿Está cerca de?</label>
-      <select name="estaCercaDe.tipo" required>
-        <option value="playa">Playa</option>
-        <option value="centro">Centro</option>
-        <option value="malecon">Malecón</option>
-        <option value="otro">Otro</option>
-      </select>
-    </div>
-    <div class="form-col">
-      <label>Distancia:</label>
-      <input type="text" name="estaCercaDe.distancia" placeholder="Distancia">
-    </div>
-  </div>
+        <div class="form-row">
+          <div class="form-col">
+            <label>¿Está cerca de?</label>
+            <select name="estaCercaDe.tipo" required>
+              <option value="playa">Playa</option>
+              <option value="centro">Centro</option>
+              <option value="malecon">Malecón</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-col">
+            <label>Distancia:</label>
+            <input type="text" name="estaCercaDe.distancia" placeholder="Distancia">
+          </div>
+        </div>
 
-  <div class="form-row">
-    <div class="form-col">
-      <label>Estado:</label>
-      <input type="text" name="estado" required>
-    </div>
-    <div class="form-col">
-      <label>Calificación general:</label>
-      <input type="number" name="calificacionGeneral" step="0.1">
-    </div>
-  </div>
+        <div class="form-row">
+          <div class="form-col">
+            <label>Estado:</label>
+            <input type="text" name="estado" required>
+          </div>
+          <div class="form-col">
+            <label>Calificación general:</label>
+            <input type="number" name="calificacionGeneral" step="0.1">
+          </div>
+        </div>
 
-  <div class="form-row">
-    <div class="form-col">
-      <label>Número de comentarios:</label>
-      <input type="number" name="numeroComentarios">
-    </div>
-    <div class="form-col">
-      <label>Impuestos y cargos:</label>
-      <input type="number" name="impuestosCargos">
-    </div>
-  </div>
+        <div class="form-row">
+          <div class="form-col">
+            <label>Número de comentarios:</label>
+            <input type="number" name="numeroComentarios">
+          </div>
+          <div class="form-col">
+            <label>Impuestos y cargos:</label>
+            <input type="number" name="impuestosCargos">
+          </div>
+        </div>
 
-<div class="form-group acepta-mascotas">
-  <label>
-    <input type="checkbox" name="aceptaMascotas">
-    Acepta mascotas
-  </label>
-</div>
+         <div class="form-group">
+          <label>Ubicacion:</label>
+          <input type="number" name="ubicacion">
+        </div>
+
+         <div class="form-group">
+          <label>urlImagen:</label>
+          <input type="text" name="urlImagen">
+        </div>
 
 
-  <div class="form-row">
-    <div class="form-col">
-      <label>Hora check-in:</label>
-      <input type="time" name="horaCheckIn">
-    </div>
-    <div class="form-col">
-      <label>Hora check-out:</label>
-      <input type="time" name="horaCheckOut">
-    </div>
-  </div>
+        <div class="form-group acepta-mascotas">
+          <label>
+            <input type="checkbox" name="aceptaMascotas">
+            Acepta mascotas
+          </label>
+        </div>
 
-  <!-- Agrega el resto de los campos siguiendo esta misma estructura -->
 
-  <fieldset>
-    <legend>Servicios</legend>
-    <div class="checkbox-inline"><input type="checkbox" name="servicios" value="piscina"><label>Piscina</label></div>
-    <div class="checkbox-inline"><input type="checkbox" name="servicios" value="wifi"><label>WiFi</label></div>
-    <div class="checkbox-inline"><input type="checkbox" name="servicios" value="desayuno"><label>Desayuno</label></div>
-    <div class="checkbox-inline"><input type="checkbox" name="servicios" value="estacionamiento"><label>Estacionamiento</label></div>
-    <div class="checkbox-inline"><input type="checkbox" name="servicios" value="spa"><label>Spa</label></div>
-    <div class="checkbox-inline"><input type="checkbox" name="servicios" value="gimnasio"><label>Gimnasio</label></div>
-    <div class="checkbox-inline"><input type="checkbox" name="servicios" value="otros"><label>Otros</label></div>
-  </fieldset>
+        <div class="form-row">
+          <div class="form-col">
+            <label>Hora check-in:</label>
+            <input type="time" name="horaCheckIn">
+          </div>
+          <div class="form-col">
+            <label>Hora check-out:</label>
+            <input type="time" name="horaCheckOut">
+          </div>
+        </div>
 
-<button type="submit" class="boton-crear-hotel">
-  🏨 Crear Hotel
-</button>
-</form>
+         <div class="form-row">
+          <div class="form-col">
+            <label>latitud:</label>
+            <input type="number" name="latitud">
+          </div>
+          <div class="form-col">
+            <label>longitud:</label>
+            <input type="number" name="longitud">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label>calle:</label>
+            <input type="text" name="calle">
+          </div>
+          <div class="form-col">
+            <label>numero:</label>
+            <input type="text" name="numero">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label>codigoPostal:</label>
+            <input type="text" name="codigoPostal">
+          </div>
+          <div class="form-col">
+            <label>telefono:</label>
+            <input type="text" name="telefono">
+          </div>
+        </div>
+
+         <div class="form-group">
+          <label>email:</label>
+          <input type="email" name="email">
+        </div>
+
+        <fieldset>
+          <legend>Servicios</legend>
+          <div class="checkbox-inline">
+            <input type="checkbox" name="servicios" value="piscina">
+            <label>Piscina</label>
+          </div>
+          <div class="checkbox-inline">
+            <input type="checkbox" name="servicios" value="wifi">
+            <label>WiFi</label>
+          </div>
+          <div class="checkbox-inline">
+            <input type="checkbox" name="servicios" value="desayuno">
+            <label>Desayuno</label>
+          </div>
+          <div class="checkbox-inline">
+            <input type="checkbox" name="servicios" value="estacionamiento">
+            <label>Estacionamiento</label>
+          </div>
+          <div class="checkbox-inline">
+            <input type="checkbox" name="servicios" value="spa">
+            <label>Spa</label>
+          </div>
+          <div class="checkbox-inline">
+            <input type="checkbox" name="servicios" value="gimnasio">
+            <label>Gimnasio</label>
+          </div>
+          <div class="checkbox-inline">
+            <input type="checkbox" name="servicios" value="otros">
+            <label>Otros</label>
+          </div>
+        </fieldset>
+
+        <button type="submit" class="boton-crear-hotel">
+          🏨 Crear Hotel
+        </button>
+      </form>
 
     </div>
   </div>
