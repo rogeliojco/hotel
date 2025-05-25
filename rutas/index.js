@@ -4,7 +4,7 @@ const router = express.Router();
 const Hotel = require('../models/soloHotel');
 const Habitacion = require('../models/habitacion');
 const Reserva = require('../models/reserva');
-const perfilController = require('../controllers/perfil_controller');
+const perfilController = require('../controllers/perfilController');
 const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 const moment = require('moment');
 
