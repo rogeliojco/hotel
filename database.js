@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
-const { mongodb } = require('./keys');
+require('dotenv').config();
 
-mongoose.connect(mongodb.URI, {})
-.then(db => console.log('base de datos conectada con exito'))
-.catch(err => console.log(err));
+const dbURI = process.env.MONGODB_URI;
+
+mongoose.connect(dbURI, {})
+    .then(() => console.log('Base de datos conectada con éxito'))
+    .catch(err => console.error('Error al conectar a la base de datos:', err));
