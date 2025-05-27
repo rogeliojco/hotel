@@ -1,67 +1,68 @@
 <% layout('layout/layout.ejs') %>
 
-<div class="container mt-5">
-  <h2 class="mb-4">Completar su Reserva</h2>
+  <div class="container mt-5">
+    <h2 class="mb-4">Completar su Reserva</h2>
 
-  <form action="/confirmar-reserva" method="POST">
-    <h4 class="mb-3">Detalles de la Reserva</h4>
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <label for="ciudad" class="form-label">Ciudad/Hotel</label>
-        <input type="text" class="form-control" id="ciudad" name="ciudad" value="<%= ciudad || '' %>" required>
+    <form action="/confirmar-reserva" method="POST">
+      <h4 class="mb-3">Detalles de la Reserva</h4>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label for="ciudad" class="form-label">Ciudad/Hotel</label>
+          <input type="text" class="form-control" id="ciudad" name="ciudad" value="<%= ciudad %>" readonly required>
+        </div>
+        <div class="col-md-6">
+          <label for="fechas" class="form-label">Fechas</label>
+          <input type="text" class="form-control" id="fechas" name="fechas" value="<%= fechas %>" readonly required>
+        </div>
+        <div class="col-md-6">
+          <label for="habitacion" class="form-label">Habitación</label>
+          <input type="text" class="form-control" id="habitacion" name="habitacion" value="<%= habitacion %>" readonly required>
+        </div>
+        <div class="col-md-6">
+          <label for="codigo" class="form-label">Código Promocional</label>
+          <input type="text" class="form-control" id="codigo" name="codigo" value="<%= codigo %>">
+        </div>
       </div>
-      <div class="col-md-6">
-        <label for="fechas" class="form-label">Fechas</label>
-        <input type="text" class="form-control" id="fechas" name="fechas" value="<%= fechas || '' %>" required>
-      </div>
-      <div class="col-md-6">
-        <label for="habitacion" class="form-label">Habitación</label>
-        <input type="text" class="form-control" id="habitacion" name="habitacion" value="<%= habitacion || '' %>" required>
-      </div>
-      <div class="col-md-6">
-        <label for="codigo" class="form-label">Código Promocional</label>
-        <input type="text" class="form-control" id="codigo" name="codigo" value="<%= codigo || '' %>">
-      </div>
-    </div>
 
-    <h4 class="mb-3">Información Personal</h4>
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <label for="nombre" class="form-label">Nombre Completo</label>
-        <input type="text" class="form-control" id="nombre" name="nombre" value="<%= user?.name || '' %>" required>
+      <h4 class="mb-3">Información Personal</h4>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label for="nombre" class="form-label">Nombre Completo</label>
+          <input type="text" class="form-control" id="nombre" name="nombre" required>
+        </div>
+        <div class="col-md-6">
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="col-md-6">
+          <label for="telefono" class="form-label">Teléfono</label>
+          <input type="tel" class="form-control" id="telefono" name="telefono" required>
+        </div>
       </div>
-      <div class="col-md-6">
-        <label for="email" class="form-label">Correo Electrónico</label>
-        <input type="email" class="form-control" id="email" name="email" value="<%= user?.email || '' %>" required>
-      </div>
-      <div class="col-md-6">
-        <label for="telefono" class="form-label">Teléfono</label>
-        <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="Ej: 6671234567" required>
-      </div>
-    </div>
 
-    <h4 class="mb-3">Información de Pago</h4>
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <label for="tarjeta" class="form-label">Número de Tarjeta</label>
-        <input type="text" class="form-control" id="tarjeta" name="tarjeta" required>
+      <h4 class="mb-3">Información de Pago</h4>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label for="tarjeta" class="form-label">Número de Tarjeta</label>
+          <input type="text" class="form-control" id="tarjeta" name="tarjeta" required>
+        </div>
+        <div class="col-md-3">
+          <label for="vencimiento" class="form-label">Fecha de Vencimiento</label>
+          <input type="text" class="form-control" id="vencimiento" name="vencimiento" placeholder="MM/AA" required>
+        </div>
+        <div class="col-md-3">
+          <label for="cvv" class="form-label">CVV</label>
+          <input type="text" class="form-control" id="cvv" name="cvv" required>
+        </div>
+        <div class="col-md-6">
+          <label for="titular" class="form-label">Nombre del Titular</label>
+          <input type="text" class="form-control" id="titular" name="titular" required>
+        </div>
       </div>
-      <div class="col-md-3">
-        <label for="vencimiento" class="form-label">Fecha de Vencimiento</label>
-        <input type="text" class="form-control" id="vencimiento" name="vencimiento" placeholder="MM/AA" required>
-      </div>
-      <div class="col-md-3">
-        <label for="cvv" class="form-label">CVV</label>
-        <input type="text" class="form-control" id="cvv" name="cvv" required>
-      </div>
-      <div class="col-md-6">
-        <label for="titular" class="form-label">Nombre del Titular</label>
-        <input type="text" class="form-control" id="titular" name="titular" required>
-      </div>
-    </div>
 
-    <button type="submit" class="btn btn-danger btn-lg">Confirmar Reserva</button>
-  </form>
-</div>
+      <button type="submit" class="btn btn-danger btn-lg">Confirmar Reserva</button>
+    </form>
+  </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
