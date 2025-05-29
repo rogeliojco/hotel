@@ -2,18 +2,19 @@ const User = require('../models/user');
 const Reserva = require('../models/reserva');
 const Recomendacion = require('../models/recomendacion');
 const Resena = require('../models/resena');
+const Notificacion = require('../models/notificacion'); // Modelo de notificaciones
 
 // Vista principal del perfil
 exports.verPerfil = async (req, res) => {
   try {
     const user = req.user;
 
-    // Obtener reservas por email
+    // Obtener reservas
     const reservas = await Reserva.find({ email: user.email });
     const reservasActivas = reservas.filter(r => r.estado !== 'cancelada');
     const reservasCanceladas = reservas.filter(r => r.estado === 'cancelada');
 
-    // Recomendaciones reales o simuladas
+    // Obtener recomendaciones
     let recomendaciones = await Recomendacion.find().limit(3);
     if (!recomendaciones.length) {
       recomendaciones = [
@@ -23,7 +24,7 @@ exports.verPerfil = async (req, res) => {
       ];
     }
 
-    // Reseñas reales o simuladas
+    // Obtener reseñas
     let reseñas = await Resena.find({ usuario: user._id }).populate('hotel');
     if (!reseñas.length) {
       reseñas = [
@@ -40,12 +41,18 @@ exports.verPerfil = async (req, res) => {
       ];
     }
 
+    // Obtener notificaciones
+    const notificaciones = await Notificacion.find({ usuario: user._id })
+      .sort({ fecha: -1 })
+      .limit(10);
+
     res.render('perfil', {
       user,
       reservasActivas,
       reservasCanceladas,
       recomendaciones,
       reseñas,
+      notificaciones,
       success: req.query.success,
       error: req.query.error
     });

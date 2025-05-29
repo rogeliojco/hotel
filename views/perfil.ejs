@@ -10,7 +10,7 @@
   <h1 class="fw-semibold mb-4">Bienvenido, <%= user.name %></h1>
   <div class="bg-white text-dark p-4 rounded-4 shadow d-flex flex-column flex-md-row align-items-center gap-3 w-100" style="max-width: 900px;">
     <div class="d-flex align-items-center gap-3 flex-grow-1">
-      <img src="/images/avatar-generico.png" alt="Avatar" class="perfil-avatar-img">
+      <img src="<%= user.avatarUrl || '/images/avatar-generico.png' %>" class="perfil-avatar-img">
       <div>
         <h5 class="mb-1 fw-bold"><%= user.name %> <span class="badge-miembro">Miembro</span></h5>
         <p class="mb-0 text-muted small"><%= user.email %></p>
@@ -18,31 +18,31 @@
       </div>
     </div>
     <div class="d-flex flex-column flex-md-row gap-2">
-    <a href="/hoteles" class="btn btn-primary">Reservar ahora</a>
+      <a href="/hoteles" class="btn btn-primary">Reservar ahora</a>
       <button id="btnActualizar" class="btn btn-outline-dark">Editar perfil</button>
     </div>
   </div>
 </section>
 
-<!-- Contenido principal -->
 <section class="container perfil-container mt-n5">
   <!-- Contadores -->
   <div class="row text-center mb-5">
+    <% const formatNumber = (n) => n.toString().padStart(2, '0'); %>
     <div class="col-6 col-md-3">
       <div class="card p-3 border-0 shadow-sm">
-        <h3 class="text-primary mb-1"><%= reservasActivas.length %></h3>
+        <h3 class="text-primary mb-1"><%= formatNumber(reservasActivas.length) %></h3>
         <p class="mb-0 text-muted small">Reservaciones activas</p>
       </div>
     </div>
     <div class="col-6 col-md-3">
       <div class="card p-3 border-0 shadow-sm">
-        <h3 class="text-primary mb-1"><%= reseñas.length %></h3>
+        <h3 class="text-primary mb-1"><%= formatNumber(reseñas.length) %></h3>
         <p class="mb-0 text-muted small">Reseñas</p>
       </div>
     </div>
     <div class="col-6 col-md-3">
       <div class="card p-3 border-0 shadow-sm">
-        <h3 class="text-primary mb-1"><%= reservasCanceladas.length %></h3>
+        <h3 class="text-primary mb-1"><%= formatNumber(reservasCanceladas.length) %></h3>
         <p class="mb-0 text-muted small">Canceladas</p>
       </div>
     </div>
@@ -54,36 +54,17 @@
     </div>
   </div>
 
-  <!-- Módulo: Tu nivel -->
-  <div class="card-section nivel-usuario mb-4 text-white position-relative overflow-hidden">
-    <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient rounded-3" style="z-index: 0; background: linear-gradient(135deg, #6b4edb, #947ee8); opacity: 0.9;"></div>
-    <div class="position-relative z-1 d-flex flex-column flex-md-row align-items-center gap-4">
-      <i class="bi bi-gem fs-1 text-warning bg-white bg-opacity-25 p-3 rounded-circle shadow-sm"></i>
-      <div class="flex-grow-1 text-start">
-        <h5 class="mb-1">Tu nivel actual</h5>
-        <p class="mb-2">¡Felicidades <%= user.name %>! Eres <strong>Miembro Platino</strong></p>
-        <div class="progress" role="progressbar" aria-label="Progreso de nivel" style="height: 12px;">
-          <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 70%"></div>
-        </div>
-        <small class="text-white-50">70% para alcanzar nivel Diamante</small>
-      </div>
-      <button class="btn btn-light text-dark fw-semibold">Ver beneficios</button>
-    </div>
+  <!-- Avatar -->
+  <div id="moduloAvatar" class="card-section mb-4" style="display: none;">
+    <h5 class="section-title">Cambiar avatar</h5>
+    <form class="avatar-change-form" method="POST" action="/cambiar-avatar" enctype="multipart/form-data">
+      <label for="avatarFile">Selecciona una imagen</label>
+      <input type="file" class="form-control mt-2" id="avatarFile" name="avatar">
+      <button type="submit" class="btn btn-outline-primary mt-3">Actualizar Avatar</button>
+    </form>
   </div>
 
-
-  <!-- Módulo: Cambiar avatar -->
-<div id="moduloAvatar" class="card-section mb-4" style="display: none;">
-  <h5 class="section-title">Cambiar avatar</h5>
-  <form class="avatar-change-form" method="POST" action="/cambiar-avatar" enctype="multipart/form-data">
-    <label for="avatarFile">Selecciona una imagen</label>
-    <input type="file" class="form-control mt-2" id="avatarFile" name="avatar">
-    <button type="submit" class="btn btn-outline-primary mt-3">Actualizar Avatar</button>
-  </form>
-</div>
-
-
-  <!-- Formulario de actualización -->
+  <!-- Edición perfil -->
   <div id="formActualizar" class="card-section mb-4" style="display: none;">
     <h5 class="section-title">Actualizar datos</h5>
     <form action="/actualizar-perfil" method="POST">
@@ -99,7 +80,7 @@
     </form>
   </div>
 
-  <!-- Reseñas y Reservas -->
+  <!-- Reservas y Reseñas -->
   <div class="row">
     <div class="col-md-7">
       <!-- Reservas -->
@@ -174,77 +155,62 @@
       </div>
     </div>
   </div>
-<!-- Módulo combinado: Actividad reciente y notificaciones -->
-<div class="card-section mb-4">
-  <h5 class="section-title">Actividad reciente y notificaciones</h5>
 
-  <div class="d-flex flex-column gap-3">
-
-    <!-- Notificación de nueva reserva -->
-    <div class="d-flex align-items-start gap-3 p-3 bg-light border rounded shadow-sm">
-      <i class="bi bi-calendar-check text-success fs-4"></i>
-      <div>
-        <p class="mb-1"><strong>Tu reserva en Mazatlán ha sido confirmada</strong></p>
-        <small class="text-muted">Hace 2 horas</small>
+  <!-- Notificaciones -->
+  <div class="card-section mb-4">
+    <h5 class="section-title">Actividad reciente y notificaciones</h5>
+    <% if (notificaciones && notificaciones.length > 0) { %>
+      <div class="d-flex flex-column gap-3">
+        <% notificaciones.forEach(n => { %>
+          <div class="d-flex align-items-start justify-content-between gap-3 p-3 rounded shadow-sm notificacion 
+              <%= n.tipo === 'confirmacion' ? 'bg-confirmacion' : n.tipo === 'reseña' ? 'bg-reseña' : 'bg-cancelacion' %>">
+            <div class="d-flex gap-3 align-items-start">
+              <i class="bi 
+                <%= n.tipo === 'confirmacion' ? 'bi-check-circle-fill text-success' : 
+                    n.tipo === 'reseña' ? 'bi-chat-left-dots-fill text-primary' : 
+                    'bi-x-circle-fill text-danger' %> fs-4"></i>
+              <div>
+                <p class="mb-1 fw-semibold"><%= n.mensaje %></p>
+                <small class="text-muted"><%= n.fecha.toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) %></small>
+              </div>
+            </div>
+            <div class="d-flex gap-1">
+              <form method="POST" action="/notificaciones/<%= n._id %>/leida">
+                <button class="btn btn-sm btn-outline-success" title="Marcar como leída">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </form>
+              <form method="POST" action="/notificaciones/<%= n._id %>/eliminar">
+                <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
       </div>
-    </div>
-
-    <!-- Notificación de reseña -->
-    <div class="d-flex align-items-start gap-3 p-3 bg-light border rounded shadow-sm">
-      <i class="bi bi-chat-left-dots text-primary fs-4"></i>
-      <div>
-        <p class="mb-1"><strong>Gracias por dejar tu reseña en Hotel Azul</strong></p>
-        <small class="text-muted">Ayer</small>
-      </div>
-    </div>
-
-    <!-- Notificación de cancelación -->
-    <div class="d-flex align-items-start gap-3 p-3 bg-light border rounded shadow-sm">
-      <i class="bi bi-x-circle text-danger fs-4"></i>
-      <div>
-        <p class="mb-1"><strong>Cancelaste tu estancia en Casa Bonita</strong></p>
-        <small class="text-muted">Hace 3 días</small>
-      </div>
-    </div>
-
+    <% } else { %>
+      <p class="text-muted">No tienes notificaciones recientes.</p>
+    <% } %>
   </div>
-</div>
 
-  <!-- Carrusel de Recomendaciones -->
+  <!-- Carrusel Recomendaciones -->
   <div class="card-section mt-4">
     <h5 class="section-title">Recomendaciones</h5>
     <div id="carouselHoteles" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-inner">
-        <div class="carousel-item active">
-          <div class="card d-flex flex-column flex-md-row align-items-center gap-3 p-3 shadow-sm">
-            <img src="/images/hotel1.jpg" class="img-thumbnail rounded" style="width: 120px; height: 90px; object-fit: cover;">
-            <div class="flex-grow-1">
-              <h6 class="fw-bold mb-1">Hotel Paraíso del Sol</h6>
-              <p class="mb-1 text-muted small">Frente al mar con piscina y desayuno incluido.</p>
-              <button class="btn btn-sm btn-primary">Ver más</button>
+        <% recomendaciones.forEach((rec, index) => { %>
+          <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+            <div class="card d-flex flex-column flex-md-row align-items-center gap-3 p-3 shadow-sm">
+              <img src="/images/hotel<%= index + 1 %>.jpg" class="img-thumbnail rounded" style="width: 120px; height: 90px; object-fit: cover;">
+              <div class="flex-grow-1">
+                <h6 class="fw-bold mb-1"><%= rec.nombre %></h6>
+                <p class="mb-1 text-muted small"><%= rec.descripcion %></p>
+                <button class="btn btn-sm btn-primary">Ver más</button>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="carousel-item">
-          <div class="card d-flex flex-column flex-md-row align-items-center gap-3 p-3 shadow-sm">
-            <img src="/images/hotel2.jpg" class="img-thumbnail rounded" style="width: 120px; height: 90px; object-fit: cover;">
-            <div class="flex-grow-1">
-              <h6 class="fw-bold mb-1">Resort Luna Azul</h6>
-              <p class="mb-1 text-muted small">Spa, jacuzzi y cenas románticas frente al lago.</p>
-              <button class="btn btn-sm btn-primary">Ver más</button>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <div class="card d-flex flex-column flex-md-row align-items-center gap-3 p-3 shadow-sm">
-            <img src="/images/hotel3.jpg" class="img-thumbnail rounded" style="width: 120px; height: 90px; object-fit: cover;">
-            <div class="flex-grow-1">
-              <h6 class="fw-bold mb-1">Casa Bonita</h6>
-              <p class="mb-1 text-muted small">Hotel boutique con vista al mar y playa privada.</p>
-              <button class="btn btn-sm btn-primary">Ver más</button>
-            </div>
-          </div>
-        </div>
+        <% }) %>
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#carouselHoteles" data-bs-slide="prev">
         <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
@@ -262,10 +228,8 @@
   document.getElementById('btnActualizar').addEventListener('click', function () {
     const form = document.getElementById('formActualizar');
     const avatar = document.getElementById('moduloAvatar');
-
     const visible = form.style.display === 'block';
     form.style.display = visible ? 'none' : 'block';
     avatar.style.display = visible ? 'none' : 'block';
   });
 </script>
-

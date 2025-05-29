@@ -1,3 +1,4 @@
+/* === Fuente y fondo general === */
 body {
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(to bottom, #9c8fe4 0%, #f4f2ff 100%);
@@ -6,7 +7,7 @@ body {
   color: #2e2e2e;
 }
 
-/* Hero */
+/* === Hero === */
 .perfil-hero {
   min-height: 60vh;
   padding: 80px 10px;
@@ -24,7 +25,7 @@ body {
   margin-bottom: 0.5em;
 }
 
-/* Contenedor principal */
+/* === Contenedor principal === */
 .perfil-container {
   background: linear-gradient(to bottom right, #f0f0f0, #eaeaea);
   border-radius: 25px;
@@ -33,7 +34,7 @@ body {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
-/* Avatar */
+/* === Avatar === */
 .perfil-avatar-img {
   width: 90px;
   height: 90px;
@@ -42,7 +43,7 @@ body {
   border: 4px solid #6b4edb;
 }
 
-/* Badge */
+/* === Badges === */
 .badge-miembro {
   background-color: #fcd34d;
   color: #6b4e14;
@@ -52,7 +53,7 @@ body {
   font-weight: 600;
 }
 
-/* Botones */
+/* === Botones === */
 .btn {
   border-radius: 25px;
   font-weight: 600;
@@ -90,7 +91,7 @@ body {
   color: white;
 }
 
-/* Contadores */
+/* === Contadores === */
 .row .col-md-3 .card {
   background: #f9f8ff;
   border: none;
@@ -112,6 +113,8 @@ body {
   color: #777;
   margin-bottom: 0;
 }
+
+/* === Nivel de usuario === */
 .nivel-usuario {
   border-radius: 20px;
   padding: 25px;
@@ -120,7 +123,7 @@ body {
   color: white;
 }
 
-/* Secciones visuales */
+/* === Secciones de tarjetas === */
 .card-section {
   background: #ffffff;
   border-radius: 20px;
@@ -141,7 +144,7 @@ body {
   margin-bottom: 20px;
 }
 
-/* Reservaciones */
+/* === Reservaciones === */
 .hotel-reservation-card {
   display: flex;
   align-items: center;
@@ -165,7 +168,7 @@ body {
   border: none;
 }
 
-/* Reseñas */
+/* === Reseñas === */
 .review-item {
   background: #f9f8ff;
   border-radius: 12px;
@@ -186,7 +189,7 @@ body {
   font-size: 1.4em;
 }
 
-/* Calendario */
+/* === Calendario === */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -213,7 +216,7 @@ body {
   box-shadow: 0 0 0 2px white, 0 0 6px rgba(107, 78, 219, 0.6);
 }
 
-/* Facturas */
+/* === Facturas === */
 .invoice-item {
   background: #f9f8ff;
   padding: 12px 15px;
@@ -235,44 +238,14 @@ body {
   font-weight: bold;
 }
 
-/* Carrusel */
+/* === Carrusel === */
 .carousel-item img {
   border-radius: 12px;
   height: 200px;
   object-fit: cover;
 }
 
-/* Nuevos módulos */
-
-.recent-activity-item {
-  background: #f5f3ff;
-  padding: 10px 15px;
-  border-left: 4px solid #6b4edb;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  font-size: 0.9em;
-}
-
-.membership-level {
-  font-size: 1rem;
-  color: #6b4edb;
-  background: #ede9fe;
-  padding: 10px 20px;
-  border-radius: 12px;
-  display: inline-block;
-  font-weight: bold;
-}
-
-.notification-item {
-  background: #fff8e1;
-  padding: 12px 15px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  border-left: 4px solid #fbc02d;
-  font-size: 0.9em;
-}
-
-/* Formulario cambiar avatar */
+/* === Formulario cambiar avatar === */
 .avatar-change-form {
   background: #f9f8ff;
   padding: 20px;
@@ -288,7 +261,39 @@ body {
   margin-top: 10px;
 }
 
-/* Responsive */
+/* === Notificaciones === */
+.notificacion {
+  animation: fadeIn 0.5s ease-in-out;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  border-radius: 8px;
+}
+
+.notificacion:hover {
+  transform: scale(1.01);
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.notificacion i {
+  min-width: 32px;
+}
+
+.bg-confirmacion {
+  background-color: #e6f4ea;
+  border-left: 4px solid #34a853;
+}
+
+.bg-reseña {
+  background-color: #e8f0fe;
+  border-left: 4px solid #4285f4;
+}
+
+.bg-cancelacion {
+  background-color: #fdecea;
+  border-left: 4px solid #ea4335;
+}
+
+/* === Responsive === */
 @media screen and (max-width: 768px) {
   .perfil-container {
     padding: 20px;

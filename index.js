@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const passport = require('passport');
 const session = require('express-session');
 const flash = require('connect-flash');
+const notificacionesRoutes = require('./rutas/notificaciones'); // ✅ CORRECTO
 
 const app = express();
 
@@ -51,9 +52,12 @@ app.use('/', require('./rutas')); // rutas generales: inicio, hoteles, login, et
 app.use('/', require('./rutas/reservas'));
 app.use('/', require('./rutas/perfil'));
 app.use('/admin', require('./rutas/admin'));
+app.use('/', notificacionesRoutes); // ✅ solo esta línea
+app.use('/', require('./rutas/notificaciones'));
+
 
 try {
-  app.use('/resenas', require('./rutas/resenas')); // corregido: debe ser rutas, no routes
+  app.use('/resenas', require('./rutas/resenas'));
 } catch (err) {
   console.error("⚠️  La ruta './rutas/resenas' no fue encontrada. ¿Ya la creaste?");
 }
@@ -62,6 +66,7 @@ try {
 app.listen(app.get('port'), () => {
   console.log(`🚀 Servidor iniciado en: http://localhost:${app.get('port')}`);
 });
+
 
 
 

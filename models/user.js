@@ -27,7 +27,11 @@ const userSchema = new mongoose.Schema({
   fechaRegistro: {
     type: Date,
     default: Date.now
-  }
+  },
+  avatarUrl: {
+  type: String,
+  default: '/images/avatar-generico.png'
+}
 });
 
 // Encripta automáticamente antes de guardar, si la contraseña fue modificada
