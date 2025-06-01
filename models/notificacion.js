@@ -1,31 +1,17 @@
 const mongoose = require('mongoose');
-const { Schema } = mongoose;
 
-const notificacionSchema = new Schema({
-  usuario: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  mensaje: {
-    type: String,
-    required: true
-  },
+const notificacionSchema = new mongoose.Schema({
+  usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  mensaje: { type: String, required: true },
   tipo: {
     type: String,
-    enum: ['confirmacion', 'reseña', 'cancelacion'],
-    default: 'confirmacion'
+    enum: ['reserva', 'cancelacion', 'resena', 'avatar', 'password', 'perfil'],
+    required: true
   },
-  leida: {
-    type: Boolean,
-    default: false
-  },
-  fecha: {
-    type: Date,
-    default: Date.now
-  }
+  fecha: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('Notificacion', notificacionSchema);
+
 
 

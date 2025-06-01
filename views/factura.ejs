@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Factura</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      color: #333;
+    }
+    h1 {
+      color: #6b4edb;
+    }
+    .resumen, .habitacion {
+      margin-bottom: 20px;
+    }
+    .resumen p, .habitacion p {
+      margin: 4px 0;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #888;
+    }
+    .total {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #4b3a80;
+    }
+  </style>
+</head>
+<body>
+  <h1>Factura de Reserva</h1>
+
+  <div class="resumen">
+    <p><strong>Cliente:</strong> <%= reserva.nombre %></p>
+    <p><strong>Email:</strong> <%= reserva.email %></p>
+    <p><strong>Teléfono:</strong> <%= reserva.telefono %></p>
+    <p><strong>Fecha de reserva:</strong> <%= new Date(reserva.fechaReserva).toLocaleDateString('es-MX') %></p>
+    <p><strong>Fechas de estancia:</strong>
+      <%= new Date(reserva.fechaInicio).toLocaleDateString('es-MX') %> - 
+      <%= new Date(reserva.fechaFin).toLocaleDateString('es-MX') %>
+    </p>
+  </div>
+
+  <div class="habitacion">
+    <h3>Detalles de habitación</h3>
+    <% reserva.habitaciones.forEach(h => { %>
+      <p><strong>Habitación:</strong> <%= h.nombre %></p>
+      <p><strong>Descripción:</strong> <%= h.descripcion %></p>
+      <p><strong>Precio por noche:</strong> $<%= h.precio %></p>
+      <hr>
+    <% }) %>
+  </div>
+
+  <p class="total">Total pagado: $<%= reserva.precioTotal %> MXN</p>
+
+  <div class="footer">
+    <p>Gracias por reservar con nosotros.</p>
+    <p>Hotel MX · www.hotelmx.com</p>
+  </div>
+</body>
+</html>

@@ -1,42 +1,40 @@
 const express = require('express');
 const router = express.Router();
 const Notificacion = require('../models/notificacion');
+const { isAuthenticated } = require('../middlewares/auth');
 
-// Ruta temporal para insertar notificaciones de prueba
-router.get('/crear-notificacion-prueba', async (req, res) => {
+// Mostrar todas las notificaciones del usuario autenticado
+router.get('/notificaciones', isAuthenticated, async (req, res) => {
   try {
-    const usuarioId = '6832ee5c7da8812acdb7db36'; // Tu ID de usuario real
-
-    const notificaciones = [
-      {
-        mensaje: 'Tu reserva en Mazatlán ha sido confirmada.',
-        tipo: 'confirmacion'
-      },
-      {
-        mensaje: 'Gracias por dejar tu reseña en Hotel Azul.',
-        tipo: 'reseña'
-      },
-      {
-        mensaje: 'Cancelaste tu estancia en Casa Bonita.',
-        tipo: 'cancelacion'
-      }
-    ];
-
-    for (const noti of notificaciones) {
-      await Notificacion.create({
-        usuario: usuarioId,
-        mensaje: noti.mensaje,
-        tipo: noti.tipo
-      });
-    }
-
-    res.send('✅ Notificaciones de prueba insertadas.');
+    const notificaciones = await Notificacion.find({ usuario: req.user._id }).sort({ fecha: -1 });
+    res.render('notificaciones', { notificaciones });
   } catch (error) {
-    console.error('Error al insertar notificaciones:', error);
-    res.status(500).send('❌ Error al insertar notificaciones.');
+    console.error('Error al cargar notificaciones:', error);
+    res.status(500).send('Error al cargar notificaciones');
+  }
+});
+
+// ✅ Ruta opcional: eliminar una notificación por su ID
+router.post('/notificaciones/:id/eliminar', isAuthenticated, async (req, res) => {
+  try {
+    await Notificacion.deleteOne({ _id: req.params.id, usuario: req.user._id });
+    res.redirect('/perfil?success=Notificación eliminada');
+  } catch (err) {
+    console.error('Error al eliminar notificación:', err);
+    res.redirect('/perfil?error=No se pudo eliminar la notificación');
+  }
+});
+
+// ✅ Ruta opcional: eliminar todas las notificaciones del usuario
+router.post('/notificaciones/eliminar-todas', isAuthenticated, async (req, res) => {
+  try {
+    await Notificacion.deleteMany({ usuario: req.user._id });
+    res.redirect('/perfil?success=Todas las notificaciones han sido eliminadas');
+  } catch (error) {
+    console.error('Error al eliminar todas las notificaciones:', error);
+    res.redirect('/perfil?error=No se pudieron eliminar las notificaciones');
   }
 });
 
 module.exports = router;
-
 

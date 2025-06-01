@@ -53,7 +53,6 @@ app.use('/', require('./rutas/reservas'));
 app.use('/', require('./rutas/perfil'));
 app.use('/admin', require('./rutas/admin'));
 app.use('/', notificacionesRoutes); // ✅ solo esta línea
-app.use('/', require('./rutas/notificaciones'));
 
 
 try {

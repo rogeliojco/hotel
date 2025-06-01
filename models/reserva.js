@@ -11,6 +11,11 @@ const reservaSchema = new mongoose.Schema({
     ref: 'Habitacion',
     required: true
   }],
+  hotel: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Hotel',
+    required: true
+  },
   fechaInicio: {
     type: Date,
     required: [true, 'La fecha de inicio es obligatoria']
@@ -39,8 +44,6 @@ const reservaSchema = new mongoose.Schema({
     enum: ['pendiente', 'confirmada', 'cancelada', 'completada'],
     default: 'pendiente'
   },
-
-  // Datos personales del cliente al momento de reservar
   nombre: {
     type: String,
     required: true,
@@ -58,8 +61,6 @@ const reservaSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-
-  // Información de pago (no recomendado guardar en producción real)
   tarjeta: {
     type: String,
     required: true,

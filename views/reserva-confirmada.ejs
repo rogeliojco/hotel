@@ -6,17 +6,60 @@
       <div class="card shadow-lg p-4 border-0 text-center" style="background-color: #f8f9fa;">
         <div class="card-body">
           <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
-          <h3 class="mb-3 text-dark">¡Reserva confirmada!</h3>
+          <h3 class="mb-3 text-dark">¡Reserva Confirmada!</h3>
           <p class="text-muted fs-5 mb-4">
             Gracias, <strong><%= nombre %></strong>. Tu reserva se ha realizado con éxito.<br>
             Hemos enviado un resumen a tu correo electrónico.
           </p>
-          <a href="/perfil" class="btn btn-outline-primary me-2">
-            <i class="fas fa-user-circle me-1"></i> Ir al Perfil
-          </a>
-          <a href="/" class="btn btn-outline-secondary">
-            <i class="fas fa-home me-1"></i> Volver al inicio
-          </a>
+
+          <hr>
+
+          <h5 class="text-primary">Detalles de la Reserva</h5>
+          <div class="text-start mt-3">
+            <p><strong>Nombre:</strong> <%= reserva.nombre %></p>
+            <p><strong>Email:</strong> <%= reserva.email %></p>
+            <p><strong>Teléfono:</strong> <%= reserva.telefono %></p>
+            <p><strong>Fechas:</strong> <%= reserva.fechaInicio.toLocaleDateString() %> a <%= reserva.fechaFin.toLocaleDateString() %></p>
+            <p><strong>Precio Total:</strong> $<%= reserva.precioTotal %> MXN</p>
+            <p><strong>Hotel:</strong> <%= hotel?.nombre || 'No disponible' %></p>
+            <p><strong>Ciudad:</strong> <%= hotel?.estado || 'No disponible' %></p>
+
+          </div>
+
+          <hr>
+
+          <h5 class="text-primary">Habitaciones Reservadas</h5>
+          <div class="row">
+            <% if (reserva.habitaciones && reserva.habitaciones.length > 0) { %>
+              <% reserva.habitaciones.forEach(h => { %>
+                <div class="col-md-6 mb-3">
+                  <div class="card h-100 border shadow-sm">
+                    <% if (h.imagenes && h.imagenes.length > 0) { %>
+                      <img src="<%= h.imagenes[0] %>" class="card-img-top" alt="Imagen habitación" style="height: 200px; object-fit: cover;">
+                    <% } else { %>
+                      <div class="text-center py-5 text-muted">Sin imagen disponible</div>
+                    <% } %>
+                    <div class="card-body">
+                      <h5 class="card-title"><%= h.nombre %></h5>
+                      <p class="card-text"><strong>Tipo:</strong> <%= h.tipo || 'N/D' %></p>
+                      <p class="card-text"><strong>Precio por noche:</strong> $<%= h.precioNoche %> MXN</p>
+                    </div>
+                  </div>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <p class="text-muted">No se encontraron habitaciones en la reserva.</p>
+            <% } %>
+          </div>
+
+          <div class="mt-4">
+            <a href="/perfil" class="btn btn-outline-primary me-2">
+              <i class="fas fa-user-circle me-1"></i> Ir al Perfil
+            </a>
+            <a href="/" class="btn btn-outline-secondary">
+              <i class="fas fa-home me-1"></i> Volver al inicio
+            </a>
+          </div>
         </div>
       </div>
 
@@ -26,5 +69,3 @@
     </div>
   </div>
 </div>
-
-

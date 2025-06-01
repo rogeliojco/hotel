@@ -1,43 +1,65 @@
 const express = require('express');
 const router = express.Router();
 const Resena = require('../models/resena');
-const Hotel = require('../models/hotel'); // solo si tienes un modelo Hotel
+const Notificacion = require('../models/notificacion');
 const { isAuthenticated } = require('../middlewares/auth');
 
-// Mostrar formulario para escribir una nueva reseña
-router.get('/nueva', isAuthenticated, async (req, res) => {
+router.post('/nueva', isAuthenticated, async (req, res) => {
   try {
-    // Puedes mostrar una lista de hoteles si es necesario:
-    const hoteles = await Hotel.find(); // si tienes modelo Hotel
-    res.render('resenas/nueva', { hoteles });
-  } catch (err) {
-    console.error('Error al cargar formulario de reseña:', err);
-    res.redirect('/perfil?error=No se pudo cargar el formulario');
+    const { titulo, comentario, reservaId } = req.body;
+
+    if (!titulo || !comentario || !reservaId) {
+      return res.status(400).json({ success: false, message: 'Faltan datos obligatorios' });
+    }
+
+    const nueva = new Resena({
+      usuario: req.user._id,
+      reserva: reservaId,
+      titulo,
+      comentario,
+      fecha: new Date()
+    });
+
+    await nueva.save();
+
+    // ✅ Crear notificación por reseña
+    await Notificacion.create({
+      usuario: req.user._id,
+      mensaje: `Publicaste una reseña titulada: "${titulo}".`,
+      tipo: 'resena'
+    });
+
+    res.status(200).json({
+      success: true,
+      resena: {
+        titulo: nueva.titulo,
+        comentario: nueva.comentario
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error al guardar reseña:', error);
+    res.status(500).json({ success: false, message: 'Error interno al guardar reseña' });
   }
 });
 
-// Guardar la reseña enviada por el usuario
-router.post('/nueva', isAuthenticated, async (req, res) => {
+// ✅ Eliminar reseña (solo si pertenece al usuario)
+router.post('/eliminar/:id', isAuthenticated, async (req, res) => {
   try {
-    const { hotel, comentario, calificacion } = req.body;
-
-    if (!comentario || !calificacion || !hotel) {
-      return res.redirect('/resenas/nueva?error=Todos los campos son obligatorios');
-    }
-
-    const nuevaResena = new Resena({
-      usuario: req.user._id,
-      hotel,
-      comentario: comentario.trim(),
-      calificacion
+    const resena = await Resena.findOneAndDelete({
+      _id: req.params.id,
+      usuario: req.user._id
     });
 
-    await nuevaResena.save();
-    res.redirect('/perfil?success=Reseña enviada con éxito');
-  } catch (err) {
-    console.error('Error al guardar reseña:', err);
-    res.redirect('/resenas/nueva?error=No se pudo guardar la reseña');
+    if (!resena) {
+      return res.status(404).json({ success: false, message: 'Reseña no encontrada' });
+    }
+
+    res.json({ success: true, id: req.params.id });
+  } catch (error) {
+    console.error('Error al eliminar reseña:', error);
+    res.status(500).json({ success: false, message: 'Error al eliminar la reseña' });
   }
 });
 
 module.exports = router;
+

@@ -2,28 +2,67 @@
 
 <div class="container my-5">
   <div class="card shadow border-0">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-      <h4 class="mb-0"><i class="fas fa-file-alt me-2"></i> Detalles de la Reservación</h4>
-      <a href="/perfil" class="btn btn-outline-light btn-sm"><i class="fas fa-arrow-left me-1"></i> Volver</a>
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center flex-wrap">
+      <h4 class="mb-2"><i class="fas fa-file-alt me-2"></i> Detalles de la Reservación</h4>
+      <a href="/perfil" class="btn btn-outline-light btn-sm mt-2 mt-md-0"><i class="fas fa-arrow-left me-1"></i> Volver</a>
     </div>
-    <div class="card-body">
-      <p><strong>Nombre del huésped:</strong> <%= reserva.nombre %></p>
-      <p><strong>Ciudad:</strong> <%= reserva.ciudad %></p>
-      <p><strong>Fechas:</strong> <%= reserva.fechas %></p>
-      <p><strong>Habitación:</strong> <%= reserva.habitacion %></p>
-      <p><strong>Código de reserva:</strong> <%= reserva.codigo %></p>
-      <p><strong>Email:</strong> <%= reserva.email %></p>
-      <p><strong>Teléfono:</strong> <%= reserva.telefono %></p>
-      <p><strong>Estado:</strong>
-        <% if (reserva.estado === 'pendiente') { %>
-          <span class="badge bg-warning text-dark">Pendiente</span>
-        <% } else if (reserva.estado === 'confirmada') { %>
-          <span class="badge bg-success">Confirmada</span>
-        <% } else if (reserva.estado === 'cancelada') { %>
-          <span class="badge bg-danger">Cancelada</span>
-        <% } %>
-      </p>
 
+    <div class="card-body">
+      <div class="mb-3">
+        <p><strong>Nombre del huésped:</strong> <%= reserva.nombre %></p>
+        <p><strong>Email:</strong> <%= reserva.email %></p>
+        <p><strong>Teléfono:</strong> <%= reserva.telefono %></p>
+        <p><strong>Fechas:</strong> <%= reserva.fechaInicio.toLocaleDateString() %> a <%= reserva.fechaFin.toLocaleDateString() %></p>
+        <p><strong>Precio Total:</strong> $<%= reserva.precioTotal %> MXN</p>
+        <p><strong>Estado:</strong>
+          <% if (reserva.estado === 'pendiente') { %>
+            <span class="badge bg-warning text-dark">Pendiente</span>
+          <% } else if (reserva.estado === 'confirmada') { %>
+            <span class="badge bg-success">Confirmada</span>
+          <% } else if (reserva.estado === 'cancelada') { %>
+            <span class="badge bg-danger">Cancelada</span>
+          <% } %>
+        </p>
+      </div>
+
+      <hr>
+
+      <!-- Información del hotel -->
+      <div class="mb-3">
+        <h5 class="text-primary">Información del Hotel</h5>
+        <p><strong>Hotel:</strong> <%= reserva.hotel?.nombre || 'No disponible' %></p>
+        <p><strong>Ciudad:</strong> <%= reserva.hotel?.estado || 'No disponible' %></p>
+      </div>
+
+      <hr>
+
+      <!-- Habitaciones -->
+      <h5 class="text-primary">Habitaciones reservadas</h5>
+      <div class="row">
+        <% if (reserva.habitaciones && reserva.habitaciones.length > 0) { %>
+          <% reserva.habitaciones.forEach(h => { %>
+            <div class="col-lg-6 col-md-6 col-12 mb-4">
+              <div class="card h-100 border shadow-sm">
+                <% if (h.imagenes && h.imagenes.length > 0) { %>
+                  <img src="<%= h.imagenes[0] %>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Imagen habitación">
+                <% } else { %>
+                  <div class="text-center py-5 text-muted">Sin imagen disponible</div>
+                <% } %>
+                <div class="card-body">
+                  <h5 class="card-title"><%= h.nombre %></h5>
+                  <p class="card-text"><strong>Tipo:</strong> <%= h.tipo || 'N/D' %></p>
+                  <p class="card-text"><strong>Precio por noche:</strong> $<%= h.precioNoche %> MXN</p>
+                  <p class="card-text"><strong>Capacidad:</strong> <%= h.capacidad %> personas</p>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="text-muted">No se encontraron habitaciones asociadas.</p>
+        <% } %>
+      </div>
+
+      <!-- Botón cancelar -->
       <% if (reserva.estado !== 'cancelada') { %>
         <form action="/reserva/<%= reserva._id %>/cancelar" method="POST" id="cancelar-form" class="mt-4">
           <button type="button" class="btn btn-outline-danger" onclick="confirmarCancelacion()">
@@ -39,7 +78,7 @@
 
 <script>
   function confirmarCancelacion() {
-    if (confirm("¿Estás seguro de que deseas cancelar esta reservación? Esta acción no se puede deshacer.")) {
+    if (confirm("¿Estás segura de que deseas cancelar esta reservación? Esta acción no se puede deshacer.")) {
       document.getElementById("cancelar-form").submit();
     }
   }

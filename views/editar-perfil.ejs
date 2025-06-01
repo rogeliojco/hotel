@@ -1,0 +1,27 @@
+<% layout('layout/layout.ejs') %>
+
+<div class="container mt-5">
+  <h2 class="mb-4">Editar Perfil</h2>
+
+  <form action="/actualizar-perfil" method="POST" class="mb-4">
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nuevo nombre</label>
+      <input type="text" class="form-control" id="nombre" name="nombre" value="<%= user.name %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Nueva contraseña</label>
+      <input type="password" class="form-control" id="password" name="password">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Actualizar Perfil</button>
+  </form>
+
+  <form action="/cambiar-avatar" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="avatar" class="form-label">Cambiar Foto de Perfil</label>
+      <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*" required>
+    </div>
+    <button type="submit" class="btn btn-secondary">Subir Foto</button>
+  </form>
+</div>

@@ -7,7 +7,7 @@ body {
   color: #2e2e2e;
 }
 
-/* === Hero === */
+/* === Hero de bienvenida === */
 .perfil-hero {
   min-height: 60vh;
   padding: 80px 10px;
@@ -23,9 +23,10 @@ body {
   font-size: 3em;
   font-weight: 700;
   margin-bottom: 0.5em;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-/* === Contenedor principal === */
+/* === Contenedor del perfil === */
 .perfil-container {
   background: linear-gradient(to bottom right, #f0f0f0, #eaeaea);
   border-radius: 25px;
@@ -41,9 +42,14 @@ body {
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #6b4edb;
+  transition: transform 0.3s ease;
 }
 
-/* === Badges === */
+.perfil-avatar-img:hover {
+  transform: scale(1.08);
+}
+
+/* === Badge de miembro === */
 .badge-miembro {
   background-color: #fcd34d;
   color: #6b4e14;
@@ -53,7 +59,7 @@ body {
   font-weight: 600;
 }
 
-/* === Botones === */
+/* === Botones generales === */
 .btn {
   border-radius: 25px;
   font-weight: 600;
@@ -69,6 +75,7 @@ body {
 
 .btn-primary:hover {
   background-color: #5a3dd1;
+  transform: scale(1.05);
 }
 
 .btn-outline-dark {
@@ -101,7 +108,8 @@ body {
   text-align: center;
 }
 
-.row .col-md-3 h3 {
+.row .col-md-3 h3,
+.row .col-md-3 h2 {
   font-size: 2rem;
   color: #6b4edb;
   font-weight: bold;
@@ -114,16 +122,7 @@ body {
   margin-bottom: 0;
 }
 
-/* === Nivel de usuario === */
-.nivel-usuario {
-  border-radius: 20px;
-  padding: 25px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(135deg, #6b4edb, #947ee8);
-  color: white;
-}
-
-/* === Secciones de tarjetas === */
+/* === Tarjetas de sección === */
 .card-section {
   background: #ffffff;
   border-radius: 20px;
@@ -154,6 +153,7 @@ body {
   padding: 15px;
   margin-bottom: 15px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
 }
 
 .hotel-reservation-card:hover {
@@ -165,7 +165,34 @@ body {
   height: 60px;
   object-fit: cover;
   border-radius: 10px;
-  border: none;
+}
+
+/* === Estados de reservación === */
+.badge-confirmada {
+  background-color: #198754;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-cancelada {
+  background-color: #dc3545;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-pendiente {
+  background-color: #ffc107;
+  color: #000;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 /* === Reseñas === */
@@ -233,24 +260,54 @@ body {
   background: #eceaff;
 }
 
-.invoice-amount {
-  color: #6b4edb;
-  font-weight: bold;
+/* === Carrusel de recomendaciones === */
+.carousel-item {
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  transition: opacity 1s ease-in-out;
 }
 
-/* === Carrusel === */
-.carousel-item img {
-  border-radius: 12px;
-  height: 200px;
-  object-fit: cover;
+.card-section .carousel .card {
+  background: #ffffff;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+  width: 100%;
 }
 
-/* === Formulario cambiar avatar === */
+.card-section .carousel .card:hover {
+  transform: translateY(-5px);
+}
+
+.card-section:has(.text-muted) {
+  min-height: 120px;
+}
+
+/* === Botón de favorito === */
+.btn-fav {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #888;
+  transition: color 0.3s ease;
+}
+
+.btn-fav.active {
+  color: #e63946;
+}
+
+.btn-fav:hover {
+  color: #dc3545;
+}
+
+/* === Avatar Form === */
 .avatar-change-form {
   background: #f9f8ff;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .avatar-change-form label {
@@ -266,16 +323,14 @@ body {
   animation: fadeIn 0.5s ease-in-out;
   transition: transform 0.2s ease, background-color 0.3s ease;
   border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
 .notificacion:hover {
   transform: scale(1.01);
   background-color: #f9f9f9;
   cursor: pointer;
-}
-
-.notificacion i {
-  min-width: 32px;
 }
 
 .bg-confirmacion {
@@ -291,6 +346,22 @@ body {
 .bg-cancelacion {
   background-color: #fdecea;
   border-left: 4px solid #ea4335;
+}
+
+/* === Animación de entrada === */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
 }
 
 /* === Responsive === */
@@ -309,4 +380,185 @@ body {
     height: 28px;
     line-height: 28px;
   }
+
+ .hotel-reservation-card {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .hotel-reservation-card .img-thumbnail {
+    margin-bottom: 10px;
+  }
+
+  .hotel-reservation-card .d-flex.text-end {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .review-item {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .avatar-change-form {
+    padding: 15px;
+  }
+
+  .card-section {
+    padding: 20px;
+  }
+
+  .carousel .card {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center;
+  }
+
+  .carousel .card img {
+    width: 100px;
+    height: 80px;
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    text-align: center;
+  }
+
+  .row > .col-md-6 {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .perfil-hero h1 {
+    font-size: 1.8em;
+    text-align: center;
+  }
+
+  .row.text-center .col-md-3 {
+    width: 50%;
+    margin-bottom: 1rem;
+  }
+}
+/* === RESPONSIVE GENERAL PARA COMPUTADORAS === */
+@media screen and (min-width: 1024px) {
+  .perfil-container {
+    padding: 50px 60px;
+    max-width: 1280px;
+    margin: -100px auto 40px auto;
+  }
+
+  .card-section {
+    padding: 30px 35px;
+  }
+
+  .carousel .card {
+    padding: 30px;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+
+  .row.text-center .col-md-3 {
+    flex: 1 1 25%;
+    max-width: 25%;
+  }
+}
+
+/* Pantallas anchas (1440px o más) */
+@media screen and (min-width: 1440px) {
+  .perfil-container {
+    max-width: 1400px;
+  }
+
+  .hotel-reservation-card {
+    padding: 20px 30px;
+  }
+
+  .carousel .card {
+    padding: 35px;
+  }
+
+  .card-section {
+    padding: 35px 40px;
+  }
+
+  .btn-fav {
+    font-size: 1.4rem;
+  }
+
+  .review-item {
+    font-size: 1.05rem;
+  }
+}
+.card-habitacion {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  margin-bottom: 20px;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.card-habitacion img {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.card-habitacion .info {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* RESPONSIVE para pantallas pequeñas */
+@media screen and (max-width: 768px) {
+  .card-habitacion {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .card-habitacion .info {
+    width: 100%;
+  }
+
+  .card-habitacion img {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+.card-header {
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+.list-group-item {
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.btn-outline-danger.btn-sm {
+  transition: transform 0.2s ease;
+}
+
+.btn-outline-danger.btn-sm:hover {
+  transform: scale(1.1);
+  background-color: #f8d7da;
+}
+
+.card-footer {
+  background-color: #f5f5f5;
 }

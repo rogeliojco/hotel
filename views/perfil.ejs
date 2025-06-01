@@ -1,235 +1,441 @@
 <% layout('layout/layout.ejs') %>
+
 <link rel="stylesheet" href="/css/perfil.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Hero -->
-<section class="perfil-hero d-flex flex-column align-items-center justify-content-center text-white text-center">
-  <h1 class="fw-semibold mb-4">Bienvenido, <%= user.name %></h1>
-  <div class="bg-white text-dark p-4 rounded-4 shadow d-flex flex-column flex-md-row align-items-center gap-3 w-100" style="max-width: 900px;">
-    <div class="d-flex align-items-center gap-3 flex-grow-1">
-      <img src="<%= user.avatarUrl || '/images/avatar-generico.png' %>" class="perfil-avatar-img">
-      <div>
-        <h5 class="mb-1 fw-bold"><%= user.name %> <span class="badge-miembro">Miembro</span></h5>
-        <p class="mb-0 text-muted small"><%= user.email %></p>
-        <small class="text-muted"><i class="bi bi-shield-lock"></i> Último acceso: <%= new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) %></small>
-      </div>
-    </div>
-    <div class="d-flex flex-column flex-md-row gap-2">
-      <a href="/hoteles" class="btn btn-primary">Reservar ahora</a>
-      <button id="btnActualizar" class="btn btn-outline-dark">Editar perfil</button>
-    </div>
-  </div>
-</section>
+<div class="perfil-hero text-white text-center py-5">
+  <h1 class="text-uppercase" style="text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">
+    Bienvenida, <%= user.name.toLowerCase() %>
+  </h1>
+</div>
 
-<section class="container perfil-container mt-n5">
-  <!-- Contadores -->
-  <div class="row text-center mb-5">
-    <% const formatNumber = (n) => n.toString().padStart(2, '0'); %>
-    <div class="col-6 col-md-3">
-      <div class="card p-3 border-0 shadow-sm">
-        <h3 class="text-primary mb-1"><%= formatNumber(reservasActivas.length) %></h3>
-        <p class="mb-0 text-muted small">Reservaciones activas</p>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card p-3 border-0 shadow-sm">
-        <h3 class="text-primary mb-1"><%= formatNumber(reseñas.length) %></h3>
-        <p class="mb-0 text-muted small">Reseñas</p>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card p-3 border-0 shadow-sm">
-        <h3 class="text-primary mb-1"><%= formatNumber(reservasCanceladas.length) %></h3>
-        <p class="mb-0 text-muted small">Canceladas</p>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card p-3 border-0 shadow-sm">
-        <p class="text-muted mb-1">Miembro desde</p>
-        <strong><%= user.fechaRegistro ? new Date(user.fechaRegistro).toLocaleDateString('es-MX', { year: 'numeric', month: 'long' }) : 'N/D' %></strong>
-      </div>
-    </div>
-  </div>
-
-  <!-- Avatar -->
-  <div id="moduloAvatar" class="card-section mb-4" style="display: none;">
-    <h5 class="section-title">Cambiar avatar</h5>
-    <form class="avatar-change-form" method="POST" action="/cambiar-avatar" enctype="multipart/form-data">
-      <label for="avatarFile">Selecciona una imagen</label>
-      <input type="file" class="form-control mt-2" id="avatarFile" name="avatar">
-      <button type="submit" class="btn btn-outline-primary mt-3">Actualizar Avatar</button>
-    </form>
-  </div>
-
-  <!-- Edición perfil -->
-  <div id="formActualizar" class="card-section mb-4" style="display: none;">
-    <h5 class="section-title">Actualizar datos</h5>
-    <form action="/actualizar-perfil" method="POST">
-      <div class="mb-3">
-        <label for="nuevoUsuario" class="form-label">Nuevo nombre</label>
-        <input type="text" class="form-control" name="nuevoUsuario" id="nuevoUsuario">
-      </div>
-      <div class="mb-3">
-        <label for="nuevaContrasena" class="form-label">Nueva contraseña</label>
-        <input type="password" class="form-control" name="nuevaContrasena" id="nuevaContrasena">
-      </div>
-      <button type="submit" class="btn btn-success">Guardar</button>
-    </form>
-  </div>
-
-  <!-- Reservas y Reseñas -->
-  <div class="row">
-    <div class="col-md-7">
-      <!-- Reservas -->
-      <div class="card-section mb-4">
-        <h5 class="section-title">Mis reservaciones</h5>
-        <% if (reservasActivas.length > 0) { %>
-          <% reservasActivas.forEach(r => { %>
-            <div class="hotel-reservation-card mb-3">
-              <img src="/images/hotel.jpg" class="img-thumbnail" style="width: 80px; height: 60px;">
-              <div class="flex-grow-1">
-                <h6><%= r.ciudad %></h6>
-                <p class="text-muted small mb-1"><%= r.fechas %></p>
-                <span class="badge bg-success">Confirmada</span>
-              </div>
-              <a href="/reserva/<%= r._id %>" class="btn btn-sm btn-outline-primary">Ver detalles</a>
-            </div>
-          <% }) %>
-        <% } else { %>
-          <p class="text-muted">No tienes reservas activas.</p>
-        <% } %>
-      </div>
-
-      <!-- Reseñas -->
-      <div class="card-section mb-4">
-        <h5 class="section-title">Reseñas</h5>
-        <% if (reseñas.length > 0) { %>
-          <% reseñas.forEach(r => { %>
-            <div class="review-item mb-2">
-              <i class="fas fa-check-circle review-icon"></i>
-              <div>
-                <strong><%= r.titulo || 'Excelente estancia' %></strong>
-                <p class="mb-0"><%= r.comentario %></p>
-              </div>
-              <i class="fas fa-chevron-right ms-auto text-muted"></i>
-            </div>
-          <% }) %>
-        <% } else { %>
-          <p class="text-muted">No has escrito reseñas.</p>
-        <% } %>
-      </div>
-    </div>
-
-    <!-- Calendario y Facturas -->
-    <div class="col-md-5">
-      <!-- Calendario -->
-      <div class="card-section mb-4">
-        <h5 class="section-title">Calendario</h5>
-        <div class="calendar-grid text-center">
-          <% for (let i = 1; i <= 30; i++) { %>
-            <span class="<%= [10, 20, 21, 22, 23].includes(i) ? 'active-date' : '' %>"><%= i %></span>
-          <% } %>
-        </div>
-        <p class="text-muted text-center mt-2">Próximo viaje: 20–23 jun</p>
-      </div>
-
-      <!-- Facturas -->
-      <div class="card-section mb-4">
-        <h5 class="section-title">Facturas</h5>
-        <% if (typeof facturas !== 'undefined' && facturas.length > 0) { %>
-          <% facturas.forEach(f => { %>
-            <div class="invoice-item d-flex justify-content-between align-items-center mb-2">
-              <div>
-                <p class="mb-0 fw-bold">$<%= f.monto %></p>
-                <small><%= f.nombreEstablecimiento %></small>
-              </div>
-              <button class="btn btn-sm btn-outline-primary"><i class="fas fa-download"></i> Descargar</button>
-            </div>
-          <% }) %>
-        <% } else { %>
-          <p class="text-muted">No tienes facturas disponibles.</p>
-        <% } %>
-      </div>
-    </div>
-  </div>
-
-  <!-- Notificaciones -->
-  <div class="card-section mb-4">
-    <h5 class="section-title">Actividad reciente y notificaciones</h5>
-    <% if (notificaciones && notificaciones.length > 0) { %>
-      <div class="d-flex flex-column gap-3">
-        <% notificaciones.forEach(n => { %>
-          <div class="d-flex align-items-start justify-content-between gap-3 p-3 rounded shadow-sm notificacion 
-              <%= n.tipo === 'confirmacion' ? 'bg-confirmacion' : n.tipo === 'reseña' ? 'bg-reseña' : 'bg-cancelacion' %>">
-            <div class="d-flex gap-3 align-items-start">
-              <i class="bi 
-                <%= n.tipo === 'confirmacion' ? 'bi-check-circle-fill text-success' : 
-                    n.tipo === 'reseña' ? 'bi-chat-left-dots-fill text-primary' : 
-                    'bi-x-circle-fill text-danger' %> fs-4"></i>
-              <div>
-                <p class="mb-1 fw-semibold"><%= n.mensaje %></p>
-                <small class="text-muted"><%= n.fecha.toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) %></small>
-              </div>
-            </div>
-            <div class="d-flex gap-1">
-              <form method="POST" action="/notificaciones/<%= n._id %>/leida">
-                <button class="btn btn-sm btn-outline-success" title="Marcar como leída">
-                  <i class="bi bi-check2-circle"></i>
-                </button>
-              </form>
-              <form method="POST" action="/notificaciones/<%= n._id %>/eliminar">
-                <button class="btn btn-sm btn-outline-danger" title="Eliminar">
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </form>
-            </div>
+<div class="container perfil-container mt-4">
+  <!-- Tarjeta de usuario -->
+  <div class="row justify-content-center mb-4">
+    <div class="col-lg-8 col-md-10">
+      <div class="bg-white rounded shadow p-3 d-flex flex-wrap align-items-center justify-content-between perfil-card">
+        <div class="d-flex align-items-center">
+          <img src="<%= user.avatarUrl || '/images/avatar-generico.png' %>" alt="Avatar" class="perfil-avatar-img me-3">
+          <div>
+            <h5 class="mb-1 text-uppercase"><%= user.name %> 
+              <span class="badge bg-warning text-dark ms-2">
+                <i class="bi bi-star-fill"></i> Miembro
+              </span>
+            </h5>
+            <p class="mb-0 text-muted"><%= user.email %></p>
+            <small class="text-muted">
+              <i class="bi bi-clock"></i> 
+              Último acceso: <%= new Date().toLocaleTimeString('es-MX') %>
+            </small>
           </div>
-        <% }) %>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+          <a href="/hoteles" class="btn btn-primary">
+            <i class="bi bi-calendar-check-fill"></i> Reservar ahora
+          </a>
+          <a href="/editar-perfil" class="btn btn-outline-dark">
+            <i class="bi bi-pencil-fill"></i> Editar perfil
+          </a>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Contadores -->
+  <div class="row text-center mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card p-3 shadow-sm">
+        <h2><%= reservas?.length || 0 %></h2>
+        <p class="text-muted mb-0">Reservas</p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card p-3 shadow-sm">
+        <h2><%= resenas?.length || 0 %></h2>
+        <p class="text-muted mb-0">Reseñas</p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card p-3 shadow-sm">
+        <h2><%= facturas?.length || 0 %></h2>
+        <p class="text-muted mb-0">Facturas</p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card p-3 shadow-sm">
+        <h2><%= moment(user.createdAt).format('MMMM [de] YYYY') %></h2>
+        <p class="text-muted mb-0">Miembro desde</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reservaciones -->
+  <div class="card-section mb-5">
+    <h4 class="section-title">Mis Reservaciones</h4>
+    <% if (reservas.length > 0) { %>
+      <% reservas.forEach(r => { const hotel = r.hotel; %>
+        <div class="hotel-reservation-card d-flex flex-column flex-md-row align-items-center gap-3 mb-3" id="reserva-<%= r._id %>">
+          <img src="<%= hotel?.urlImagen || '/images/hotel-default.jpg' %>" class="img-thumbnail" style="width: 120px; height: 80px; object-fit: cover;" alt="Imagen hotel">
+          <div class="flex-grow-1">
+            <p class="mb-1"><strong>Hotel:</strong> <%= hotel?.nombre || 'No disponible' %></p>
+            <p class="mb-1"><strong>Ciudad:</strong> <%= hotel?.estado || 'No disponible' %></p>
+            <p class="mb-1"><strong>Fechas:</strong> <%= new Date(r.fechaInicio).toLocaleDateString('es-MX') %> - <%= new Date(r.fechaFin).toLocaleDateString('es-MX') %></p>
+            <span class="badge <%= r.estado === 'cancelada' ? 'bg-danger' : 'bg-success' %>">
+              <%= r.estado.charAt(0).toUpperCase() + r.estado.slice(1) %>
+            </span>
+          </div>
+          <div class="d-flex flex-column gap-2">
+            <a href="/reserva/<%= r._id %>" class="btn btn-sm btn-outline-primary">Ver detalles</a>
+            <% if (r.estado === 'cancelada') { %>
+              <form action="/reserva/<%= r._id %>/eliminar" method="POST" onsubmit="return confirm('¿Estás segura de eliminar esta reserva cancelada?');">
+                <button type="submit" class="btn btn-sm btn-danger">
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>
+              </form>
+            <% } else { %>
+              <a href="/reserva/<%= r._id %>/factura" class="btn btn-sm btn-success">
+                <i class="fas fa-file-invoice-dollar"></i> Descargar Factura
+              </a>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
     <% } else { %>
-      <p class="text-muted">No tienes notificaciones recientes.</p>
+      <p class="text-muted">No tienes reservaciones registradas.</p>
     <% } %>
   </div>
+</div>
+<div class="row">
+  <!-- Reseñas y Calendario lado a lado -->
+  <div class="row">
+    <!-- Reseñas -->
+<div class="col-md-6">
+  <div class="resenas-box p-4 rounded shadow-sm mb-5">
+    <h4 class="mb-3">Mis Reseñas</h4>
 
-  <!-- Carrusel Recomendaciones -->
-  <div class="card-section mt-4">
-    <h5 class="section-title">Recomendaciones</h5>
-    <div id="carouselHoteles" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        <% recomendaciones.forEach((rec, index) => { %>
-          <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-            <div class="card d-flex flex-column flex-md-row align-items-center gap-3 p-3 shadow-sm">
-              <img src="/images/hotel<%= index + 1 %>.jpg" class="img-thumbnail rounded" style="width: 120px; height: 90px; object-fit: cover;">
-              <div class="flex-grow-1">
-                <h6 class="fw-bold mb-1"><%= rec.nombre %></h6>
-                <p class="mb-1 text-muted small"><%= rec.descripcion %></p>
-                <button class="btn btn-sm btn-primary">Ver más</button>
+    <!-- Formulario nueva reseña -->
+    <form id="formNuevaResena" class="mb-4">
+      <div class="mb-2">
+        <input type="text" name="titulo" placeholder="Título" class="form-control" required>
+      </div>
+      <div class="mb-2">
+        <textarea name="comentario" placeholder="Escribe tu reseña..." class="form-control" required></textarea>
+      </div>
+      <div class="mb-2">
+        <label>Puntuación:</label>
+        <select name="puntuacion" class="form-select" required>
+          <option value="5">⭐️⭐️⭐️⭐️⭐️</option>
+          <option value="4">⭐️⭐️⭐️⭐️</option>
+          <option value="3">⭐️⭐️⭐️</option>
+          <option value="2">⭐️⭐️</option>
+          <option value="1">⭐️</option>
+        </select>
+      </div>
+      <input type="hidden" name="reservaId" value="<%= reservas[0]?._id || '' %>">
+      <button class="btn btn-outline-primary" type="submit">Agregar Reseña</button>
+    </form>
+
+    <!-- Filtro de ordenamiento -->
+    <div class="mb-3">
+      <label for="ordenarPor">Ordenar por:</label>
+      <select id="ordenarPor" class="form-select" onchange="filtrarOrdenar()">
+        <option value="recientes">Más recientes</option>
+        <option value="antiguas">Más antiguas</option>
+        <option value="puntuacion-alta">Puntuación alta</option>
+        <option value="puntuacion-baja">Puntuación baja</option>
+      </select>
+    </div>
+
+    <!-- Lista de reseñas -->
+    <div id="contenedorResenas">
+      <% resenas.forEach(function(reseña) { %>
+        <div class="card mb-3 p-3 border-left-purple review-item" data-id="<%= reseña._id %>">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h5><%= reseña.titulo %></h5>
+              <div class="rating mb-1">
+                <% for (let i = 1; i <= 5; i++) { %>
+                  <i class="bi <%= reseña.puntuacion >= i ? 'bi-star-fill text-warning' : 'bi-star' %>"></i>
+                <% } %>
+              </div>
+              <p><%= reseña.comentario %></p>
+              <small class="text-muted">Publicado el <%= new Date(reseña.fecha).toLocaleDateString('es-MX') %></small>
+            </div>
+            <div class="d-flex flex-column align-items-end">
+              <button class="btn btn-sm btn-outline-secondary mb-2" onclick="editarResena('<%= reseña._id %>')">✏️</button>
+              <button class="btn btn-sm btn-outline-danger btn-eliminar-resena">🗑️</button>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  function filtrarOrdenar() {
+    const criterio = document.getElementById('ordenarPor').value;
+    window.location.href = `/perfil?orden=${criterio}`;
+  }
+
+  function editarResena(id) {
+    alert('Funcionalidad para editar reseña aún no implementada.');
+    // Aquí puedes abrir un modal o redirigir a /editarResena/:id
+  }
+</script>
+    <!-- Calendario -->
+     <!-- Columna derecha: Calendario + Notificaciones -->
+  <div class="col-md-6">
+    <!-- Calendario -->
+    <div class="card-section mb-4">
+      <h4 class="section-title">Calendario</h4>
+      <div class="calendar-grid text-center">
+        <% for (let i = 1; i <= 30; i++) { %>
+          <span class="<%= [10, 20, 21, 22, 23].includes(i) ? 'active-date' : '' %>"><%= i %></span>
+        <% } %>
+      </div>
+      <p class="text-muted text-center mt-2">Próximo viaje: 20–23 jun</p>
+    </div>
+
+    <!-- Historial de actividad -->
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+      <div class="card-header bg-primary text-white fw-bold">
+        <i class="bi bi-clock-history me-2"></i> Historial de Actividad
+      </div>
+      <div class="list-group list-group-flush">
+        <% notificaciones.forEach(n => { 
+          let tipoClase = 'text-muted';
+          let icono = 'bi-info-circle';
+          if (n.tipo === 'reserva') { tipoClase = 'text-success'; icono = 'bi-check-circle-fill'; }
+          else if (n.tipo === 'cancelacion') { tipoClase = 'text-danger'; icono = 'bi-x-circle-fill'; }
+          else if (n.tipo === 'resena') { tipoClase = 'text-warning'; icono = 'bi-star-fill'; }
+          else if (n.tipo === 'avatar') { tipoClase = 'text-primary'; icono = 'bi-person-circle'; }
+          else if (n.tipo === 'perfil' || n.tipo === 'password') { tipoClase = 'text-info'; icono = 'bi-gear-fill'; }
+        %>
+          <div class="list-group-item d-flex justify-content-between align-items-start flex-column flex-md-row gap-2">
+            <div class="d-flex align-items-start">
+              <i class="bi <%= icono %> fs-5 me-3 <%= tipoClase %>"></i>
+              <div>
+                <p class="mb-1 fw-semibold <%= tipoClase %>"><%= n.mensaje %></p>
+                <small class="text-muted"><%= moment(n.fecha).format('D/M/YYYY, h:mm:ss a') %></small>
               </div>
             </div>
+            <form action="/notificaciones/<%= n._id %>/eliminar" method="POST">
+              <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </form>
           </div>
         <% }) %>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#carouselHoteles" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
-        <span class="visually-hidden">Anterior</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#carouselHoteles" data-bs-slide="next">
-        <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
-        <span class="visually-hidden">Siguiente</span>
-      </button>
+      <% if (notificaciones.length > 0) { %>
+        <div class="card-footer text-end">
+          <form action="/notificaciones/eliminar-todas" method="POST">
+            <button class="btn btn-outline-secondary btn-sm rounded-pill">
+              <i class="bi bi-trash"></i> Eliminar todas
+            </button>
+          </form>
+        </div>
+      <% } %>
     </div>
   </div>
-</section>
+</div>
+
+
+
+
+<!-- Recomendaciones -->
+<div class="card-section">
+  <h5 class="section-title">Recomendaciones</h5>
+
+  <div id="carouselRecomendaciones" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+    <div class="carousel-inner">
+
+      <div class="carousel-item active">
+        <div class="card shadow-lg border-0 p-4 d-flex flex-column flex-md-row gap-3 align-items-center bg-light rounded-4 position-relative">
+          <!-- Botón favorito -->
+          <button class="btn btn-fav position-absolute top-0 end-0 m-2" onclick="toggleFavorito('rec1', this)">
+            <i class="bi bi-heart"></i>
+          </button>
+          <img src="/images/hotel1.jpg" class="img-fluid rounded" alt="Hotel Paraíso del Mar" style="width: 120px; height: 90px; object-fit: cover;">
+          <div class="text-start">
+            <h6 class="fw-bold mb-1">Hotel Paraíso del Mar</h6>
+            <p class="text-muted small mb-0">Disfruta de un ambiente tropical frente al océano.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-item">
+        <div class="card shadow-lg border-0 p-4 d-flex flex-column flex-md-row gap-3 align-items-center bg-light rounded-4 position-relative">
+          <button class="btn btn-fav position-absolute top-0 end-0 m-2" onclick="toggleFavorito('rec2', this)">
+            <i class="bi bi-heart"></i>
+          </button>
+          <img src="/images/hotel2.jpg" class="img-fluid rounded" alt="Sierra Lodge & Spa" style="width: 120px; height: 90px; object-fit: cover;">
+          <div class="text-start">
+            <h6 class="fw-bold mb-1">Sierra Lodge & Spa</h6>
+            <p class="text-muted small mb-0">Relájate en las montañas con nuestro exclusivo spa.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-item">
+        <div class="card shadow-lg border-0 p-4 d-flex flex-column flex-md-row gap-3 align-items-center bg-light rounded-4 position-relative">
+          <button class="btn btn-fav position-absolute top-0 end-0 m-2" onclick="toggleFavorito('rec3', this)">
+            <i class="bi bi-heart"></i>
+          </button>
+          <img src="/images/hotel3.jpg" class="img-fluid rounded" alt="Ciudadela Business Hotel" style="width: 120px; height: 90px; object-fit: cover;">
+          <div class="text-start">
+            <h6 class="fw-bold mb-1">Ciudadela Business Hotel</h6>
+            <p class="text-muted small mb-0">Perfecto para viajes de negocios con todas las comodidades.</p>
+          </div>
+        </div>
+      </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselRecomendaciones" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon bg-dark rounded-circle"></span>
+      <span class="visually-hidden">Anterior</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselRecomendaciones" data-bs-slide="next">
+      <span class="carousel-control-next-icon bg-dark rounded-circle"></span>
+      <span class="visually-hidden">Siguiente</span>
+    </button>
+  </div>
+</div>
+
+
+
 
 <script>
-  document.getElementById('btnActualizar').addEventListener('click', function () {
-    const form = document.getElementById('formActualizar');
-    const avatar = document.getElementById('moduloAvatar');
-    const visible = form.style.display === 'block';
-    form.style.display = visible ? 'none' : 'block';
-    avatar.style.display = visible ? 'none' : 'block';
+  const ocultarReserva = (id) => {
+    const card = document.getElementById(`reserva-${id}`);
+    if (card) {
+      card.remove();
+      const ocultas = JSON.parse(localStorage.getItem('reservasOcultas') || '[]');
+      if (!ocultas.includes(id)) {
+        ocultas.push(id);
+        localStorage.setItem('reservasOcultas', JSON.stringify(ocultas));
+      }
+    }
+  };
+
+  // Al cargar, ocultar las reservaciones que estén en localStorage
+  document.addEventListener('DOMContentLoaded', () => {
+    const ocultas = JSON.parse(localStorage.getItem('reservasOcultas') || '[]');
+    ocultas.forEach(id => {
+      const card = document.getElementById(`reserva-${id}`);
+      if (card) card.style.display = 'none';
+    });
   });
 </script>
+
+
+<!-- AJAX reseñas -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('formNuevaResena');
+  const contenedor = document.getElementById('contenedorResenas');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const datos = Object.fromEntries(formData.entries());
+
+    try {
+      const res = await fetch('/resenas/nueva', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        const nueva = document.createElement('div');
+        nueva.classList.add('review-item', 'mb-2', 'fade-in');
+        nueva.innerHTML = `
+          <i class="bi bi-star-fill review-icon"></i>
+          <div>
+            <strong>${result.resena.titulo}</strong><br>
+            <span>${result.resena.comentario}</span>
+          </div>`;
+        contenedor.prepend(nueva);
+        form.reset();
+      } else {
+        alert(result.message || 'Error al enviar reseña');
+      }
+
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Hubo un problema al enviar la reseña.');
+    }
+  });
+});
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('formNuevaResena');
+    const contenedor = document.getElementById('contenedorResenas');
+
+    // Código para enviar reseñas (ya lo tienes aquí)
+
+    // ✅ Nuevo código para eliminar reseñas
+    contenedor.addEventListener('click', async function (e) {
+      if (e.target.closest('.btn-eliminar-resena')) {
+        const item = e.target.closest('.review-item');
+        const id = item.getAttribute('data-id');
+
+        if (confirm('¿Estás segura de que deseas eliminar esta reseña?')) {
+          try {
+            const res = await fetch(`/resenas/eliminar/${id}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' }
+            });
+
+            const result = await res.json();
+
+            if (result.success) {
+              item.remove();
+            } else {
+              alert(result.message || 'No se pudo eliminar la reseña.');
+            }
+          } catch (err) {
+            console.error('Error:', err);
+            alert('Hubo un problema al eliminar la reseña.');
+          }
+        }
+      }
+    });
+  });
+</script>
+<script>
+  function toggleFavorito(id, btn) {
+    let favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+    const icono = btn.querySelector('i');
+
+    if (favoritos.includes(id)) {
+      favoritos = favoritos.filter(fid => fid !== id);
+      btn.classList.remove('active');
+      icono.className = 'bi bi-heart';
+    } else {
+      favoritos.push(id);
+      btn.classList.add('active');
+      icono.className = 'bi bi-heart-fill';
+    }
+
+    localStorage.setItem('favoritos', JSON.stringify(favoritos));
+  }
+
+  // Marcar favoritos guardados al cargar
+  document.addEventListener('DOMContentLoaded', () => {
+    const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+    favoritos.forEach(id => {
+      const btn = document.querySelector(`.btn-fav[onclick*="${id}"]`);
+      if (btn) {
+        btn.classList.add('active');
+        btn.querySelector('i').className = 'bi bi-heart-fill';
+      }
+    });
+  });
+</script>
+

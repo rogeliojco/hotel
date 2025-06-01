@@ -53,4 +53,10 @@ userSchema.methods.compararContraseña = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
+// Método para encriptar contraseñas manualmente (por ejemplo al actualizar perfil)
+userSchema.methods.encryptPassword = function (password) {
+  const salt = bcrypt.genSaltSync(10);
+  return bcrypt.hashSync(password, salt);
+};
+
 module.exports = mongoose.model('User', userSchema);
