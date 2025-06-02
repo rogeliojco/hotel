@@ -9,7 +9,7 @@ const resenaSchema = new mongoose.Schema({
   reserva: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Reserva',
-    required: true
+    required: false
   },
   titulo: {
     type: String,

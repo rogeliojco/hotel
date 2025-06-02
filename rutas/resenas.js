@@ -4,21 +4,27 @@ const Resena = require('../models/resena');
 const Notificacion = require('../models/notificacion');
 const { isAuthenticated } = require('../middlewares/auth');
 
+// ✅ Crear nueva reseña
 router.post('/nueva', isAuthenticated, async (req, res) => {
   try {
-    const { titulo, comentario, reservaId } = req.body;
+    const { titulo, comentario, puntuacion, reservaId } = req.body;
 
-    if (!titulo || !comentario || !reservaId) {
+    if (!titulo || !comentario || !puntuacion) {
       return res.status(400).json({ success: false, message: 'Faltan datos obligatorios' });
     }
 
     const nueva = new Resena({
       usuario: req.user._id,
-      reserva: reservaId,
       titulo,
       comentario,
+      puntuacion,
       fecha: new Date()
     });
+
+    // Agregar reserva solo si existe el ID
+    if (reservaId) {
+      nueva.reserva = reservaId;
+    }
 
     await nueva.save();
 
@@ -32,8 +38,11 @@ router.post('/nueva', isAuthenticated, async (req, res) => {
     res.status(200).json({
       success: true,
       resena: {
+        _id: nueva._id,
         titulo: nueva.titulo,
-        comentario: nueva.comentario
+        comentario: nueva.comentario,
+        puntuacion: nueva.puntuacion,
+        fecha: nueva.fecha
       }
     });
   } catch (error) {

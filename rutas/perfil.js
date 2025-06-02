@@ -8,7 +8,6 @@ const Resena = require('../models/resena');
 const Factura = require('../models/factura');
 const Recomendacion = require('../models/recomendacion');
 const Notificacion = require('../models/notificacion');
-
 const moment = require('moment');
 
 // Middleware de autenticación
@@ -44,14 +43,33 @@ router.get('/perfil', isAuthenticated, async (req, res) => {
     const facturas = await Factura.find({ usuario: req.user._id }).sort({ fecha: -1 });
     const recomendaciones = await Recomendacion.find({ usuario: req.user._id });
 
+    // 🔽 NUEVO: Generar fechas para marcar en el calendario
+    const diasMarcados = [];
+
+reservas.forEach(r => {
+  const inicio = new Date(r.fechaInicio);
+  const fin = new Date(r.fechaFin);
+  const hotelNombre = r.hotel?.nombre || 'Hotel desconocido';
+
+  for (let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
+    diasMarcados.push({
+      fecha: d.toISOString().split('T')[0],
+      hotel: hotelNombre,
+      rango: `${inicio.toLocaleDateString('es-MX')} al ${fin.toLocaleDateString('es-MX')}`
+    });
+  }
+});
+
+
     res.render('perfil', {
       user: req.user,
       reservas,
-      resenas, // Usar sin tilde
+      resenas,
       notificaciones,
       facturas,
       recomendaciones,
       moment,
+      diasMarcados, // ✅ Enviamos fechas al frontend
       success: req.query.success,
       error: req.query.error
     });
@@ -136,3 +154,4 @@ router.post('/cambiar-avatar', isAuthenticated, upload.single('avatar'), async (
 });
 
 module.exports = router;
+

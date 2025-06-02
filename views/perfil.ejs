@@ -2,10 +2,12 @@
 
 <link rel="stylesheet" href="/css/perfil.css">
 
-<div class="perfil-hero text-white text-center py-5">
-  <h1 class="text-uppercase" style="text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">
-    Bienvenida, <%= user.name.toLowerCase() %>
-  </h1>
+<div class="perfil-hero-video position-relative">
+  <video autoplay loop muted playsinline class="video-fondo">
+    <source src="/videos/bienvenida-video.mp4" type="video/mp4">
+    Tu navegador no soporta video HTML5.
+  </video>
+  
 </div>
 
 <div class="container perfil-container mt-4">
@@ -41,32 +43,28 @@
   </div>
 
   <!-- Contadores -->
-  <div class="row text-center mb-4">
-    <div class="col-md-3 mb-3">
-      <div class="card p-3 shadow-sm">
-        <h2><%= reservas?.length || 0 %></h2>
-        <p class="text-muted mb-0">Reservas</p>
-      </div>
-    </div>
-    <div class="col-md-3 mb-3">
-      <div class="card p-3 shadow-sm">
-        <h2><%= resenas?.length || 0 %></h2>
-        <p class="text-muted mb-0">Reseñas</p>
-      </div>
-    </div>
-    <div class="col-md-3 mb-3">
-      <div class="card p-3 shadow-sm">
-        <h2><%= facturas?.length || 0 %></h2>
-        <p class="text-muted mb-0">Facturas</p>
-      </div>
-    </div>
-    <div class="col-md-3 mb-3">
-      <div class="card p-3 shadow-sm">
-        <h2><%= moment(user.createdAt).format('MMMM [de] YYYY') %></h2>
-        <p class="text-muted mb-0">Miembro desde</p>
-      </div>
+  <div class="row text-center mb-5">
+  <div class="col-md-4 mb-3">
+    <div class="card border-0 rounded-4 shadow-lg py-4 bg-light h-100">
+      <h2 class="fw-bold text-primary"><%= reservas?.length || 0 %></h2>
+      <p class="text-muted mb-0">Reservas</p>
     </div>
   </div>
+  <div class="col-md-4 mb-3">
+    <div class="card border-0 rounded-4 shadow-lg py-4 bg-light h-100">
+      <h2 class="fw-bold text-primary"><%= resenas?.length || 0 %></h2>
+      <p class="text-muted mb-0">Reseñas</p>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card border-0 rounded-4 shadow-lg py-4 bg-light h-100">
+      <h4 class="fw-bold text-primary mb-1">
+        <%= moment(user.createdAt).locale('es').format('MMMM [de] YYYY') %>
+      </h4>
+      <p class="text-muted mb-0">Miembro desde</p>
+    </div>
+  </div>
+</div>
 
   <!-- Reservaciones -->
   <div class="card-section mb-5">
@@ -104,74 +102,74 @@
     <% } %>
   </div>
 </div>
-<div class="row">
-  <!-- Reseñas y Calendario lado a lado -->
-  <div class="row">
-    <!-- Reseñas -->
-<div class="col-md-6">
-  <div class="resenas-box p-4 rounded shadow-sm mb-5">
-    <h4 class="mb-3">Mis Reseñas</h4>
 
-    <!-- Formulario nueva reseña -->
-    <form id="formNuevaResena" class="mb-4">
-      <div class="mb-2">
-        <input type="text" name="titulo" placeholder="Título" class="form-control" required>
-      </div>
-      <div class="mb-2">
-        <textarea name="comentario" placeholder="Escribe tu reseña..." class="form-control" required></textarea>
-      </div>
-      <div class="mb-2">
-        <label>Puntuación:</label>
-        <select name="puntuacion" class="form-select" required>
-          <option value="5">⭐️⭐️⭐️⭐️⭐️</option>
-          <option value="4">⭐️⭐️⭐️⭐️</option>
-          <option value="3">⭐️⭐️⭐️</option>
-          <option value="2">⭐️⭐️</option>
-          <option value="1">⭐️</option>
+<!-- Contenedor general de reseñas en 2 columnas -->
+<div class="resenas-box mb-5">
+  <h4 class="mb-4 fw-bold">Mis Reseñas</h4>
+  <div class="row">
+    <!-- Formulario a la izquierda -->
+    <div class="col-md-6">
+      <form id="formNuevaResena" class="mb-4">
+        <div class="mb-2">
+          <input type="text" name="titulo" placeholder="Título" class="form-control" required>
+        </div>
+        <div class="mb-2">
+          <textarea name="comentario" placeholder="Escribe tu reseña..." class="form-control" required></textarea>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Puntuación:</label>
+          <select name="puntuacion" class="form-select" required>
+            <option value="5">⭐️⭐️⭐️⭐️⭐️</option>
+            <option value="4">⭐️⭐️⭐️⭐️</option>
+            <option value="3">⭐️⭐️⭐️</option>
+            <option value="2">⭐️⭐️</option>
+            <option value="1">⭐️</option>
+          </select>
+        </div>
+        <input type="hidden" name="reservaId" value="<%= reservas[0]?._id || '' %>">
+        <button class="btn btn-outline-primary w-100" type="submit">Agregar Reseña</button>
+      </form>
+    </div>
+
+    <!-- Orden y reseñas a la derecha -->
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label class="form-label" for="ordenarPor">Ordenar por:</label>
+        <select id="ordenarPor" class="form-select" onchange="filtrarOrdenar()">
+          <option value="recientes">Más recientes</option>
+          <option value="antiguas">Más antiguas</option>
+          <option value="puntuacion-alta">Puntuación alta</option>
+          <option value="puntuacion-baja">Puntuación baja</option>
         </select>
       </div>
-      <input type="hidden" name="reservaId" value="<%= reservas[0]?._id || '' %>">
-      <button class="btn btn-outline-primary" type="submit">Agregar Reseña</button>
-    </form>
 
-    <!-- Filtro de ordenamiento -->
-    <div class="mb-3">
-      <label for="ordenarPor">Ordenar por:</label>
-      <select id="ordenarPor" class="form-select" onchange="filtrarOrdenar()">
-        <option value="recientes">Más recientes</option>
-        <option value="antiguas">Más antiguas</option>
-        <option value="puntuacion-alta">Puntuación alta</option>
-        <option value="puntuacion-baja">Puntuación baja</option>
-      </select>
-    </div>
-
-    <!-- Lista de reseñas -->
-    <div id="contenedorResenas">
-      <% resenas.forEach(function(reseña) { %>
-        <div class="card mb-3 p-3 border-left-purple review-item" data-id="<%= reseña._id %>">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <h5><%= reseña.titulo %></h5>
-              <div class="rating mb-1">
-                <% for (let i = 1; i <= 5; i++) { %>
-                  <i class="bi <%= reseña.puntuacion >= i ? 'bi-star-fill text-warning' : 'bi-star' %>"></i>
-                <% } %>
-              </div>
-              <p><%= reseña.comentario %></p>
-              <small class="text-muted">Publicado el <%= new Date(reseña.fecha).toLocaleDateString('es-MX') %></small>
-            </div>
-            <div class="d-flex flex-column align-items-end">
-              <button class="btn btn-sm btn-outline-secondary mb-2" onclick="editarResena('<%= reseña._id %>')">✏️</button>
-              <button class="btn btn-sm btn-outline-danger btn-eliminar-resena">🗑️</button>
-            </div>
+      <div id="contenedorResenas">
+  <% resenas.forEach(function(reseña) { %>
+    <div class="card mb-3 p-3 review-item" data-id="<%= reseña._id %>">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h5 class="fw-semibold"><%= reseña.titulo %></h5>
+          <div class="rating mb-1">
+            <% for (let i = 1; i <= 5; i++) { %>
+              <i class="bi <%= reseña.puntuacion >= i ? 'bi-star-fill text-warning' : 'bi-star' %>"></i>
+            <% } %>
           </div>
+          <p><%= reseña.comentario %></p>
+          <small class="text-muted">Publicado el <%= new Date(reseña.fecha).toLocaleDateString('es-MX') %></small>
         </div>
-      <% }) %>
+        <div class="d-flex flex-column align-items-end">
+          <form class="form-eliminar-resena" data-id="<%= reseña._id %>">
+  <button type="submit" class="btn btn-danger btn-sm rounded-circle shadow-sm eliminar-resena-btn" title="Eliminar reseña">
+    <i class="bi bi-trash-fill"></i>
+  </button>
+</form>
+
+        </div>
+      </div>
     </div>
-  </div>
+  <% }) %>
 </div>
-
-
+</div>
 <script>
   function filtrarOrdenar() {
     const criterio = document.getElementById('ordenarPor').value;
@@ -184,26 +182,24 @@
   }
 </script>
     <!-- Calendario -->
-     <!-- Columna derecha: Calendario + Notificaciones -->
-  <div class="col-md-6">
-    <!-- Calendario -->
-    <div class="card-section mb-4">
-      <h4 class="section-title">Calendario</h4>
-      <div class="calendar-grid text-center">
-        <% for (let i = 1; i <= 30; i++) { %>
-          <span class="<%= [10, 20, 21, 22, 23].includes(i) ? 'active-date' : '' %>"><%= i %></span>
-        <% } %>
-      </div>
-      <p class="text-muted text-center mt-2">Próximo viaje: 20–23 jun</p>
-    </div>
+     <div class="row gx-4 mb-5">
+  <!-- Calendario dinámico -->
+<div class="col-md-6">
+  <div class="card-section mb-4">
+    <h4 class="section-title">Calendario</h4>
+    <div id="calendario"></div>
+  </div>
+</div>
 
-    <!-- Historial de actividad -->
+
+  <!-- Historial -->
+  <div class="col-md-6">
     <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
       <div class="card-header bg-primary text-white fw-bold">
         <i class="bi bi-clock-history me-2"></i> Historial de Actividad
       </div>
       <div class="list-group list-group-flush">
-        <% notificaciones.forEach(n => { 
+        <% notificaciones.forEach(n => {
           let tipoClase = 'text-muted';
           let icono = 'bi-info-circle';
           if (n.tipo === 'reserva') { tipoClase = 'text-success'; icono = 'bi-check-circle-fill'; }
@@ -220,11 +216,12 @@
                 <small class="text-muted"><%= moment(n.fecha).format('D/M/YYYY, h:mm:ss a') %></small>
               </div>
             </div>
-            <form action="/notificaciones/<%= n._id %>/eliminar" method="POST">
-              <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle">
-                <i class="bi bi-x-lg"></i>
-              </button>
-            </form>
+            <form action="/notificaciones/<%= n._id %>/eliminar" method="POST" class="form-eliminar-noti">
+  <button type="submit" class="btn btn-light border-0 shadow-sm btn-eliminar-noti" title="Eliminar notificación">
+    <i class="bi bi-x-lg"></i>
+  </button>
+</form>
+
           </div>
         <% }) %>
       </div>
@@ -240,8 +237,6 @@
     </div>
   </div>
 </div>
-
-
 
 
 <!-- Recomendaciones -->
@@ -436,6 +431,87 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.querySelector('i').className = 'bi bi-heart-fill';
       }
     });
+  });
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const formulariosEliminar = document.querySelectorAll('.form-eliminar-resena');
+
+  formulariosEliminar.forEach(form => {
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const id = this.dataset.id;
+
+      if (confirm('¿Estás segura de que deseas eliminar esta reseña?')) {
+        try {
+          const res = await fetch(`/resenas/eliminar/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            const tarjeta = document.querySelector(`.review-item[data-id="${id}"]`);
+            tarjeta.remove();
+          } else {
+            alert('No se pudo eliminar la reseña.');
+          }
+        } catch (err) {
+          console.error('Error eliminando reseña:', err);
+          alert('Error al conectar con el servidor.');
+        }
+      }
+    });
+  });
+});
+</script>
+
+<!-- Calendario dinámico con tooltip -->
+<script>
+  const diasReservados = <%- JSON.stringify(diasMarcados) %>;
+  let mesActual = 5; // Junio
+  let anioActual = 2025;
+
+  function generarCalendario(mes, anio) {
+    const diasMes = new Date(anio, mes + 1, 0).getDate();
+    const nombreMes = new Date(anio, mes).toLocaleString('es-MX', { month: 'long' });
+
+    let html = `
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <button onclick="cambiarMes(-1)" class="btn btn-sm btn-outline-secondary">◀</button>
+        <h5 class="text-capitalize m-0">${nombreMes} de ${anio}</h5>
+        <button onclick="cambiarMes(1)" class="btn btn-sm btn-outline-secondary">▶</button>
+      </div>
+      <div class="calendar-grid text-center">`;
+
+    for (let i = 1; i <= diasMes; i++) {
+      const fecha = `${anio}-${String(mes + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+      const reservaInfo = diasReservados.find(d => d.fecha === fecha);
+      const clase = reservaInfo ? 'active-date' : '';
+      const tooltip = reservaInfo ? `${reservaInfo.hotel} (${reservaInfo.rango})` : '';
+      html += `<span class="${clase}" title="${tooltip}">${i}</span>`;
+    }
+
+    html += '</div>';
+
+    const hayFechas = diasReservados.some(d => d.fecha.startsWith(`${anio}-${String(mes + 1).padStart(2, '0')}`));
+    if (!hayFechas) {
+      html += `<p class="text-muted text-center mt-2">No hay viajes en este mes</p>`;
+    }
+
+    document.getElementById('calendario').innerHTML = html;
+  }
+
+  function cambiarMes(dir) {
+    mesActual += dir;
+    if (mesActual < 5) mesActual = 5;
+    if (mesActual > 11) mesActual = 11;
+    generarCalendario(mesActual, anioActual);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    generarCalendario(mesActual, anioActual);
   });
 </script>
 
