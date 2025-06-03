@@ -14,7 +14,7 @@
           <% if (reserva) { %>
             <hr>
             <h4 class="mt-4 mb-3">Detalles de su Reserva:</h4>
-            <p><strong>Número de Transacción:</strong> <%= reserva.transaccionId %></p>
+            <p><strong>Número de Transacción:</strong> <%= reserva._id %></p>
             <p><strong>Nombre:</strong> <%= reserva.nombre %></p>
             <p><strong>Email:</strong> <%= reserva.email %></p>
             <p>
@@ -26,14 +26,13 @@
 
             <% if (reserva.habitaciones && reserva.habitaciones.length > 0) { %>
               <h5 class="mt-4 mb-3">Habitaciones reservadas:</h5>
-              <div class="row">
+              <div class="row justify-content-center">
                 <% reserva.habitaciones.forEach(h => { %>
                   <div class="col-md-6 mb-3">
                     <div class="card h-100 shadow-sm">
-                      <img src="<%= h.imagenUrl || '/images/hotel.jpg' %>" class="card-img-top" alt="Imagen habitación" style="height: 160px; object-fit: cover;">
+                      <img src="<%= h.imagenes || '/images/hotel.jpg' %>" class="card-img-top" alt="Imagen habitación" style="height: 160px; object-fit: cover;">
                       <div class="card-body text-start">
                         <h5 class="card-title"><%= h.nombre || 'Habitación' %></h5>
-                        <p class="mb-1"><strong>Tipo:</strong> <%= h.tipo || 'N/D' %></p>
                         <p class="mb-0"><strong>Precio por noche:</strong> $<%= h.precioNoche %> MXN</p>
                       </div>
                     </div>
