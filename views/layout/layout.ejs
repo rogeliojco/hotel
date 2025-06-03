@@ -31,18 +31,23 @@
 
     <div class="collapse navbar-collapse justify-content-end" id="navbarColor01">
       <% if (user) { %>
-        <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link" href="/Hoteles">Hoteles</a></li>
-          <li class="nav-item"><a class="nav-link" href="/perfil">Perfil</a></li>
-          <li class="nav-item"><a class="nav-link" href="/">Página principal</a></li>
-          <% if (user && user.rol === 'admin') { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/admin">Panel Admin</a>
-            </li>
-          <% } %>
-          <li class="nav-item"><a class="nav-link" href="/Salir">Salir</a></li>
-        </ul>
+        <% if (user.rol === 'admin') { %>
+          <!-- Menú solo para administrador -->
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/admin">Panel Admin</a></li>
+            <li class="nav-item"><a class="nav-link" href="/Salir">Salir</a></li>
+          </ul>
+        <% } else { %>
+          <!-- Menú para usuario logueado normal -->
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/Hoteles">Hoteles</a></li>
+            <li class="nav-item"><a class="nav-link" href="/perfil">Perfil</a></li>
+            <li class="nav-item"><a class="nav-link" href="/">Página principal</a></li>
+            <li class="nav-item"><a class="nav-link" href="/Salir">Salir</a></li>
+          </ul>
+        <% } %>
       <% } else { %>
+        <!-- Menú para visitantes (no logueados) -->
         <ul class="navbar-nav">
           <li class="nav-item"><a class="nav-link" href="/login">Ingresar</a></li>
           <li class="nav-item"><a class="nav-link" href="/registro">Registro</a></li>
@@ -53,6 +58,7 @@
     </div>
   </div>
 </nav>
+
 
   <!-- Flash messages -->
   <div class="container mt-3">
