@@ -1,0 +1,246 @@
+<% layout('layout/layout.ejs') %>
+
+<style>
+  .form-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #593196;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+    display: block;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #593196;
+    box-shadow: 0 0 0 3px rgba(89, 49, 150, 0.2);
+    outline: none;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .form-col {
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .preview-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .preview-images img {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+  }
+
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  .checkbox-grid label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+
+  .checkbox-inline {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+    gap: 0.3rem;
+  }
+
+  .checkbox-inline input[type="checkbox"] {
+    margin: 0;
+  }
+
+  .submit-btn {
+    display: block;
+    width: 100%;
+    background-color: #593196;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .submit-btn:hover {
+    background-color: #45287c;
+  }
+
+  hr {
+    margin: 2rem 0 1rem;
+    border-top: 2px solid #eee;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 1rem;
+  }
+
+  fieldset {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+  }
+
+  legend {
+    font-weight: bold;
+    color: #593196;
+  }
+</style>
+
+<div class="form-container">
+  <h2 class="form-title">✏️ Editar Habitación</h2>
+
+  <form action="/admin/editar-habitacion/<%= habitacion._id %>" method="POST">
+    <!-- Hotel -->
+    <div class="form-group">
+      <label for="hotel">🏨 Hotel:</label>
+      <select name="hotel" id="hotel" required>
+        <% for (const estado in hotelesPorEstado) { %>
+          <optgroup label="<%= estado %>">
+            <% hotelesPorEstado[estado].forEach(hotel => { %>
+              <option value="<%= hotel._id %>" <%= habitacion.hotel.toString() === hotel._id.toString() ? 'selected' : '' %>><%= hotel.nombre %></option>
+            <% }); %>
+          </optgroup>
+        <% } %>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group form-col">
+        <label for="nombre">📛 Nombre de la habitación</label>
+        <input type="text" id="nombre" name="nombre" required value="<%= habitacion.nombre %>">
+      </div>
+
+      <div class="form-group form-col">
+        <label for="capacdad">👥 Capacidad</label>
+        <select id="capacdad" name="capacidad" required>
+          <% ['1 persona', '2 personas', '3 personas', '4 personas', '5 personas', '6 personas'].forEach(c => { %>
+            <option value="<%= c %>" <%= habitacion.capacidad === c ? 'selected' : '' %>><%= c %></option>
+          <% }); %>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">📝 Descripción</label>
+      <textarea id="descripcion" name="descripcion" rows="3"><%= habitacion.descripcion %></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="precio">💰 Precio por noche (MXN)</label>
+      <input type="number" id="precio" name="precioNoche" min="0" required value="<%= habitacion.precioNoche %>">
+    </div>
+
+    <div class="form-group">
+      <label for="imagenes">🖼️ Enlaces de Fotos (uno por línea)</label>
+      <textarea id="imagenes" name="imagenes" rows="3"><%= habitacion.imagenes.join('\n') %></textarea>
+      <div id="preview" class="preview-images"></div>
+    </div>
+
+    <hr>
+    <h3 class="section-title">🛠️ Detalles de la habitación</h3>
+
+    <div class="form-row">
+      <div class="form-group form-col">
+        <label for="detalle-camas">🛏️ Número de camas</label>
+        <input type="number" id="detalle-camas" name="detalleHabitacion.camas" min="1" value="<%= habitacion.detalleHabitacion.camas %>">
+      </div>
+
+      <div class="form-group form-col">
+        <label for="detalle-tv">📺 Número de televisores</label>
+        <input type="number" id="detalle-tv" name="detalleHabitacion.televisiones" min="0" value="<%= habitacion.detalleHabitacion.televisiones %>">
+      </div>
+
+      <div class="form-group form-col">
+        <label for="detalle-banos">🚿 Número de baños</label>
+        <input type="number" id="detalle-banos" name="detalleHabitacion.banos" min="0" value="<%= habitacion.detalleHabitacion.banos %>">
+      </div>
+    </div>
+
+    <fieldset>
+      <legend>Detalles de la habitación</legend>
+      <% const d = habitacion.detalleHabitacion; %>
+      <% const checked = v => v ? 'checked' : '' %>
+      <div class="checkbox-inline"><input type="checkbox" name="detalleHabitacion.aireAcondicionado" value="true" <%= checked(d.aireAcondicionado) %>><label>Aire Acondicionado</label></div>
+      <div class="checkbox-inline"><input type="checkbox" name="detalleHabitacion.alberca" value="true" <%= checked(d.alberca) %>><label>Alberca</label></div>
+      <div class="checkbox-inline"><input type="checkbox" name="detalleHabitacion.jacuzzi" value="true" <%= checked(d.jacuzzi) %>><label>Jacuzzi</label></div>
+      <div class="checkbox-inline"><input type="checkbox" name="detalleHabitacion.wifi" value="true" <%= checked(d.wifi) %>><label>Wifi</label></div>
+      <div class="checkbox-inline"><input type="checkbox" name="detalleHabitacion.balcon" value="true" <%= checked(d.balcon) %>><label>Balcón</label></div>
+      <div class="checkbox-inline"><input type="checkbox" name="detalleHabitacion.cocina" value="true" <%= checked(d.cocina) %>><label>Cocina</label></div>
+      <div class="checkbox-inline"><input type="checkbox" name="detalleHabitacion.minibar" value="true" <%= checked(d.minibar) %>><label>Minibar</label></div>
+    </fieldset>
+
+    <button type="submit" class="submit-btn">💾 Guardar Cambios</button>
+  </form>
+</div>
+
+<script>
+  const fotosTextarea = document.getElementById('imagenes');
+  const previewDiv = document.getElementById('preview');
+
+  fotosTextarea.addEventListener('input', () => {
+    previewDiv.innerHTML = '';
+    const urls = fotosTextarea.value
+      .split('\n')
+      .map(url => url.trim())
+      .filter(url => url.startsWith('http'));
+    urls.forEach(url => {
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = 'Imagen previa';
+      previewDiv.appendChild(img);
+    });
+  });
+
+  fotosTextarea.dispatchEvent(new Event('input'));
+</script>
