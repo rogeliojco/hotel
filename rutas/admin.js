@@ -386,13 +386,95 @@ router.post('/nueva-habitacion', isAdmin, async (req, res) => {
         console.log("Nueva habitación guardada:", nuevaHabitacion);
 
         // 4. Redirigir al usuario a la página de administración (o a donde quieras)
-        res.redirect('/admin');
-        console.log("Redirigiendo a /admin");
+        res.redirect('/admin/lista-habitaciones');
+        console.log("Redirigiendo a habitaciones");
 
     } catch (error) {
         console.error('Error al guardar la nueva habitación:', error);
         res.status(500).send('Error al guardar la nueva habitación.');
     }
 });
+
+// LISTAR HABITACIONES
+router.get('/lista-habitaciones', isAdmin, async (req, res) => {
+  try {
+    const habitaciones = await Habitacion.find()
+      .populate('hotel') // Para mostrar nombre del hotel
+      .lean();
+
+    res.render('admin/listar-habitaciones', { habitaciones });
+  } catch (error) {
+    console.error('Error al listar habitaciones:', error);
+    res.status(500).send('Error al listar habitaciones');
+  }
+});
+
+router.get('/editar-habitacion/:id', isAdmin, async (req, res) => {
+  try {
+    const habitacion = await Habitacion.findById(req.params.id).lean();
+    const hoteles = await Hotel.find().lean();
+
+    // Agrupar hoteles por estado (igual que en nueva-habitacion)
+    const hotelesPorEstado = {};
+    hoteles.forEach(hotel => {
+      if (!hotelesPorEstado[hotel.estado]) {
+        hotelesPorEstado[hotel.estado] = [];
+      }
+      hotelesPorEstado[hotel.estado].push(hotel);
+    });
+
+    res.render('admin/editar-habitacion', { hotelesPorEstado, habitacion });
+  } catch (error) {
+    console.error('Error al cargar habitación para editar:', error);
+    res.status(500).send('Error al cargar habitación');
+  }
+});
+
+router.post('/editar-habitacion/:id', isAdmin, async (req, res) => {
+  try {
+    const { hotel, nombre, capacidad, descripcion, precioNoche, imagenes } = req.body;
+
+    const actualizada = {
+      hotel,
+      nombre,
+      capacidad,
+      descripcion,
+      precioNoche: Number(precioNoche),
+      imagenes: imagenes.split('\n').map(url => url.trim()).filter(url => url !== ''),
+      detalleHabitacion: {
+        aireAcondicionado: req.body['detalleHabitacion.aireAcondicionado'] === 'true',
+        camas: Number(req.body['detalleHabitacion.camas']),
+        televisiones: Number(req.body['detalleHabitacion.televisiones']),
+        banos: Number(req.body['detalleHabitacion.banos']),
+        alberca: req.body['detalleHabitacion.alberca'] === 'true',
+        jacuzzi: req.body['detalleHabitacion.jacuzzi'] === 'true',
+        wifi: req.body['detalleHabitacion.wifi'] === 'true',
+        balcon: req.body['detalleHabitacion.balcon'] === 'true',
+        cocina: req.body['detalleHabitacion.cocina'] === 'true',
+        minibar: req.body['detalleHabitacion.minibar'] === 'true'
+      }
+    };
+
+    await Habitacion.findByIdAndUpdate(req.params.id, actualizada);
+    res.redirect('/admin/lista-habitaciones');
+  } catch (error) {
+    console.error('Error al editar habitación:', error);
+    res.status(500).send('Error al editar habitación');
+  }
+});
+
+router.post('/eliminar-habitacion/:id', isAdmin, async (req, res) => {
+  try {
+    await Habitacion.findByIdAndDelete(req.params.id);
+    res.redirect('/admin/lista-habitaciones');
+  } catch (error) {
+    console.error('Error al eliminar habitación:', error);
+    res.status(500).send('Error al eliminar habitación');
+  }
+});
+
+
+
+
 
 module.exports = router;
