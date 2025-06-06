@@ -1,0 +1,136 @@
+<% layout('layout/layout.ejs') %>
+
+<style>
+  .form-group { margin-bottom: 1.5rem; }
+  .form-row { display: flex; flex-wrap: wrap; gap: 20px; }
+  .form-row > .form-col { flex: 1; min-width: 200px; }
+  label { font-weight: 600; margin-bottom: 0.3rem; color: #333; display: block; }
+  input, select, textarea {
+    width: 100%; padding: 10px 12px; border: 2px solid #593196;
+    border-radius: 8px; font-size: 1rem; color: #333; background-color: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  input[type="checkbox"] { width: auto; margin-right: 8px; }
+  .checkbox-inline { display: flex; align-items: center; margin-bottom: 10px; }
+  fieldset {
+    margin-top: 1.5rem; padding: 1rem;
+    border: 2px solid #ccc; border-radius: 8px;
+  }
+  legend { font-weight: bold; color: #593196; }
+  .boton-crear-hotel {
+    width: 100%; background-color: #593196; color: #fff;
+    font-size: 1.1rem; font-weight: bold; padding: 12px 24px;
+    border: none; border-radius: 10px; cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(89, 49, 150, 0.2); margin-top: 1rem;
+  }
+  .boton-crear-hotel:hover { background-color: #45287c; transform: translateY(-2px); }
+  .boton-crear-hotel:active { transform: translateY(0); box-shadow: none; }
+  .acepta-mascotas {
+    padding: 15px; border: 2px dashed #593196; background-color: #f9f5ff;
+    border-radius: 8px; margin-top: 1rem; margin-bottom: 1.5rem;
+  }
+  .acepta-mascotas label { font-weight: bold; font-size: 1.1rem; color: #593196; }
+</style>
+
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">Editar Hotel</h3>
+    </div>
+    <div class="card-body">
+
+      <form action="/admin/editar-hotel/<%= hotel._id %>" method="POST">
+        <div class="form-group">
+          <label>Nombre:</label>
+          <input type="text" name="nombre" value="<%= hotel.nombre %>" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label>Descripción Corta:</label>
+            <input type="text" name="descripcionCorta" value="<%= hotel.descripcionCorta %>">
+          </div>
+          <div class="form-col">
+            <label>Zona:</label>
+            <input type="text" name="zona" value="<%= hotel.zona %>" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label>¿Está cerca de?</label>
+            <select name="estaCercaDe.tipo" required>
+              <% ['playa','centro','malecon','otro'].forEach(op => { %>
+                <option value="<%= op %>" <%= hotel.estaCercaDe.tipo === op ? 'selected' : '' %>><%= op %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-col">
+            <label>Distancia:</label>
+            <input type="text" name="estaCercaDe.distancia" value="<%= hotel.estaCercaDe.distancia %>">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label>Estado:</label>
+            <input type="text" name="estado" value="<%= hotel.estado %>" required>
+          </div>
+          <div class="form-col">
+            <label>Calificación general:</label>
+            <input type="number" name="calificacionGeneral" step="0.1" value="<%= hotel.calificacionGeneral %>">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label>Número de comentarios:</label>
+            <input type="number" name="numeroComentarios" value="<%= hotel.numeroComentarios %>">
+          </div>
+          <div class="form-col">
+            <label>Impuestos y cargos:</label>
+            <input type="number" name="impuestosCargos" value="<%= hotel.impuestosCargos %>">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>urlImagen:</label>
+          <input type="text" name="urlImagen" value="<%= hotel.urlImagen %>">
+        </div>
+
+        <div class="form-group acepta-mascotas">
+          <label>
+            <input type="checkbox" name="aceptaMascotas" <%= hotel.aceptaMascotas ? 'checked' : '' %>>
+            Acepta mascotas
+          </label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label>Hora check-in:</label>
+            <input type="time" name="horaCheckIn" value="<%= hotel.horaCheckIn %>">
+          </div>
+          <div class="form-col">
+            <label>Hora check-out:</label>
+            <input type="time" name="horaCheckOut" value="<%= hotel.horaCheckOut %>">
+          </div>
+        </div>
+
+        <fieldset>
+          <legend>Servicios</legend>
+          <% ['piscina','wifi','desayuno','estacionamiento','spa','gimnasio','otros'].forEach(serv => { %>
+            <div class="checkbox-inline">
+              <input type="checkbox" name="servicios" value="<%= serv %>" <%= hotel.servicios?.includes(serv) ? 'checked' : '' %>>
+              <label><%= serv %></label>
+            </div>
+          <% }) %>
+        </fieldset>
+
+        <button type="submit" class="boton-crear-hotel">
+          💾 Guardar Cambios
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
