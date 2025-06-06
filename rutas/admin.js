@@ -344,7 +344,7 @@ router.post('/nuevo-hotel', isAdmin, async (req, res) => {
         await nuevoHotel.save();
 
         console.log("Hotel guardado correctamente:", nuevoHotel);
-        res.redirect('/admin'); // Redirige a donde necesites
+        res.redirect('/admin/lista-hoteles'); // Redirige a donde necesites
     } catch (error) {
         console.error("Error al guardar el nuevo hotel:", error);
         res.status(500).send("Error al guardar el nuevo hotel.");
@@ -473,6 +473,72 @@ router.post('/eliminar-habitacion/:id', isAdmin, async (req, res) => {
   }
 });
 
+// Listar hoteles
+router.get('/lista-hoteles', isAdmin, async (req, res) => {
+  try {
+    const hoteles = await Hotel.find().lean();
+    res.render('admin/lista-hoteles', { hoteles });
+  } catch (err) {
+    console.error('Error al listar hoteles:', err);
+    res.status(500).send('Error al listar hoteles');
+  }
+});
+
+// Editar hotel - GET
+router.get('/editar-hotel/:id', isAdmin, async (req, res) => {
+  try {
+    const hotel = await Hotel.findById(req.params.id).lean();
+    res.render('admin/editar-hotel', { hotel });
+  } catch (err) {
+    console.error('Error al cargar hotel para editar:', err);
+    res.status(500).send('Error al cargar hotel');
+  }
+});
+
+// Editar hotel - POST
+router.post('/editar-hotel/:id', isAdmin, async (req, res) => {
+  try {
+    const hotelEditado = {
+      nombre: req.body.nombre,
+      descripcionCorta: req.body.descripcionCorta,
+      zona: req.body.zona,
+      estaCercaDe: {
+        tipo: req.body['estaCercaDe.tipo'],
+        distancia: req.body['estaCercaDe.distancia']
+      },
+      estado: req.body.estado,
+      calificacionGeneral: req.body.calificacionGeneral,
+      numeroComentarios: req.body.numeroComentarios,
+      impuestosCargos: req.body.impuestosCargos,
+      urlImagen: req.body.urlImagen,
+      aceptaMascotas: req.body.aceptaMascotas === 'on',
+      horaCheckIn: req.body.horaCheckIn,
+      horaCheckOut: req.body.horaCheckOut,
+      contacto: {
+        telefono: req.body.telefono,
+        email: req.body.email
+      },
+      servicios: Array.isArray(req.body.servicios) ? req.body.servicios : [req.body.servicios]
+    };
+
+    await Hotel.findByIdAndUpdate(req.params.id, hotelEditado);
+    res.redirect('/admin/lista-hoteles');
+  } catch (err) {
+    console.error('Error al editar hotel:', err);
+    res.status(500).send('Error al editar hotel');
+  }
+});
+
+// Eliminar hotel - POST
+router.post('/eliminar-hotel/:id', isAdmin, async (req, res) => {
+  try {
+    await Hotel.findByIdAndDelete(req.params.id);
+    res.redirect('/admin/lista-hoteles');
+  } catch (err) {
+    console.error('Error al eliminar hotel:', err);
+    res.status(500).send('Error al eliminar hotel');
+  }
+});
 
 
 

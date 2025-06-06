@@ -1,0 +1,36 @@
+<% layout('layout/layout.ejs') %>
+
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Listado de Hoteles</h2>
+    <a href="/admin/nuevo-hotel" class="btn btn-primary">➕ Nuevo Hotel</a>
+  </div>
+
+  <table class="table table-bordered table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>Nombre</th>
+        <th>Zona</th>
+        <th>Estado</th>
+        <th>Calificación</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% hoteles.forEach(hotel => { %>
+        <tr>
+          <td><%= hotel.nombre %></td>
+          <td><%= hotel.zona %></td>
+          <td><%= hotel.estado %></td>
+          <td><%= hotel.calificacionGeneral || 'N/D' %></td>
+          <td>
+            <a href="/admin/editar-hotel/<%= hotel._id %>" class="btn btn-sm btn-warning">✏️ Editar</a>
+            <form action="/admin/eliminar-hotel/<%= hotel._id %>" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar este hotel?');">
+              <button type="submit" class="btn btn-sm btn-danger">🗑️ Eliminar</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
