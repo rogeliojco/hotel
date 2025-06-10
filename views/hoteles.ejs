@@ -12,7 +12,7 @@
       <div class="d-flex justify-content-start gap-2 flex-wrap align-items-center">
         <!-- Dropdown de Estado -->
         <div style="max-width: 200px;">
-          <select id="estadoSelectHoteles" name="estado" class="form-select custom-input-text-center">
+          <select id="selectUbicacion" name="estado" class="form-select custom-input-text-center">
             <option value="">Todos los Estados</option>
             <% estadosUnicos.forEach(est => { %>
               <option value="<%= est %>" <%= (valoresBusqueda.estado === est) ? 'selected' : '' %>>
@@ -60,9 +60,8 @@
                     </p>
                   <% } %>
                   <%
-                    // Determinar si hay fechas válidas (un rango)
                     const fechasActuales = valoresBusqueda.fechas || '';
-                    const tieneRangoDeFechas = fechasActuales.includes(' a '); // Asumimos que " a " separa las fechas de un rango
+                    const tieneRangoDeFechas = fechasActuales.includes(' a ');
                     const clasesBotonDisponibilidad = "btn btn-primary btn-sm d-block mt-3 btn-ver-disponibilidad" + (tieneRangoDeFechas ? "" : " disabled");
                     const ariaDisabled = tieneRangoDeFechas ? "false" : "true";
                   %>
@@ -94,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputFechasHoteles = document.getElementById('fechasHoteles');
     const botonesVerDisponibilidad = document.querySelectorAll('.btn-ver-disponibilidad');
 
-    // Función para actualizar el estado y href de los botones de disponibilidad
     function actualizarBotonesDisponibilidad(fechasSeleccionadasStr) {
         const esRangoValido = fechasSeleccionadasStr && fechasSeleccionadasStr.includes(' a ');
 
@@ -103,31 +101,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 boton.classList.remove('disabled');
                 boton.setAttribute('aria-disabled', 'false');
                 boton.removeAttribute('tabindex');
-                // Actualizar el href con las nuevas fechas
                 const baseHref = boton.getAttribute('data-base-href');
                 boton.href = baseHref + encodeURIComponent(fechasSeleccionadasStr);
             } else {
                 boton.classList.add('disabled');
                 boton.setAttribute('aria-disabled', 'true');
                 boton.setAttribute('tabindex', '-1');
-                // Opcional: podrías cambiar el href a '#' o 'javascript:void(0)'
-                // boton.href = '#';
             }
         });
     }
 
-    // Inicializar Flatpickr
-    const fp = flatpickr(inputFechasHoteles, {
+    flatpickr(inputFechasHoteles, {
         mode: "range",
-        dateFormat: "d/m/y", // Asegúrate que este formato sea consistente
+        dateFormat: "d/m/y",
         locale: "es",
         minDate: "today",
         onChange: function(selectedDates, dateStr, instance) {
-            // dateStr es la representación en string del rango de fechas
             actualizarBotonesDisponibilidad(dateStr);
         },
         onClose: function(selectedDates, dateStr, instance) {
-
             actualizarBotonesDisponibilidad(inputFechasHoteles.value);
         }
     });
@@ -136,16 +128,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     botonesVerDisponibilidad.forEach(boton => {
         boton.addEventListener('click', function(event) {
-            // Verificar directamente el valor del input de fechas al momento del clic
             const fechasActualesAlClic = inputFechasHoteles.value;
             const esRangoValidoAlClic = fechasActualesAlClic && fechasActualesAlClic.includes(' a ');
 
             if (!esRangoValidoAlClic) {
-                event.preventDefault(); // Prevenir la acción por defecto del enlace
+                event.preventDefault();
                 alert('Por favor, seleccione un rango de fechas para ver la disponibilidad.');
             }
-
         });
     });
+
+    // === Lógica para mantener la ubicación seleccionada al inicio y deshabilitarla ===
+    const selectUbicacion = document.getElementById('selectUbicacion');
+    const valorGuardado = localStorage.getItem('ubicacionSeleccionada');
+
+    if (selectUbicacion) {
+        if (valorGuardado) {
+            const opcionGuardada = Array.from(selectUbicacion.options).find(opt => opt.value === valorGuardado);
+            if (opcionGuardada) {
+                const texto = opcionGuardada.text;
+                const restantes = Array.from(selectUbicacion.options).filter(opt => opt.value !== valorGuardado && opt.value !== "");
+
+                selectUbicacion.innerHTML = '';
+
+                const opcionInicial = document.createElement('option');
+                opcionInicial.text = texto;
+                opcionInicial.value = valorGuardado;
+                opcionInicial.selected = true;
+                opcionInicial.disabled = true;
+                selectUbicacion.appendChild(opcionInicial);
+
+                restantes.forEach(opt => selectUbicacion.appendChild(opt));
+            }
+        }
+
+        selectUbicacion.addEventListener('change', function () {
+            localStorage.setItem('ubicacionSeleccionada', this.value);
+            location.reload();
+        });
+    }
 });
 </script>

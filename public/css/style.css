@@ -406,3 +406,7 @@ body {
     cursor: pointer;
     transition: 0.3s ease;
   }
+  .estado-opcion.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}

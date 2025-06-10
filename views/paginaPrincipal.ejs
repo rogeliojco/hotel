@@ -3,48 +3,50 @@
 <link rel="stylesheet" href="/css/loginRegistro.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-
 <div class="hero-image position-relative">
   <div class="search-form-container position-absolute top-50 start-50 translate-middle w-100 px-3">
-<form id="reservationForm" action="/Hoteles" method="GET">
-  <input type="hidden" id="estadoSeleccionado" name="estado" value="">
-  <div class="d-flex justify-content-center gap-2 flex-wrap align-items-center">
+    <form id="reservationForm" action="/Hoteles" method="GET">
+      <input type="hidden" id="estadoSeleccionado" name="estado" value="">
+      <div class="d-flex justify-content-center gap-2 flex-wrap align-items-center">
 
-    <!-- Input de ciudad con dropdown -->
-    <div class="position-relative" style="max-width: 200px;">
-      <input type="text" id="ciudadInput" name="ciudad" class="form-control custom-input-text-center" placeholder="Ingresar ciudad / Hotel" autocomplete="off" required>
-      <div id="estadoDropdown" class="position-absolute w-100 d-none">
-        <%
-          const estadosUnicos = [...new Set(hoteles.map(hotel => hotel.estado))];
+        <!-- Input de ciudad con dropdown -->
+        <div class="position-relative" style="max-width: 200px;">
+          <input type="text" id="ciudadInput" name="ciudad" class="form-control custom-input-text-center" placeholder="Ingresar ciudad / Hotel" autocomplete="off" required>
+          <div id="estadoDropdown" class="position-absolute w-100 d-none">
+            <% 
+              const estadosUnicos = [...new Set(hoteles.map(hotel => hotel.estado))];
+              const seleccionado = typeof estadoSeleccionado !== 'undefined' ? estadoSeleccionado : '';
+              if (seleccionado) {
+            %>
+              <div class="estado-opcion disabled bg-light text-muted" data-valor="<%= seleccionado %>">
+                <strong><%= seleccionado %> (seleccionado)</strong>
+              </div>
+            <% } %>
+            <% estadosUnicos.forEach(estado => {
+                 if (estado !== seleccionado) { %>
+              <div 
+                class="estado-opcion" 
+                data-valor="<%= estado %>"
+                onclick="seleccionarCiudad('<%= estado %>')"
+              >
+                <strong><%= estado %></strong>
+              </div>
+            <% }}); %>
+          </div>
+        </div>
 
-          estadosUnicos.forEach(estado => { %>
-            <div 
-              class="estado-opcion" 
-              data-valor="<%= estado %>"
-              onclick="seleccionarCiudad('<%= estado %>')"
-            >
-              <strong><%= estado %></strong>
-            </div>
-          <% });
-        %>
+        <!-- Input de fechas -->
+        <input type="text" name="fechas" id="fechas" class="form-control" placeholder="13/05/25 – 14/05/25" style="max-width: 180px;" required>
+
+        <!-- Código promocional -->
+        <input type="text" name="codigo" class="form-control" placeholder="Código Promocional" style="max-width: 180px;">
+
+        <!-- Botón reservar -->
+        <button type="submit" class="btn btn-danger">RESERVAR</button>
       </div>
-    </div>
-
-    <!-- Input de fechas -->
-    <input type="text" name="fechas" id="fechas" class="form-control" placeholder="13/05/25 – 14/05/25" style="max-width: 180px;" required>
-
-    <!-- Código promocional -->
-    <input type="text" name="codigo" class="form-control" placeholder="Código Promocional" style="max-width: 180px;">
-
-    <!-- Botón reservar -->
-    <button type="submit" class="btn btn-danger">RESERVAR</button>
-
-  </div>
-</form>
+    </form>
   </div>
 </div>
-
-
 
 <!-- Sección de Beneficios -->
 <section class="benefits-section py-5 bg-light">
@@ -200,7 +202,6 @@
   </div>
 </footer>
 
-
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
 <script>
@@ -230,28 +231,32 @@
     });
   });
 
-  document.querySelectorAll('.estado-opcion').forEach(opcion => {
-    opcion.addEventListener('click', () => {
-      ciudadInput.value = opcion.getAttribute('data-valor');
-      estadoDropdown.classList.add('d-none');
-    });
-  });
-
   document.addEventListener('click', (e) => {
     if (!estadoDropdown.contains(e.target) && e.target !== ciudadInput) {
       estadoDropdown.classList.add('d-none');
     }
   });
+
+  function seleccionarCiudad(estado) {
+    document.getElementById('ciudadInput').value = estado;
+    document.getElementById('estadoSeleccionado').value = estado;
+
+    // Actualizar dropdown para mostrar solo como seleccionado y al inicio
+    const opciones = Array.from(document.querySelectorAll('.estado-opcion'));
+    const lista = document.getElementById('estadoDropdown');
+    lista.innerHTML = `
+      <div class="estado-opcion disabled bg-light text-muted" data-valor="${estado}">
+        <strong>${estado} (seleccionado)</strong>
+      </div>
+      ${opciones
+        .filter(op => op.getAttribute('data-valor') !== estado)
+        .map(op => `<div class="estado-opcion" data-valor="${op.getAttribute('data-valor')}" onclick="seleccionarCiudad('${op.getAttribute('data-valor')}')"><strong>${op.getAttribute('data-valor')}</strong></div>`)
+        .join('')}
+    `;
+    estadoDropdown.classList.add('d-none');
+  }
 </script>
 
-<!-- Script para año actual -->
 <script>
   document.getElementById('current-year').textContent = new Date().getFullYear();
-</script>
-
-<script>
-  function seleccionarCiudad(estado) {
-    document.getElementById('ciudadInput').value = estado; // Opcional: Si quieres que el estado aparezca en el input
-    document.getElementById('estadoSeleccionado').value = estado; // Guarda el estado en el campo oculto
-  }
 </script>
